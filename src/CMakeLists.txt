@@ -13,13 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #=============================================================================
-cmake_minimum_required(VERSION 2.8.5)
-project(CastXML)
 
-set(KWSYS_NAMESPACE cxsys)
-set(KWSYS_USE_Encoding 1)
-set(KWSYS_HEADER_ROOT ${CastXML_BINARY_DIR}/src)
-add_subdirectory(src/kwsys)
-include_directories(${KWSYS_HEADER_ROOT})
-
-add_subdirectory(src)
+add_executable(castxml castxml.cxx)
+target_link_libraries(castxml
+  cxsys
+  )
+install(TARGETS castxml DESTINATION bin)
