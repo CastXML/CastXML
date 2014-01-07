@@ -14,6 +14,7 @@
   limitations under the License.
 */
 
+#include "Detect.h"
 #include "Options.h"
 #include "Utils.h"
 
@@ -37,11 +38,14 @@ int main(int argc, const char* const * argv)
   }
 
   const char* usage =
-    "Usage: castxml [--castxml-gccxml] [<clang-args>...]\n"
+    "Usage: castxml [--castxml-gccxml] [<clang-args>...] \\\n"
+    "               [--castxml-cc-<id> <cc> [<cc-args>...]]\n"
     ;
 
   Options opts;
   llvm::SmallVector<const char *, 16> clang_args;
+  llvm::SmallVector<const char *, 16> cc_args;
+  const char* cc_id = 0;
 
   for(int i=1; i < argc; ++i) {
     if(strcmp(argv[i], "--castxml-gccxml") == 0) {
@@ -55,9 +59,47 @@ int main(int argc, const char* const * argv)
           ;
         return 1;
       }
+    } else if(strncmp(argv[i], "--castxml-cc-", 13) == 0) {
+      if(!cc_id) {
+        cc_id = argv[i] + 13;
+        for(++i;i < argc && strncmp(argv[i], "--castxml-", 10) != 0; ++i) {
+          cc_args.push_back(argv[i]);
+        }
+        --i;
+      } else {
+        std::cerr <<
+          "error: '--castxml-cc-<id>' may be given at most once!\n"
+          "\n" <<
+          usage
+          ;
+        return 1;
+      }
     } else {
       clang_args.push_back(argv[i]);
     }
+  }
+
+  if(cc_id) {
+    opts.HaveCC = true;
+    if(cc_args.empty()) {
+      std::cerr <<
+        "error: '--castxml-cc-" << cc_id <<
+        "' must be followed by a compiler command!\n"
+        "\n" <<
+        usage
+        ;
+      return 1;
+    }
+    if(!detectCC(cc_id, cc_args.data(), cc_args.data() + cc_args.size(),
+                 opts)) {
+      return 1;
+    }
+  }
+
+  std::cerr << opts.Predefines;
+  for(std::vector<std::string>::iterator i = opts.Includes.begin(),
+      e = opts.Includes.end(); i != e; ++i) {
+    std::cerr << *i << "\n";
   }
 
   return 0;

@@ -13,21 +13,22 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-#ifndef CASTXML_OPTIONS_H
-#define CASTXML_OPTIONS_H
 
-#include <cxsys/Configure.hxx>
-#include <string>
-#include <vector>
+#include "Detect.h"
+#include "Options.h"
+#include "Utils.h"
 
-struct Options
+#include <string.h>
+
+//----------------------------------------------------------------------------
+bool detectCC(const char* id,
+              const char* const* argBeg,
+              const char* const* argEnd,
+              Options& opts)
 {
-  Options(): GccXml(false), HaveCC(false) {}
-  bool GccXml;
-  bool HaveCC;
-  std::vector<std::string> Includes;
-  std::string Predefines;
-  std::string Triple;
-};
-
-#endif // CASTXML_OPTIONS_H
+  (void)id;
+  (void)argBeg;
+  (void)argEnd;
+  (void)opts;
+  return false;
+}

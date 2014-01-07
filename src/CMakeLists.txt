@@ -25,6 +25,7 @@ llvm_map_components_to_libraries(llvm_libs native option bitreader)
 add_executable(castxml
   castxml.cxx
 
+  Detect.cxx Detect.h
   Options.h
   Utils.cxx Utils.h
   )
