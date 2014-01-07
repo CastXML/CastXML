@@ -15,3 +15,9 @@
 #=============================================================================
 cmake_minimum_required(VERSION 2.8.5)
 project(CastXML)
+
+set(KWSYS_NAMESPACE cxsys)
+set(KWSYS_USE_Encoding 1)
+set(KWSYS_HEADER_ROOT ${CastXML_BINARY_DIR}/src)
+add_subdirectory(src/kwsys)
+include_directories(${KWSYS_HEADER_ROOT})
