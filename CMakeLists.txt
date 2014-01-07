@@ -16,10 +16,19 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(CastXML)
 
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
+endif()
+
 set(KWSYS_NAMESPACE cxsys)
 set(KWSYS_USE_Encoding 1)
 set(KWSYS_HEADER_ROOT ${CastXML_BINARY_DIR}/src)
 add_subdirectory(src/kwsys)
 include_directories(${KWSYS_HEADER_ROOT})
+
+find_package(LLVM REQUIRED)
+add_definitions(${LLVM_DEFINITIONS})
+include_directories(${LLVM_INCLUDE_DIRS})
+link_directories(${LLVM_LIBRARY_DIRS})
 
 add_subdirectory(src)

@@ -14,8 +14,11 @@
 # limitations under the License.
 #=============================================================================
 
+llvm_map_components_to_libraries(llvm_libs native option bitreader)
+
 add_executable(castxml castxml.cxx)
 target_link_libraries(castxml
   cxsys
+  ${llvm_libs}
   )
 install(TARGETS castxml DESTINATION bin)
