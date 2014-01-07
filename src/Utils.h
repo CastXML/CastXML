@@ -13,23 +13,18 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
+#ifndef CASTXML_UTILS_H
+#define CASTXML_UTILS_H
 
-#include "Utils.h"
+#include <cxsys/Configure.hxx>
+#include <string>
 
-#include <cxsys/Encoding.hxx>
-#include <iostream>
+/// findResources - Call from main() to find resources
+/// relative to the executable.  On success returns true.
+/// On failure returns false and stores a message in the stream.
+bool findResourceDir(const char* argv0, std::ostream& error);
 
-//----------------------------------------------------------------------------
-int main(int argc, const char* const * argv)
-{
-  cxsys::Encoding::CommandLineArguments args =
-    cxsys::Encoding::CommandLineArguments::Main(argc, argv);
-  argc = args.argc();
-  argv = args.argv();
-  if(!findResourceDir(argv[0], std::cerr)) {
-    return 1;
-  }
-  (void)argc;
-  (void)argv;
-  return 0;
-}
+/// getResourceDir - Get resource directory found at startup
+std::string getResourceDir();
+
+#endif // CASTXML_UTILS_H

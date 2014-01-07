@@ -14,11 +14,23 @@
 # limitations under the License.
 #=============================================================================
 
+# Tell executables in the build tree where to find the source tree.
+configure_file(
+  "SourceDir.txt.in"
+  "${CastXML_BINARY_DIR}/CMakeFiles/castxmlSourceDir.txt" @ONLY
+  )
+
 llvm_map_components_to_libraries(llvm_libs native option bitreader)
 
-add_executable(castxml castxml.cxx)
+add_executable(castxml
+  castxml.cxx
+
+  Utils.cxx Utils.h
+  )
 target_link_libraries(castxml
   cxsys
   ${llvm_libs}
   )
+set_property(SOURCE Utils.cxx APPEND PROPERTY COMPILE_DEFINITIONS
+  "CASTXML_INSTALL_DATA_DIR=\"${CastXML_INSTALL_DATA_DIR}\"")
 install(TARGETS castxml DESTINATION ${CastXML_INSTALL_RUNTIME_DIR})
