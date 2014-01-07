@@ -18,7 +18,102 @@
 #include "Options.h"
 #include "Utils.h"
 
+#include <cxsys/SystemTools.hxx>
+
+#include <iostream>
 #include <string.h>
+
+//----------------------------------------------------------------------------
+static bool failedCC(const char* id,
+                     std::vector<const char*> const& args,
+                     std::string const& out,
+                     std::string const& err,
+                     std::string const& msg)
+{
+  std::cerr << "error: '--castxml-cc-" << id
+            << "' compiler command failed:\n\n";
+  for(std::vector<const char*>::const_iterator i = args.begin(),
+        e = args.end(); i != e; ++i) {
+    std::cerr << " '" << *i << "'";
+  }
+  std::cerr << "\n";
+  if(!msg.empty()) {
+    std::cerr << msg << "\n";
+  } else {
+    std::cerr << out << "\n";
+    std::cerr << err << "\n";
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------------
+static void setTriple(Options& opts)
+{
+  std::string const& pd = opts.Predefines;
+  std::string arch;
+  std::string os;
+  if(pd.find("#define __x86_64__ 1") != pd.npos) {
+    arch = "x86_64";
+  } else if(pd.find("#define __amd64__ 1") != pd.npos) {
+    arch = "amd64";
+  } else if(pd.find("#define __i386__ 1") != pd.npos) {
+    arch = "i386";
+  }
+  if(pd.find("#define __MINGW32__ 1") != pd.npos) {
+    if(arch.find("64") != arch.npos) {
+      os = "w64-mingw32";
+    } else {
+      os = "pc-mingw32";
+    }
+  } else if(pd.find("#define _WIN32 1") != pd.npos) {
+    os = "pc-win32";
+  }
+  if(!arch.empty() && !os.empty()) {
+    opts.Triple = arch + "-" + os;
+  }
+}
+
+//----------------------------------------------------------------------------
+static bool detectCC_GNU(const char* const* argBeg,
+                         const char* const* argEnd,
+                         Options& opts)
+{
+  std::vector<const char*> cc_args(argBeg, argEnd);
+  std::string empty_cpp = getResourceDir() + "/empty.cpp";
+  int ret;
+  std::string out;
+  std::string err;
+  std::string msg;
+  cc_args.push_back("-E");
+  cc_args.push_back("-dM");
+  cc_args.push_back("-v");
+  cc_args.push_back(empty_cpp.c_str());
+  if(runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
+     ret == 0) {
+    opts.Predefines = out;
+    const char* start_line = "#include <...> search starts here:";
+    if(const char* c = strstr(err.c_str(), start_line)) {
+      if((c = strchr(c, '\n'), c++)) {
+        while(*c++ == ' ') {
+          if(const char* e = strchr(c, '\n')) {
+            const char* s = c;
+            c = e + 1;
+            if(*(e - 1) == '\r') {
+              --e;
+            }
+            std::string inc(s, e-s);
+            cxsys::SystemTools::ConvertToUnixSlashes(inc);
+            opts.Includes.push_back(inc);
+          }
+        }
+      }
+    }
+    setTriple(opts);
+    return true;
+  } else {
+    return failedCC("gnu", cc_args, out, err, msg);
+  }
+}
 
 //----------------------------------------------------------------------------
 bool detectCC(const char* id,
@@ -26,9 +121,10 @@ bool detectCC(const char* id,
               const char* const* argEnd,
               Options& opts)
 {
-  (void)id;
-  (void)argBeg;
-  (void)argEnd;
-  (void)opts;
-  return false;
+  if(strcmp(id, "gnu") == 0) {
+    return detectCC_GNU(argBeg, argEnd, opts);
+  } else {
+    std::cerr << "error: '--castxml-cc-" << id << "' not known!\n";
+    return false;
+  }
 }

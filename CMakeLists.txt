@@ -48,3 +48,5 @@ include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 
 add_subdirectory(src)
+
+install(DIRECTORY share/castxml/ DESTINATION "${CastXML_INSTALL_DATA_DIR}")
