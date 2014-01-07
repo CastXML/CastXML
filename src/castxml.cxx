@@ -22,6 +22,7 @@
 //----------------------------------------------------------------------------
 int main(int argc, const char* const * argv)
 {
+  suppressInteractiveErrors();
   cxsys::Encoding::CommandLineArguments args =
     cxsys::Encoding::CommandLineArguments::Main(argc, argv);
   argc = args.argc();

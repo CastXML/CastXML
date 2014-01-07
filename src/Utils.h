@@ -27,4 +27,12 @@ bool findResourceDir(const char* argv0, std::ostream& error);
 /// getResourceDir - Get resource directory found at startup
 std::string getResourceDir();
 
+/// runCommand - Run a given command line and capture the output.
+bool runCommand(int argc, const char* const* argv,
+                int& ret, std::string& out, std::string& err,
+                std::string& msg);
+
+/// suppressInteractiveErrors - Disable Windows error dialog popups
+void suppressInteractiveErrors();
+
 #endif // CASTXML_UTILS_H

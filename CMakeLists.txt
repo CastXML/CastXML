@@ -35,6 +35,7 @@ endif()
 
 set(KWSYS_NAMESPACE cxsys)
 set(KWSYS_USE_Encoding 1)
+set(KWSYS_USE_Process 1)
 set(KWSYS_USE_RegularExpression 1)
 set(KWSYS_USE_SystemTools 1)
 set(KWSYS_HEADER_ROOT ${CastXML_BINARY_DIR}/src)

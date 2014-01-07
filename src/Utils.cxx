@@ -16,9 +16,11 @@
 
 #include "Utils.h"
 
+#include <cxsys/Process.h>
 #include <cxsys/SystemTools.hxx>
 #include <llvm/Support/FileSystem.h>
 #include <fstream>
+#include <vector>
 
 static std::string castxmlResourceDir;
 
@@ -77,4 +79,81 @@ bool findResourceDir(const char* argv0, std::ostream& error)
 std::string getResourceDir()
 {
   return castxmlResourceDir;
+}
+
+//----------------------------------------------------------------------------
+bool runCommand(int argc, const char* const* argv,
+                int& ret, std::string& out, std::string& err,
+                std::string& msg)
+{
+  std::vector<const char*> cmd(argv, argv + argc);
+  cmd.push_back(0);
+  ret = 1;
+  out = "";
+  err = "";
+  std::vector<char> outBuf;
+  std::vector<char> errBuf;
+
+  cxsysProcess* cp = cxsysProcess_New();
+  cxsysProcess_SetCommand(cp, &*cmd.begin());
+  cxsysProcess_SetOption(cp, cxsysProcess_Option_HideWindow, 1);
+#ifdef _WIN32
+  cxsysProcess_SetPipeFile(cp, cxsysProcess_Pipe_STDIN, "//./nul");
+#else
+  cxsysProcess_SetPipeFile(cp, cxsysProcess_Pipe_STDIN, "/dev/null");
+#endif
+  cxsysProcess_Execute(cp);
+
+  char* data;
+  int length;
+  int pipe;
+  while((pipe = cxsysProcess_WaitForData(cp, &data, &length, 0)) > 0) {
+    if(pipe == cxsysProcess_Pipe_STDOUT) {
+      outBuf.insert(outBuf.end(), data, data+length);
+    } else if(pipe == cxsysProcess_Pipe_STDERR) {
+      errBuf.insert(errBuf.end(), data, data+length);
+    }
+  }
+
+  cxsysProcess_WaitForExit(cp, 0);
+  if(!outBuf.empty()) {
+    out.append(&*outBuf.begin(), outBuf.size());
+  }
+  if(!errBuf.empty()) {
+    err.append(&*errBuf.begin(), errBuf.size());
+  }
+
+  bool result = true;
+  switch(cxsysProcess_GetState(cp)) {
+  case cxsysProcess_State_Exited:
+    ret = cxsysProcess_GetExitValue(cp);
+    break;
+  case cxsysProcess_State_Exception:
+    msg = cxsysProcess_GetExceptionString(cp);
+    result = false;
+    break;
+  case cxsysProcess_State_Error:
+    msg = cxsysProcess_GetErrorString(cp);
+    result = false;
+    break;
+  default:
+    msg = "Process terminated in unexpected state.\n";
+    result = false;
+    break;
+  }
+
+  cxsysProcess_Delete(cp);
+  return result;
+}
+
+#if defined(_WIN32)
+# include <windows.h>
+#endif
+
+//----------------------------------------------------------------------------
+void suppressInteractiveErrors()
+{
+#if defined(_WIN32)
+  SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX);
+#endif
 }
