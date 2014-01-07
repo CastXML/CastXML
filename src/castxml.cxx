@@ -14,10 +14,15 @@
   limitations under the License.
 */
 
+#include "Options.h"
 #include "Utils.h"
+
+#include "llvm/ADT/SmallVector.h"
 
 #include <cxsys/Encoding.hxx>
 #include <iostream>
+#include <vector>
+#include <string.h>
 
 //----------------------------------------------------------------------------
 int main(int argc, const char* const * argv)
@@ -30,7 +35,30 @@ int main(int argc, const char* const * argv)
   if(!findResourceDir(argv[0], std::cerr)) {
     return 1;
   }
-  (void)argc;
-  (void)argv;
+
+  const char* usage =
+    "Usage: castxml [--castxml-gccxml] [<clang-args>...]\n"
+    ;
+
+  Options opts;
+  llvm::SmallVector<const char *, 16> clang_args;
+
+  for(int i=1; i < argc; ++i) {
+    if(strcmp(argv[i], "--castxml-gccxml") == 0) {
+      if(!opts.GccXml) {
+        opts.GccXml = true;
+      } else {
+        std::cerr <<
+          "error: '--castxml-gccxml' may be given at most once!\n"
+          "\n" <<
+          usage
+          ;
+        return 1;
+      }
+    } else {
+      clang_args.push_back(argv[i]);
+    }
+  }
+
   return 0;
 }
