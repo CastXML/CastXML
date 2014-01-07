@@ -21,4 +21,4 @@ target_link_libraries(castxml
   cxsys
   ${llvm_libs}
   )
-install(TARGETS castxml DESTINATION bin)
+install(TARGETS castxml DESTINATION ${CastXML_INSTALL_RUNTIME_DIR})

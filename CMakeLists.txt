@@ -16,6 +16,19 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(CastXML)
 
+# Build tree locations.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CastXML_BINARY_DIR}/bin")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CastXML_BINARY_DIR}/lib")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CastXML_BINARY_DIR}/lib")
+
+# Install tree locations.
+if(NOT CastXML_INSTALL_RUNTIME_DIR)
+  set(CastXML_INSTALL_RUNTIME_DIR bin)
+endif()
+if(NOT CastXML_INSTALL_DATA_DIR)
+  set(CastXML_INSTALL_DATA_DIR share/castxml)
+endif()
+
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
 endif()
