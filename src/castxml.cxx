@@ -16,6 +16,7 @@
 
 #include "Detect.h"
 #include "Options.h"
+#include "RunClang.h"
 #include "Utils.h"
 
 #include "llvm/ADT/SmallVector.h"
@@ -74,9 +75,31 @@ int main(int argc, const char* const * argv)
           ;
         return 1;
       }
+    } else if(strcmp(argv[i], "-E") == 0) {
+      opts.PPOnly = true;
+    } else if(strcmp(argv[i], "-o") == 0) {
+      if((i+1) < argc) {
+        opts.OutputFile = argv[++i];
+      } else {
+        std::cerr <<
+          "error: argument to '-o' is missing (expected 1 value)\n"
+          "\n" <<
+          usage
+          ;
+        return 1;
+      }
     } else {
       clang_args.push_back(argv[i]);
     }
+  }
+
+  if(opts.PPOnly && opts.GccXml) {
+    std::cerr <<
+      "error: '--castxml-gccxml' and '-E' may not both be given\n"
+      "\n" <<
+      usage
+      ;
+    return 1;
   }
 
   if(cc_id) {
@@ -96,11 +119,10 @@ int main(int argc, const char* const * argv)
     }
   }
 
-  std::cerr << opts.Predefines;
-  for(std::vector<std::string>::iterator i = opts.Includes.begin(),
-      e = opts.Includes.end(); i != e; ++i) {
-    std::cerr << *i << "\n";
+  if(clang_args.empty()) {
+    return 0;
   }
 
-  return 0;
+  return runClang(clang_args.data(), clang_args.data() + clang_args.size(),
+                  opts);
 }

@@ -20,6 +20,19 @@ configure_file(
   "${CastXML_BINARY_DIR}/CMakeFiles/castxmlSourceDir.txt" @ONLY
   )
 
+set(clang_libs
+  clangFrontend
+  clangDriver
+  clangSerialization
+  clangParse
+  clangSema
+  clangAnalysis
+  clangEdit
+  clangAST
+  clangLex
+  clangBasic
+  )
+
 llvm_map_components_to_libraries(llvm_libs native option bitreader)
 
 add_executable(castxml
@@ -27,10 +40,12 @@ add_executable(castxml
 
   Detect.cxx Detect.h
   Options.h
+  RunClang.cxx RunClang.h
   Utils.cxx Utils.h
   )
 target_link_libraries(castxml
   cxsys
+  ${clang_libs}
   ${llvm_libs}
   )
 set_property(SOURCE Utils.cxx APPEND PROPERTY COMPILE_DEFINITIONS

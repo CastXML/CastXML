@@ -13,23 +13,14 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-#ifndef CASTXML_OPTIONS_H
-#define CASTXML_OPTIONS_H
+#ifndef CASTXML_RUNCLANG_H
+#define CASTXML_RUNCLANG_H
 
-#include <cxsys/Configure.hxx>
-#include <string>
-#include <vector>
+struct Options;
 
-struct Options
-{
-  Options(): PPOnly(false), GccXml(false), HaveCC(false) {}
-  bool PPOnly;
-  bool GccXml;
-  bool HaveCC;
-  std::string OutputFile;
-  std::vector<std::string> Includes;
-  std::string Predefines;
-  std::string Triple;
-};
+/// runClang - Run Clang with given user arguments and detected options.
+int runClang(const char* const* argBeg,
+             const char* const* argEnd,
+             Options const& opts);
 
-#endif // CASTXML_OPTIONS_H
+#endif // CASTXML_RUNCLANG_H
