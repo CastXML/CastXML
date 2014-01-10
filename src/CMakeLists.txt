@@ -19,6 +19,11 @@ configure_file(
   "SourceDir.txt.in"
   "${CastXML_BINARY_DIR}/CMakeFiles/castxmlSourceDir.txt" @ONLY
   )
+# Tell executables in the build tree where to find Clang resources.
+configure_file(
+  "ClangResourceDir.txt.in"
+  "${CastXML_BINARY_DIR}/CMakeFiles/castxmlClangResourceDir.txt" @ONLY
+  )
 
 set(clang_libs
   clangFrontend

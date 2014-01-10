@@ -27,6 +27,9 @@ bool findResourceDir(const char* argv0, std::ostream& error);
 /// getResourceDir - Get resource directory found at startup
 std::string getResourceDir();
 
+/// getClangResourceDir - Get Clang resource directory found at startup
+std::string getClangResourceDir();
+
 /// runCommand - Run a given command line and capture the output.
 bool runCommand(int argc, const char* const* argv,
                 int& ret, std::string& out, std::string& err,

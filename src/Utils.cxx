@@ -23,6 +23,7 @@
 #include <vector>
 
 static std::string castxmlResourceDir;
+static std::string castxmlClangResourceDir;
 
 //----------------------------------------------------------------------------
 static std::string GetMainExecutable(const char* argv0)
@@ -36,12 +37,19 @@ static bool tryBuildDir(std::string const& dir)
 {
   // Build tree has
   //   <build>/CMakeFiles/castxmlSourceDir.txt
+  //   <build>/CMakeFiles/castxmlClangResourceDir.txt
   std::string src_dir_txt = dir + "/CMakeFiles/castxmlSourceDir.txt";
+  std::string cl_dir_txt = dir + "/CMakeFiles/castxmlClangResourceDir.txt";
   std::ifstream src_fin(src_dir_txt.c_str());
+  std::ifstream cl_fin(cl_dir_txt.c_str());
   std::string src_dir;
+  std::string cl_dir;
   if(src_fin && cxsys::SystemTools::GetLineFromStream(src_fin, src_dir) &&
-     cxsys::SystemTools::FileIsDirectory(src_dir.c_str())) {
+     cxsys::SystemTools::FileIsDirectory(src_dir.c_str()) &&
+     cl_fin && cxsys::SystemTools::GetLineFromStream(cl_fin, cl_dir) &&
+     cxsys::SystemTools::FileIsDirectory(cl_dir.c_str())) {
     castxmlResourceDir = src_dir + "/share/castxml";
+    castxmlClangResourceDir = cl_dir;
     return true;
   }
   return false;
@@ -60,9 +68,12 @@ bool findResourceDir(const char* argv0, std::ostream& error)
   // Install tree has
   //   <prefix>/bin/castxml
   //   <prefix>/<CASTXML_INSTALL_DATA_DIR>
+  //   <prefix>/<CASTXML_INSTALL_DATA_DIR>/clang
   std::string dir = cxsys::SystemTools::GetFilenamePath(exe_dir);
   castxmlResourceDir = dir + "/" + CASTXML_INSTALL_DATA_DIR;
-  if(!cxsys::SystemTools::FileIsDirectory(castxmlResourceDir.c_str())) {
+  castxmlClangResourceDir = castxmlResourceDir + "/clang";
+  if(!cxsys::SystemTools::FileIsDirectory(castxmlResourceDir.c_str()) ||
+     !cxsys::SystemTools::FileIsDirectory(castxmlClangResourceDir.c_str())) {
     // Build tree has
     //   <build>/bin[/<config>]/castxml
     if(!tryBuildDir(dir) &&
@@ -79,6 +90,12 @@ bool findResourceDir(const char* argv0, std::ostream& error)
 std::string getResourceDir()
 {
   return castxmlResourceDir;
+}
+
+//----------------------------------------------------------------------------
+std::string getClangResourceDir()
+{
+  return castxmlClangResourceDir;
 }
 
 //----------------------------------------------------------------------------

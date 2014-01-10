@@ -47,6 +47,23 @@ add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 
+set(CLANG_RESOURCE_DIR "" CACHE PATH "Clang resource directory")
+if(NOT CLANG_RESOURCE_DIR)
+  set(v ${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR})
+  foreach(d ${LLVM_LIBRARY_DIRS})
+    if(IS_DIRECTORY "${d}/clang/${v}/include")
+      set(CLANG_RESOURCE_DIR ${d}/clang/${v})
+      break()
+    endif()
+  endforeach()
+endif()
+
+if(CLANG_RESOURCE_DIR)
+  install(DIRECTORY ${CLANG_RESOURCE_DIR}/include
+    DESTINATION "${CastXML_INSTALL_DATA_DIR}/clang"
+    )
+endif()
+
 add_subdirectory(src)
 
 install(DIRECTORY share/castxml/ DESTINATION "${CastXML_INSTALL_DATA_DIR}")

@@ -16,6 +16,9 @@
 
 #include "RunClang.h"
 #include "Options.h"
+#include "Utils.h"
+
+#include <cxsys/SystemTools.hxx>
 
 #include "clang/AST/ASTConsumer.h"
 #include "clang/Driver/Compilation.h"
@@ -195,6 +198,10 @@ static int runClangImpl(const char* const* argBeg,
   // get system compiler setting arguments from the Driver.
   clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(),
                           "dummy.out", *diags);
+  if(!cxsys::SystemTools::FileIsFullPath(d.ResourceDir.c_str()) ||
+     !cxsys::SystemTools::FileIsDirectory(d.ResourceDir.c_str())) {
+    d.ResourceDir = getClangResourceDir();
+  }
   llvm::SmallVector<const char *, 16> cArgs;
   cArgs.push_back("<clang>");
   cArgs.insert(cArgs.end(), argBeg, argEnd);
