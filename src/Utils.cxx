@@ -163,6 +163,38 @@ bool runCommand(int argc, const char* const* argv,
   return result;
 }
 
+//----------------------------------------------------------------------------
+std::string encodeXML(std::string const& in, bool cdata)
+{
+  std::string xml;
+  const char* last = in.c_str();
+  for(const char* c = last; *c; ++c) {
+    switch(*c) {
+#   define XML(OUT)               \
+      xml.append(last, c - last); \
+      last = c + 1;               \
+      xml.append(OUT)
+    case '&': XML("&amp;"); break;
+    case '<': XML("&lt;"); break;
+    case '>': XML("&gt;"); break;
+    case '\'':
+      if(!cdata) {
+        XML("&apos;");
+      }
+      break;
+    case '"':
+      if(!cdata) {
+        XML("&quot;");
+      }
+      break;
+    default: break;
+#   undef XML
+    }
+  }
+  xml.append(last);
+  return xml;
+}
+
 #if defined(_WIN32)
 # include <windows.h>
 #endif

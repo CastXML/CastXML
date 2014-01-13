@@ -38,4 +38,7 @@ bool runCommand(int argc, const char* const* argv,
 /// suppressInteractiveErrors - Disable Windows error dialog popups
 void suppressInteractiveErrors();
 
+/// encodeXML - Convert character string to XML representation
+std::string encodeXML(std::string const& in, bool cdata = false);
+
 #endif // CASTXML_UTILS_H
