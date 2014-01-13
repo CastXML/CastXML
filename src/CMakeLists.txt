@@ -45,6 +45,7 @@ add_executable(castxml
 
   Detect.cxx Detect.h
   Options.h
+  Output.cxx Output.h
   RunClang.cxx RunClang.h
   Utils.cxx Utils.h
   )

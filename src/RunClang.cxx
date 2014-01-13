@@ -16,6 +16,7 @@
 
 #include "RunClang.h"
 #include "Options.h"
+#include "Output.h"
 #include "Utils.h"
 
 #include <cxsys/SystemTools.hxx>
@@ -49,7 +50,7 @@ public:
     CI(ci), OS(os) {}
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
-    // TODO: Run visitor on this translation unit.
+    outputXML(this->CI, ctx, this->OS);
   }
 };
 
