@@ -142,11 +142,15 @@ class ASTVisitor: public ASTVisitorBase
   /** Helper common to AddDumpNode implementation for every kind.  */
   template <typename K> unsigned int AddDumpNodeImpl(K k, bool complete);
 
+  /** Allocate a dump node for a source file entry.  */
+  unsigned int AddDumpFile(clang::FileEntry const* f);
+
   /** Queue leftover nodes that do not need complete output.  */
   void QueueIncompleteDumpNodes();
 
   /** Traverse AST nodes until the queue is empty.  */
   void ProcessQueue();
+  void ProcessFileQueue();
 
   /** Dispatch output of a declaration.  */
   void OutputDecl(clang::Decl const* d, DumpNode const* dn);
@@ -167,6 +171,9 @@ private:
   // Total number of nodes to be dumped.
   unsigned int NodeCount;
 
+  // Total number of source files to be referenced.
+  unsigned int FileCount;
+
   // Whether we are in the complete or incomplete output step.
   bool RequireComplete;
 
@@ -178,8 +185,15 @@ private:
   typedef std::map<clang::QualType, DumpNode, QualTypeCompare> TypeNodesMap;
   TypeNodesMap TypeNodes;
 
+  // Map from clang file entry to our source file index.
+  typedef std::map<clang::FileEntry const*, unsigned int> FileNodesMap;
+  FileNodesMap FileNodes;
+
   // Node traversal queue.
   std::queue<QueueEntry> Queue;
+
+  // File traversal queue.
+  std::queue<clang::FileEntry const*> FileQueue;
 
 public:
   ASTVisitor(clang::CompilerInstance& ci,
@@ -188,7 +202,7 @@ public:
              std::vector<std::string> const& startNames):
     ASTVisitorBase(ci, ctx, os),
     StartNames(startNames),
-    NodeCount(0),
+    NodeCount(0), FileCount(0),
     RequireComplete(true) {}
 
   /** Visit declarations in the given translation unit.
@@ -234,6 +248,17 @@ unsigned int ASTVisitor::AddDumpNodeImpl(K k, bool complete)
 }
 
 //----------------------------------------------------------------------------
+unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
+{
+  unsigned int& index = this->FileNodes[f];
+  if(index == 0) {
+    index = ++this->FileCount;
+    this->FileQueue.push(f);
+  }
+  return index;
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::QueueIncompleteDumpNodes()
 {
   // Queue declaration nodes that do not need complete output.
@@ -268,6 +293,21 @@ void ASTVisitor::ProcessQueue()
       this->OutputType(qe.Type, qe.DN);
       break;
     }
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::ProcessFileQueue()
+{
+  while(!this->FileQueue.empty()) {
+    clang::FileEntry const* f = this->FileQueue.front();
+    this->FileQueue.pop();
+    this->OS <<
+      "  <File"
+      " id=\"f" << this->FileNodes[f] << "\""
+      " name=\"" << encodeXML(f->getName()) << "\""
+      "/>\n"
+      ;
   }
 }
 
@@ -372,6 +412,9 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 
   // Dump the incomplete nodes.
   this->ProcessQueue();
+
+  // Dump the filename queue.
+  this->ProcessFileQueue();
 
   // Finish dump.
   this->OS <<
