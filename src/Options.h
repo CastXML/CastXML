@@ -30,6 +30,7 @@ struct Options
   std::vector<std::string> Includes;
   std::string Predefines;
   std::string Triple;
+  std::vector<std::string> StartNames;
 };
 
 #endif // CASTXML_OPTIONS_H

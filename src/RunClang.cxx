@@ -45,12 +45,14 @@ class ASTConsumer: public clang::ASTConsumer
 {
   clang::CompilerInstance& CI;
   llvm::raw_ostream& OS;
+  std::vector<std::string> const& StartNames;
 public:
-  ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os):
-    CI(ci), OS(os) {}
+  ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
+              std::vector<std::string> const& startNames):
+    CI(ci), OS(os), StartNames(startNames) {}
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
-    outputXML(this->CI, ctx, this->OS);
+    outputXML(this->CI, ctx, this->OS, this->StartNames);
   }
 };
 
@@ -110,7 +112,7 @@ class CastXMLSyntaxOnlyAction:
       return clang::SyntaxOnlyAction::CreateASTConsumer(CI, InFile);
     } else if(llvm::raw_ostream* OS =
               CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
-      return new ASTConsumer(CI, *OS);
+      return new ASTConsumer(CI, *OS, this->Opts.StartNames);
     } else {
       return 0;
     }

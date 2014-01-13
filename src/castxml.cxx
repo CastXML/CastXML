@@ -40,6 +40,7 @@ int main(int argc, const char* const * argv)
 
   const char* usage =
     "Usage: castxml [--castxml-gccxml] [<clang-args>...] \\\n"
+    "               [--castxml-start <qualified-name>]... \\\n"
     "               [--castxml-cc-<id> <cc> [<cc-args>...]]\n"
     ;
 
@@ -55,6 +56,18 @@ int main(int argc, const char* const * argv)
       } else {
         std::cerr <<
           "error: '--castxml-gccxml' may be given at most once!\n"
+          "\n" <<
+          usage
+          ;
+        return 1;
+      }
+    } else if(strcmp(argv[i], "--castxml-start") == 0) {
+      if((i+1) < argc) {
+        opts.StartNames.push_back(argv[++i]);
+      } else {
+        std::cerr <<
+          "error: argument to '--castxml-start' is missing "
+          "(expected 1 value)\n"
           "\n" <<
           usage
           ;

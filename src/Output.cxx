@@ -157,7 +157,13 @@ class ASTVisitor: public ASTVisitorBase
   /** Output a qualified type and queue its unqualified type.  */
   void OutputCvQualifiedType(clang::QualType t, DumpNode const* dn);
 
+  /** Queue declarations matching given qualified name in given context.  */
+  void LookupStart(clang::DeclContext const* dc, std::string const& name);
+
 private:
+  // List of starting declaration names.
+  std::vector<std::string> const& StartNames;
+
   // Total number of nodes to be dumped.
   unsigned int NodeCount;
 
@@ -178,8 +184,10 @@ private:
 public:
   ASTVisitor(clang::CompilerInstance& ci,
              clang::ASTContext const& ctx,
-             llvm::raw_ostream& os):
+             llvm::raw_ostream& os,
+             std::vector<std::string> const& startNames):
     ASTVisitorBase(ci, ctx, os),
+    StartNames(startNames),
     NodeCount(0),
     RequireComplete(true) {}
 
@@ -309,10 +317,45 @@ void ASTVisitor::OutputCvQualifiedType(clang::QualType t, DumpNode const* dn)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::LookupStart(clang::DeclContext const* dc,
+                             std::string const& name)
+{
+  std::string::size_type pos = name.find("::");
+  std::string cur = name.substr(0, pos);
+
+  clang::IdentifierTable& ids = CI.getPreprocessor().getIdentifierTable();
+  clang::DeclContext::lookup_const_result r =
+    dc->lookup(clang::DeclarationName(&ids.get(cur)));
+  if(pos == name.npos) {
+    for(clang::DeclContext::lookup_const_iterator i = r.begin(), e = r.end();
+        i != e; ++i) {
+      this->AddDumpNode(*i, true);
+    }
+  } else {
+    std::string rest = name.substr(pos+2);
+    for(clang::DeclContext::lookup_const_iterator i = r.begin(), e = r.end();
+        i != e; ++i) {
+      if (clang::DeclContext* idc = clang::dyn_cast<clang::DeclContext>(*i)) {
+        this->LookupStart(idc, rest);
+      }
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 {
   // Add the starting nodes for the dump.
-  this->AddDumpNode(tu, true);
+  if(!this->StartNames.empty()) {
+    // Use the specified starting locations.
+    for(std::vector<std::string>::const_iterator i = this->StartNames.begin(),
+          e = this->StartNames.end(); i != e; ++i) {
+      this->LookupStart(tu, *i);
+    }
+  } else {
+    // No start specified.  Use whole translation unit.
+    this->AddDumpNode(tu, true);
+  }
 
   // Start dump with gccxml-compatible format.
   this->OS <<
@@ -339,8 +382,9 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 //----------------------------------------------------------------------------
 void outputXML(clang::CompilerInstance& ci,
                clang::ASTContext const& ctx,
-               llvm::raw_ostream& os)
+               llvm::raw_ostream& os,
+               std::vector<std::string> const& startNames)
 {
-  ASTVisitor v(ci, ctx, os);
+  ASTVisitor v(ci, ctx, os, startNames);
   v.HandleTranslationUnit(ctx.getTranslationUnitDecl());
 }

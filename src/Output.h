@@ -18,6 +18,7 @@
 
 #include <cxsys/Configure.hxx>
 #include <string>
+#include <vector>
 
 namespace llvm {
   class raw_ostream;
@@ -31,6 +32,7 @@ namespace clang {
 /// outputXML - Print a gccxml-compatible AST dump.
 void outputXML(clang::CompilerInstance& ci,
                clang::ASTContext const& ctx,
-               llvm::raw_ostream& os);
+               llvm::raw_ostream& os,
+               std::vector<std::string> const& startNames);
 
 #endif // CASTXML_OUTPUT_H
