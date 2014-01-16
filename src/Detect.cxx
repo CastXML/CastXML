@@ -52,11 +52,14 @@ static void setTriple(Options& opts)
   std::string const& pd = opts.Predefines;
   std::string arch;
   std::string os;
-  if(pd.find("#define __x86_64__ 1") != pd.npos) {
+  if(pd.find("#define __x86_64__ 1") != pd.npos ||
+     pd.find("#define _M_X64 ") != pd.npos) {
     arch = "x86_64";
-  } else if(pd.find("#define __amd64__ 1") != pd.npos) {
+  } else if(pd.find("#define __amd64__ 1") != pd.npos ||
+            pd.find("#define _M_AMD64 ") != pd.npos) {
     arch = "amd64";
-  } else if(pd.find("#define __i386__ 1") != pd.npos) {
+  } else if(pd.find("#define __i386__ 1") != pd.npos ||
+            pd.find("#define _M_IX86 ") != pd.npos) {
     arch = "i386";
   }
   if(pd.find("#define __MINGW32__ 1") != pd.npos) {
@@ -116,6 +119,44 @@ static bool detectCC_GNU(const char* const* argBeg,
 }
 
 //----------------------------------------------------------------------------
+static bool detectCC_MSVC(const char* const* argBeg,
+                          const char* const* argEnd,
+                          Options& opts)
+{
+  std::vector<const char*> cc_args(argBeg, argEnd);
+  std::string detect_vs_cpp = getResourceDir() + "/detect_vs.cpp";
+  int ret;
+  std::string out;
+  std::string err;
+  std::string msg;
+  cc_args.push_back("-c");
+  cc_args.push_back("-FoNUL");
+  cc_args.push_back(detect_vs_cpp.c_str());
+  if(runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
+     ret == 0) {
+    if(const char* predefs = strstr(out.c_str(), "\n#define")) {
+      opts.Predefines = predefs+1;
+    }
+    if(const char* includes_str = cxsys::SystemTools::GetEnv("INCLUDE")) {
+      std::vector<std::string> includes;
+      cxsys::SystemTools::Split(includes_str, includes, ';');
+      for(std::vector<std::string>::iterator i = includes.begin(),
+            e = includes.end(); i != e; ++i) {
+        if(!i->empty()) {
+          std::string inc = *i;
+          cxsys::SystemTools::ConvertToUnixSlashes(inc);
+          opts.Includes.push_back(inc);
+        }
+      }
+    }
+    setTriple(opts);
+    return true;
+  } else {
+    return failedCC("msvc", cc_args, out, err, msg);
+  }
+}
+
+//----------------------------------------------------------------------------
 bool detectCC(const char* id,
               const char* const* argBeg,
               const char* const* argEnd,
@@ -123,6 +164,8 @@ bool detectCC(const char* id,
 {
   if(strcmp(id, "gnu") == 0) {
     return detectCC_GNU(argBeg, argEnd, opts);
+  } else if(strcmp(id, "msvc") == 0) {
+    return detectCC_MSVC(argBeg, argEnd, opts);
   } else {
     std::cerr << "error: '--castxml-cc-" << id << "' not known!\n";
     return false;

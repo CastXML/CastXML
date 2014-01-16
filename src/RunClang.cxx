@@ -269,6 +269,7 @@ int runClang(const char* const* argBeg,
              Options const& opts)
 {
   llvm::SmallVector<const char*, 32> args(argBeg, argEnd);
+  std::string fmsc_version = "-fmsc-version=";
 
   if(opts.HaveCC) {
     // Configure target to match that of given compiler.
@@ -289,6 +290,24 @@ int runClang(const char* const* argBeg,
 
     // Tell Clang not to add its predefines.
     args.push_back("-undef");
+
+    // Configure language options to match given compiler.
+    const char* pd = opts.Predefines.c_str();
+    if(strstr(pd, "#define _MSC_EXTENSIONS ")) {
+      args.push_back("-fms-extensions");
+    }
+    if(const char* d = strstr(pd, "#define _MSC_VER ")) {
+      args.push_back("-fms-compatibility");
+      // Extract the _MSC_VER value to give to -fmsc-version=.
+      d += 17;
+      if(const char* e = strchr(d, '\n')) {
+        if(*(e - 1) == '\r') {
+          --e;
+        }
+        fmsc_version.append(d, e-d);
+        args.push_back(fmsc_version.c_str());
+      }
+    }
   }
 
   return runClangImpl(args.data(), args.data() + args.size(), opts);
