@@ -28,6 +28,9 @@ endif()
 if(NOT CastXML_INSTALL_DATA_DIR)
   set(CastXML_INSTALL_DATA_DIR share/castxml)
 endif()
+if(NOT CastXML_INSTALL_DOC_DIR)
+  set(CastXML_INSTALL_DOC_DIR doc/castxml)
+endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti")
@@ -67,3 +70,9 @@ endif()
 add_subdirectory(src)
 
 install(DIRECTORY share/castxml/ DESTINATION "${CastXML_INSTALL_DATA_DIR}")
+
+install(FILES
+  "LICENSE"
+  "NOTICE"
+  DESTINATION "${CastXML_INSTALL_DOC_DIR}"
+  )
