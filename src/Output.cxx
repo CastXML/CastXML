@@ -161,6 +161,21 @@ class ASTVisitor: public ASTVisitorBase
   /** Output a qualified type and queue its unqualified type.  */
   void OutputCvQualifiedType(clang::QualType t, DumpNode const* dn);
 
+  /** Print an id="_<n>" XML unique ID attribute.  */
+  void PrintIdAttribute(DumpNode const* dn);
+
+  /** Print a name="..." attribute.  */
+  void PrintNameAttribute(std::string const& name);
+
+  /** Print a members="..." attribute listing the XML IDREFs for
+      members of the given declaration context.  Also queues the
+      context members for later output.  */
+  void PrintMembersAttribute(clang::DeclContext const* dc);
+
+  // Decl node output methods.
+  void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
+                                 DumpNode const* dn);
+
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
 
@@ -354,6 +369,71 @@ void ASTVisitor::OutputCvQualifiedType(clang::QualType t, DumpNode const* dn)
   // unqualified type element and lists qualifier attributes.
   static_cast<void>(t);
   static_cast<void>(dn);
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
+{
+  this->OS << " id=\"_" << dn->Index << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintNameAttribute(std::string const& name)
+{
+  this->OS << " name=\"" << encodeXML(name) << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
+{
+  std::set<unsigned int> emitted;
+  for(clang::DeclContext::decl_iterator i = dc->decls_begin(),
+        e = dc->decls_end(); i != e; ++i) {
+    clang::Decl const* d = *i;
+
+    // Ignore certain members.
+    switch (d->getKind()) {
+    case clang::Decl::CXXRecord: {
+      if(static_cast<clang::CXXRecordDecl const*>(d)->isInjectedClassName()) {
+        continue;
+      }
+    } break;
+    case clang::Decl::AccessSpec: {
+      continue;
+    } break;
+    default:
+      break;
+    }
+
+    // Queue this decl and print its id.
+    if(unsigned int id = this->AddDumpNode(d, true)) {
+      emitted.insert(id);
+    }
+  }
+
+  if(!emitted.empty()) {
+    this->OS << " members=\"";
+    const char* sep = "";
+    for(std::set<unsigned int>::const_iterator i = emitted.begin(),
+          e = emitted.end(); i != e; ++i) {
+      this->OS << sep << "_" << *i;
+      sep = " ";
+    }
+    this->OS << "\"";
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputTranslationUnitDecl(
+  clang::TranslationUnitDecl const* d, DumpNode const* dn)
+{
+  this->OS << "  <Namespace";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute("::");
+  if(dn->Complete) {
+    this->PrintMembersAttribute(d);
+  }
+  this->OS << "/>\n";
 }
 
 //----------------------------------------------------------------------------
