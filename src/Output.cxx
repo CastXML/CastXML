@@ -161,6 +161,10 @@ class ASTVisitor: public ASTVisitorBase
   /** Output a qualified type and queue its unqualified type.  */
   void OutputCvQualifiedType(clang::QualType t, DumpNode const* dn);
 
+  /** Get the XML IDREF for the element defining the given
+      declaration context (namespace, class, etc.).  */
+  unsigned int GetContextIdRef(clang::DeclContext const* dc);
+
   /** Print an id="_<n>" XML unique ID attribute.  */
   void PrintIdAttribute(DumpNode const* dn);
 
@@ -172,9 +176,16 @@ class ASTVisitor: public ASTVisitorBase
       context members for later output.  */
   void PrintMembersAttribute(clang::DeclContext const* dc);
 
+  /** Print a context="..." attribute with the XML IDREF for
+      the containing declaration context (namespace, class, etc.).
+      Also prints access="..." attribute for class members to
+      indicate public, protected, or private membership.  */
+  void PrintContextAttribute(clang::Decl const* d);
+
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
+  void OutputNamespaceDecl(clang::NamespaceDecl const* d, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -372,6 +383,16 @@ void ASTVisitor::OutputCvQualifiedType(clang::QualType t, DumpNode const* dn)
 }
 
 //----------------------------------------------------------------------------
+unsigned int ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
+{
+  if(clang::Decl const* d = clang::dyn_cast<clang::Decl>(dc)) {
+    return this->AddDumpNode(d, false);
+  } else {
+    return 0;
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 {
   this->OS << " id=\"_" << dn->Index << "\"";
@@ -381,6 +402,24 @@ void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
   this->OS << " name=\"" << encodeXML(name) << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
+{
+  clang::DeclContext const* dc = d->getDeclContext();
+  if(unsigned int id = this->GetContextIdRef(dc)) {
+    this->OS << " context=\"_" << id << "\"";
+    if (dc->isRecord()) {
+      if (d->getAccess() == clang::AS_private) {
+        this->OS << " access=\"private\"";
+      } else if (d->getAccess() == clang::AS_protected) {
+        this->OS << " access=\"protected\"";
+      } else {
+        this->OS << " access=\"public\"";
+      }
+    }
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -430,6 +469,20 @@ void ASTVisitor::OutputTranslationUnitDecl(
   this->OS << "  <Namespace";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute("::");
+  if(dn->Complete) {
+    this->PrintMembersAttribute(d);
+  }
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputNamespaceDecl(
+  clang::NamespaceDecl const* d, DumpNode const* dn)
+{
+  this->OS << "  <Namespace";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintContextAttribute(d);
   if(dn->Complete) {
     this->PrintMembersAttribute(d);
   }
