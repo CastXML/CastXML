@@ -211,6 +211,8 @@ class ASTVisitor: public ASTVisitorBase
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
   void OutputNamespaceDecl(clang::NamespaceDecl const* d, DumpNode const* dn);
+  void OutputRecordDecl(clang::RecordDecl const* d, DumpNode const* dn);
+  void OutputCXXRecordDecl(clang::CXXRecordDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
 
   // Type node output methods.
@@ -276,6 +278,9 @@ unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
   // Replace some types with their decls.
   if(!t.hasLocalQualifiers()) {
     switch (t->getTypeClass()) {
+    case clang::Type::Record:
+      return this->AddDumpNode(t->getAs<clang::RecordType>()->getDecl(),
+                               complete);
     case clang::Type::Typedef:
       return this->AddDumpNode(t->getAs<clang::TypedefType>()->getDecl(),
                                complete);
@@ -610,6 +615,43 @@ void ASTVisitor::OutputNamespaceDecl(
     this->PrintMembersAttribute(d);
   }
   this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
+                                  DumpNode const* dn)
+{
+  const char* tag;
+  switch (d->getTagKind()) {
+  case clang::TTK_Class: tag = "Class"; break;
+  case clang::TTK_Union: tag = "Union"; break;
+  case clang::TTK_Struct: tag = "Struct"; break;
+  case clang::TTK_Interface: return;
+  case clang::TTK_Enum: return;
+  }
+
+  this->OS << "  <" << tag;
+  this->PrintIdAttribute(dn);
+  if(!d->isAnonymousStructOrUnion()) {
+    this->PrintNameAttribute(d->getName().str());
+  }
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+  if(d->getDefinition()) {
+    if(dn->Complete) {
+      this->PrintMembersAttribute(d);
+    }
+  } else {
+    this->OS << " incomplete=\"1\"";
+  }
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
+                                     DumpNode const* dn)
+{
+  this->OutputRecordDecl(d, dn);
 }
 
 //----------------------------------------------------------------------------
