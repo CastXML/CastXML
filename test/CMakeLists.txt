@@ -51,6 +51,8 @@ castxml_test_cmd(gccxml-twice --castxml-gccxml --castxml-gccxml)
 castxml_test_cmd(o-missing -o)
 castxml_test_cmd(start-missing --castxml-start)
 
+castxml_test_gccxml(ArrayType)
+castxml_test_gccxml(ArrayType-incomplete)
 castxml_test_gccxml(Class)
 castxml_test_gccxml(Class-incomplete)
 castxml_test_gccxml(CvQualifiedType)

@@ -217,6 +217,10 @@ class ASTVisitor: public ASTVisitorBase
 
   // Type node output methods.
   void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
+  void OutputConstantArrayType(clang::ConstantArrayType const* t,
+                               DumpNode const* dn);
+  void OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
+                                 DumpNode const* dn);
   void OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                  DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
@@ -677,6 +681,28 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   this->OS << "  <FundamentalType";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(t->getName(this->CTX.getPrintingPolicy()).str());
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputConstantArrayType(clang::ConstantArrayType const* t,
+                                         DumpNode const* dn)
+{
+  this->OS << "  <ArrayType";
+  this->PrintIdAttribute(dn);
+  this->OS << " min=\"0\" max=\"" << (t->getSize()-1) << "\"";
+  this->PrintTypeAttribute(t->getElementType(), dn->Complete);
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
+                                           DumpNode const* dn)
+{
+  this->OS << "  <ArrayType";
+  this->PrintIdAttribute(dn);
+  this->OS << " min=\"0\" max=\"\"";
+  this->PrintTypeAttribute(t->getElementType(), dn->Complete);
   this->OS << "/>\n";
 }
 

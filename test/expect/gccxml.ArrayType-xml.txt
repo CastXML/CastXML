@@ -1,0 +1,8 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:1" file="f1" line="1"/>
+  <ArrayType id="_2" min="0" max="1" type="_4"/>
+  <FundamentalType id="_4" name="int"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/ArrayType.cxx"/>
+</GCC_XML>$
