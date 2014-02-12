@@ -214,6 +214,7 @@ class ASTVisitor: public ASTVisitorBase
   void OutputRecordDecl(clang::RecordDecl const* d, DumpNode const* dn);
   void OutputCXXRecordDecl(clang::CXXRecordDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
+  void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
 
   // Type node output methods.
   void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
@@ -671,6 +672,25 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintTypeAttribute(d->getTypeSourceInfo()->getType(), dn->Complete);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
+{
+  this->OS << "  <Variable";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintTypeAttribute(d->getType(), dn->Complete);
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+  if(d->getStorageClass() == clang::SC_Static) {
+    this->OS << " static=\"1\"";
+  }
+  if(d->getStorageClass() == clang::SC_Extern) {
+    this->OS << " extern=\"1\"";
+  }
+
   this->OS << "/>\n";
 }
 
