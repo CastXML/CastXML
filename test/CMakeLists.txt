@@ -51,5 +51,6 @@ castxml_test_cmd(gccxml-twice --castxml-gccxml --castxml-gccxml)
 castxml_test_cmd(o-missing -o)
 castxml_test_cmd(start-missing --castxml-start)
 
+castxml_test_gccxml(CvQualifiedType)
 castxml_test_gccxml(FundamentalType)
 castxml_test_gccxml(Namespace)

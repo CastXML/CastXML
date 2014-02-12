@@ -415,10 +415,30 @@ void ASTVisitor::OutputType(clang::QualType t, DumpNode const* dn)
 //----------------------------------------------------------------------------
 void ASTVisitor::OutputCvQualifiedType(clang::QualType t, DumpNode const* dn)
 {
-  // TODO: Output a CvQualifiedType element that references the
-  // unqualified type element and lists qualifier attributes.
-  static_cast<void>(t);
-  static_cast<void>(dn);
+  bool qc, qv, qr;
+  unsigned int id = this->GetTypeIdRef(t, dn->Complete, qc, qv, qr);
+  const char* c = qc? "c" : "";
+  const char* v = qv? "v" : "";
+  const char* r = qr? "r" : "";
+
+  // Create a special CvQualifiedType element to hold top-level
+  // cv-qualifiers for a real type node.
+  this->OS << "  <CvQualifiedType id=\"_" << id << c << v << r << "\"";
+
+  // Refer to the unqualified type.
+  this->OS << " type=\"_" << id << "\"";
+
+  // Add the cv-qualification attributes.
+  if (qc) {
+    this->OS << " const=\"1\"";
+  }
+  if (qv) {
+    this->OS << " volatile=\"1\"";
+  }
+  if (qr) {
+    this->OS << " restrict=\"1\"";
+  }
+  this->OS << "/>\n";
 }
 
 //----------------------------------------------------------------------------
