@@ -165,6 +165,10 @@ class ASTVisitor: public ASTVisitorBase
       declaration context (namespace, class, etc.).  */
   unsigned int GetContextIdRef(clang::DeclContext const* dc);
 
+  /** Return the unqualified name of the declaration context
+      (class, struct, union) of the given method.  */
+  std::string GetContextName(clang::CXXMethodDecl const* d);
+
   /** Get the XML IDREF for the element defining the given
       (possibly cv-qualified) type.  The qc,qv,qr booleans are
       set to whether the IDREF should include the const,
@@ -192,6 +196,11 @@ class ASTVisitor: public ASTVisitorBase
       the given type for later output.  */
   void PrintTypeAttribute(clang::QualType t, bool complete);
 
+  /** Print a returns="..." attribute with the XML IDREF for
+      the given (possibly cv-qualified) type.  Also queue
+      the given type for later output.  */
+  void PrintReturnsAttribute(clang::QualType t, bool complete);
+
   /** Print the XML attributes location="fid:line" file="fid" line="line"
       for the given decl.  */
   void PrintLocationAttribute(clang::Decl const* d);
@@ -200,6 +209,33 @@ class ASTVisitor: public ASTVisitorBase
       members of the given declaration context.  Also queues the
       context members for later output.  */
   void PrintMembersAttribute(clang::DeclContext const* dc);
+
+  /** Print a throws="..." attribute listing the XML IDREFs for
+      the types that the given function prototype declares in
+      the throw() specification.  */
+  void PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
+                            bool complete);
+
+  /** Flags used by function output methods to pass information
+      to the OutputFunctionHelper method.  */
+  enum FunctionHelperFlags {
+    FH_Returns    = (1<<0),
+    FH_Static     = (1<<1),
+    FH_Explicit   = (1<<2),
+    FH_Const      = (1<<3),
+    FH_Virtual    = (1<<4),
+    FH__Last
+  };
+
+  /** Output a function element using the name and flags given by
+      the caller.  This encompasses functionality common to all the
+      function declaration output methods.  */
+  void OutputFunctionHelper(clang::FunctionDecl const* d, DumpNode const* dn,
+                            const char* tag, std::string const& name,
+                            unsigned int flags);
+
+  /** Output an <Argument/> element inside a function element.  */
+  void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete);
 
   /** Print a context="..." attribute with the XML IDREF for
       the containing declaration context (namespace, class, etc.).
@@ -215,6 +251,15 @@ class ASTVisitor: public ASTVisitorBase
   void OutputCXXRecordDecl(clang::CXXRecordDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
+
+  void OutputFunctionDecl(clang::FunctionDecl const* d, DumpNode const* dn);
+  void OutputCXXMethodDecl(clang::CXXMethodDecl const* d, DumpNode const* dn);
+  void OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
+                               DumpNode const* dn);
+  void OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
+                                DumpNode const* dn);
+  void OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
+                               DumpNode const* dn);
 
   // Type node output methods.
   void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
@@ -465,6 +510,16 @@ unsigned int ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
 }
 
 //----------------------------------------------------------------------------
+std::string ASTVisitor::GetContextName(clang::CXXMethodDecl const* d)
+{
+  clang::DeclContext const* dc = d->getDeclContext();
+  if(clang::RecordDecl const* rd = clang::dyn_cast<clang::RecordDecl>(dc)) {
+    return rd->getName().str();
+  }
+  return "";
+}
+
+//----------------------------------------------------------------------------
 unsigned int ASTVisitor::GetTypeIdRef(clang::QualType t, bool complete,
                                       bool& qc, bool& qv, bool& qr)
 {
@@ -517,6 +572,14 @@ void ASTVisitor::PrintNameAttribute(std::string const& name)
 void ASTVisitor::PrintTypeAttribute(clang::QualType t, bool complete)
 {
   this->OS << " type=\"";
+  this->PrintTypeIdRef(t, complete);
+  this->OS << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintReturnsAttribute(clang::QualType t, bool complete)
+{
+  this->OS << " returns=\"";
   this->PrintTypeIdRef(t, complete);
   this->OS << "\"";
 }
@@ -596,6 +659,94 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
     }
     this->OS << "\"";
   }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
+                                      bool complete)
+{
+  if(fpt && fpt->hasDynamicExceptionSpec()) {
+    clang::FunctionProtoType::exception_iterator i = fpt->exception_begin();
+    clang::FunctionProtoType::exception_iterator e = fpt->exception_end();
+    this->OS << " throws=\"";
+    const char* sep = "";
+    for(;i != e; ++i) {
+      this->OS << sep;
+      this->PrintTypeIdRef(*i, complete);
+      sep = " ";
+    }
+    this->OS << "\"";
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
+                                      DumpNode const* dn,
+                                      const char* tag,
+                                      std::string const& name,
+                                      unsigned int flags)
+{
+  this->OS << "  <" << tag;
+  this->PrintIdAttribute(dn);
+  if(!name.empty()) {
+    this->PrintNameAttribute(name);
+  }
+  if(flags & FH_Returns) {
+    this->PrintReturnsAttribute(d->getReturnType(), dn->Complete);
+  }
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+
+  if(flags & FH_Static) {
+    this->OS << " static=\"1\"";
+  }
+  if(flags & FH_Explicit) {
+    this->OS << " explicit=\"1\"";
+  }
+  if(flags & FH_Const) {
+    this->OS << " const=\"1\"";
+  }
+  if(flags & FH_Virtual) {
+    this->OS << " virtual=\"1\"";
+  }
+  if(d->isInlined()) {
+    this->OS << " inline=\"1\"";
+  }
+  if(d->getStorageClass() == clang::SC_Extern) {
+    this->OS << " extern=\"1\"";
+  }
+  if(d->isImplicit()) {
+    this->OS << " artificial=\"1\"";
+  }
+
+  clang::QualType ft = d->getType();
+  this->PrintThrowsAttribute(
+    ft->getAs<clang::FunctionProtoType>(), dn->Complete);
+
+  if(d->param_begin() != d->param_end()) {
+    this->OS << ">\n";
+    for (clang::FunctionDecl::param_const_iterator i = d->param_begin(),
+           e = d->param_end(); i != e; ++i) {
+      this->OutputFunctionArgument(*i, dn->Complete);
+    }
+    this->OS << "  </" << tag << ">\n";
+  } else {
+    this->OS << "/>\n";
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
+                                        bool complete)
+{
+  this->OS << "    <Argument";
+  std::string name = a->getName().str();
+  if(!name.empty()) {
+    this->PrintNameAttribute(name);
+  }
+  this->PrintTypeAttribute(a->getOriginalType(), complete);
+  this->PrintLocationAttribute(a);
+  this->OS << "/>\n";
 }
 
 //----------------------------------------------------------------------------
@@ -692,6 +843,82 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   }
 
   this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
+                                    DumpNode const* dn)
+{
+  unsigned int flags = FH_Returns;
+  if(d->getStorageClass() == clang::SC_Static) {
+    flags |= FH_Static;
+  }
+  if(d->isOverloadedOperator()) {
+    this->OutputFunctionHelper(d, dn, "OperatorFunction",
+      clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+  } else {
+    this->OutputFunctionHelper(d, dn, "Function", d->getName().str(), flags);
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
+                                     DumpNode const* dn)
+{
+  unsigned int flags = FH_Returns;
+  if(d->isStatic()) {
+    flags |= FH_Static;
+  }
+  if(d->isConst()) {
+    flags |= FH_Const;
+  }
+  if(d->isVirtual()) {
+    flags |= FH_Virtual;
+  }
+  if(d->isOverloadedOperator()) {
+    this->OutputFunctionHelper(d, dn, "OperatorMethod",
+      clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+  } else {
+    this->OutputFunctionHelper(d, dn, "Method", d->getName().str(), flags);
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
+                                         DumpNode const* dn)
+{
+  unsigned int flags = FH_Returns;
+  if(d->isConst()) {
+    flags |= FH_Const;
+  }
+  if(d->isVirtual()) {
+    flags |= FH_Virtual;
+  }
+  this->OutputFunctionHelper(d, dn, "Converter", "", flags);
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
+                                          DumpNode const* dn)
+{
+  unsigned int flags = 0;
+  if(d->isExplicit()) {
+    flags |= FH_Explicit;
+  }
+  this->OutputFunctionHelper(d, dn, "Constructor",
+                             this->GetContextName(d), flags);
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
+                                         DumpNode const* dn)
+{
+  unsigned int flags = 0;
+  if(d->isVirtual()) {
+    flags |= FH_Virtual;
+  }
+  this->OutputFunctionHelper(d, dn, "Destructor",
+                             this->GetContextName(d), flags);
 }
 
 //----------------------------------------------------------------------------
