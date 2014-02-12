@@ -270,6 +270,16 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
 
 //----------------------------------------------------------------------------
 unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
+  // Replace some types with their decls.
+  if(!t.hasLocalQualifiers()) {
+    switch (t->getTypeClass()) {
+    case clang::Type::Typedef:
+      return this->AddDumpNode(t->getAs<clang::TypedefType>()->getDecl(),
+                               complete);
+    default:
+      break;
+    }
+  }
   return this->AddDumpNodeImpl(t, complete);
 }
 
