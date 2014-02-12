@@ -165,11 +165,36 @@ class ASTVisitor: public ASTVisitorBase
       declaration context (namespace, class, etc.).  */
   unsigned int GetContextIdRef(clang::DeclContext const* dc);
 
+  /** Get the XML IDREF for the element defining the given
+      (possibly cv-qualified) type.  The qc,qv,qr booleans are
+      set to whether the IDREF should include the const,
+      volatile, or restrict qualifier, respectively.  Also
+      queues the given type for later output.  */
+  unsigned int GetTypeIdRef(clang::QualType t, bool complete,
+                            bool& qc, bool& qv, bool& qr);
+
+  /** Print the XML IDREF value referencing the given type.
+      If the type has top-level cv-qualifiers, they are
+      appended to the numeric id as single characters (c=const,
+      v=volatile, r=restrict) to reference the XML ID of
+      a CvQualifiedType element describing the qualifiers
+      and referencing the unqualified type.  */
+  void PrintTypeIdRef(clang::QualType t, bool complete);
+
   /** Print an id="_<n>" XML unique ID attribute.  */
   void PrintIdAttribute(DumpNode const* dn);
 
   /** Print a name="..." attribute.  */
   void PrintNameAttribute(std::string const& name);
+
+  /** Print a type="..." attribute with the XML IDREF for
+      the given (possibly cv-qualified) type.  Also queues
+      the given type for later output.  */
+  void PrintTypeAttribute(clang::QualType t, bool complete);
+
+  /** Print the XML attributes location="fid:line" file="fid" line="line"
+      for the given decl.  */
+  void PrintLocationAttribute(clang::Decl const* d);
 
   /** Print a members="..." attribute listing the XML IDREFs for
       members of the given declaration context.  Also queues the
@@ -186,6 +211,7 @@ class ASTVisitor: public ASTVisitorBase
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
   void OutputNamespaceDecl(clang::NamespaceDecl const* d, DumpNode const* dn);
+  void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -393,6 +419,43 @@ unsigned int ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
 }
 
 //----------------------------------------------------------------------------
+unsigned int ASTVisitor::GetTypeIdRef(clang::QualType t, bool complete,
+                                      bool& qc, bool& qv, bool& qr)
+{
+  // Add the type node.
+  unsigned int id = this->AddDumpNode(t, complete);
+
+  // Check for qualifiers.
+  qc = t.isLocalConstQualified();
+  qv = t.isLocalVolatileQualified();
+  qr = t.isLocalRestrictQualified();
+
+  // If the type has qualifiers, add the unqualified type and use its id.
+  if(t.hasLocalQualifiers()) {
+    id = this->AddDumpNode(t.getLocalUnqualifiedType(), complete);
+  }
+
+  // Return the dump node id of the unqualified type.
+  return id;
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintTypeIdRef(clang::QualType t, bool complete)
+{
+  // Add the type node.
+  bool qc, qv, qr;
+  unsigned int id = this->GetTypeIdRef(t, complete, qc, qv, qr);
+
+  // Check cv-qualificiation.
+  const char* c = qc? "c" : "";
+  const char* v = qv? "v" : "";
+  const char* r = qr? "r" : "";
+
+  // Print the reference.
+  this->OS << "_" << id << c << v << r;
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 {
   this->OS << " id=\"_" << dn->Index << "\"";
@@ -402,6 +465,33 @@ void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
   this->OS << " name=\"" << encodeXML(name) << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintTypeAttribute(clang::QualType t, bool complete)
+{
+  this->OS << " type=\"";
+  this->PrintTypeIdRef(t, complete);
+  this->OS << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
+{
+  clang::SourceLocation sl = d->getLocation();
+  if(!sl.isValid()) {
+    return;
+  }
+  clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
+  if (clang::FileEntry const* f =
+      this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
+    unsigned int id = this->AddDumpFile(f);
+    unsigned int line = fsl.getExpansionLineNumber();
+    this->OS <<
+      " location=\"f" << id << ":" << line << "\""
+      " file=\"f" << id << "\""
+      " line=\"" << line << "\"";
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -486,6 +576,20 @@ void ASTVisitor::OutputNamespaceDecl(
   if(dn->Complete) {
     this->PrintMembersAttribute(d);
   }
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
+                                   DumpNode const* dn)
+{
+  this->OS << "  <Typedef";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintTypeAttribute(d->getTypeSourceInfo()->getType(), dn->Complete);
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+
   this->OS << "/>\n";
 }
 
