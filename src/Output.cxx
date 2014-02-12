@@ -213,6 +213,9 @@ class ASTVisitor: public ASTVisitorBase
   void OutputNamespaceDecl(clang::NamespaceDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
 
+  // Type node output methods.
+  void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
+
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
 
@@ -599,7 +602,16 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintTypeAttribute(d->getTypeSourceInfo()->getType(), dn->Complete);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->OS << "/>\n";
+}
 
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
+                                   DumpNode const* dn)
+{
+  this->OS << "  <FundamentalType";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(t->getName(this->CTX.getPrintingPolicy()).str());
   this->OS << "/>\n";
 }
 
