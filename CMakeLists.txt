@@ -16,6 +16,8 @@
 cmake_minimum_required(VERSION 2.8.5)
 project(CastXML)
 
+include(CTest)
+
 # Build tree locations.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CastXML_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CastXML_BINARY_DIR}/lib")
@@ -68,6 +70,10 @@ if(CLANG_RESOURCE_DIR)
 endif()
 
 add_subdirectory(src)
+
+if(BUILD_TESTING)
+  add_subdirectory(test)
+endif()
 
 install(DIRECTORY share/castxml/ DESTINATION "${CastXML_INSTALL_DATA_DIR}")
 
