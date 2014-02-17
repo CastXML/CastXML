@@ -22,9 +22,20 @@ execute_process(
   RESULT_VARIABLE actual_result
   )
 
+if(xml)
+  set(maybe_xml xml)
+  if(EXISTS "${xml}")
+    file(READ "${xml}" actual_xml)
+  else()
+    set(actual_xml "(missing)")
+  endif()
+else()
+  set(maybe_xml)
+endif()
+
 set(default_result 0)
 
-foreach(o result stdout stderr)
+foreach(o result stdout stderr ${maybe_xml})
   string(REGEX REPLACE "\n+$" "" actual_${o} "${actual_${o}}")
   string(REGEX REPLACE "\n" "\n actual-${o}> " actual-${o} " actual-${o}> ${actual_${o}}")
   set(actual-${o} "Actual ${o}:\n${actual-${o}}\n")
@@ -54,8 +65,10 @@ if(msg)
     "${expect-result}"
     "${expect-stdout}"
     "${expect-stderr}"
+    "${expect-xml}"
     "${actual-result}"
     "${actual-stdout}"
     "${actual-stderr}"
+    "${actual-xml}"
     )
 endif()
