@@ -24,3 +24,13 @@ macro(castxml_test_cmd test)
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
 endmacro()
+
+castxml_test_cmd(no-arguments)
+
+castxml_test_cmd(cc-missing --castxml-cc-gnu)
+castxml_test_cmd(cc-twice --castxml-cc-msvc cl --castxml-cc-gnu gcc)
+castxml_test_cmd(cc-unknown --castxml-cc-unknown cc)
+castxml_test_cmd(gccxml-and-E --castxml-gccxml -E)
+castxml_test_cmd(gccxml-twice --castxml-gccxml --castxml-gccxml)
+castxml_test_cmd(o-missing -o)
+castxml_test_cmd(start-missing --castxml-start)

@@ -1,0 +1,3 @@
+^error: '--castxml-cc-gnu' must be followed by a compiler command!
+
+Usage: castxml .*$
