@@ -217,6 +217,8 @@ class ASTVisitor: public ASTVisitorBase
 
   // Type node output methods.
   void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
+  void OutputLValueReferenceType(clang::LValueReferenceType const* t,
+                                 DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
@@ -675,6 +677,16 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   this->OS << "  <FundamentalType";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(t->getName(this->CTX.getPrintingPolicy()).str());
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
+                                           DumpNode const* dn)
+{
+  this->OS << "  <ReferenceType";
+  this->PrintIdAttribute(dn);
+  this->PrintTypeAttribute(t->getPointeeType(), false);
   this->OS << "/>\n";
 }
 
