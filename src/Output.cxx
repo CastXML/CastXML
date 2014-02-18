@@ -25,6 +25,7 @@
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
+#include "clang/Sema/Sema.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <fstream>
@@ -810,6 +811,8 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
                                      DumpNode const* dn)
 {
+  this->CI.getSema().ForceDeclarationOfImplicitMembers(
+    const_cast<clang::CXXRecordDecl*>(d));
   this->OutputRecordDecl(d, dn);
 }
 
