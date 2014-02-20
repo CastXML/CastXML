@@ -1,0 +1,1 @@
+^error: '--castxml-gccxml' does not work with c\+\+11$

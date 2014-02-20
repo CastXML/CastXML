@@ -154,6 +154,31 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
   // Set frontend options we captured directly.
   CI->getFrontendOpts().OutputFile = opts.OutputFile;
 
+  if(opts.GccXml) {
+#   define MSG(x) "error: '--castxml-gccxml' does not work with " x "\n"
+    if(CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
+      std::cerr << MSG("Objective C");
+      return false;
+    }
+    if(CI->getLangOpts().CPlusPlus1y) {
+      std::cerr << MSG("c++1y");
+      return false;
+    }
+    if(CI->getLangOpts().CPlusPlus11) {
+      std::cerr << MSG("c++11");
+      return false;
+    }
+    if(CI->getLangOpts().C11) {
+      std::cerr << MSG("c11");
+      return false;
+    }
+    if(CI->getLangOpts().C99) {
+      std::cerr << MSG("c99");
+      return false;
+    }
+#   undef MSG
+  }
+
   // Construct our Clang front-end action.  This dispatches
   // handling of each input file with an action based on the
   // flags provided (e.g. -E to preprocess-only).
