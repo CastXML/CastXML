@@ -72,3 +72,26 @@ if(msg)
     "${actual-xml}"
     )
 endif()
+
+if(xmllint AND xml AND EXISTS "${xml}")
+  execute_process(
+    COMMAND ${xmllint} --noout --nonet "${xml}"
+    OUTPUT_VARIABLE xmllint_stdout
+    ERROR_VARIABLE xmllint_stderr
+    RESULT_VARIABLE xmllint_result
+    )
+  if(xmllint_result)
+    foreach(o result stdout stderr)
+      string(REGEX REPLACE "\n+$" "" xmllint_${o} "${xmllint_${o}}")
+      string(REGEX REPLACE "\n" "\n xmllint-${o}> " xmllint-${o} " xmllint-${o}> ${xmllint_${o}}")
+      set(xmllint-${o} "xmllint ${o}:\n${xmllint-${o}}\n")
+    endforeach()
+    message(SEND_ERROR
+      "xmllint check failed:\n"
+      "${msg}"
+      "${xmllint-result}"
+      "${xmllint-stdout}"
+      "${xmllint-stderr}"
+      )
+  endif()
+endif()

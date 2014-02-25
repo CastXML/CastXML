@@ -14,6 +14,8 @@
 # limitations under the License.
 #=============================================================================
 
+find_package(LibXml2 QUIET)
+
 macro(castxml_test_cmd test)
   set(command $<TARGET_FILE:castxml> ${ARGN})
   add_test(
@@ -37,6 +39,7 @@ macro(castxml_test_gccxml test)
     "-Dcommand:STRING=${command}"
     "-Dtest=gccxml.${test}"
     "-Dxml=${test}.xml"
+    "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
 endmacro()
