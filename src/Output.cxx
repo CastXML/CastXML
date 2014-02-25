@@ -23,6 +23,7 @@
 #include "clang/AST/DeclFriend.h"
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclOpenMP.h"
+#include "clang/AST/DeclTemplate.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
 #include "clang/Sema/Sema.h"
@@ -146,6 +147,10 @@ class ASTVisitor: public ASTVisitorBase
   /** Allocate a dump node for a source file entry.  */
   unsigned int AddDumpFile(clang::FileEntry const* f);
 
+  /** Add class template specializations and instantiations for output.  */
+  void AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
+                            std::set<unsigned int>* emitted = 0);
+
   /** Add a starting declaration for output.  */
   void AddStartDecl(clang::Decl const* d);
 
@@ -194,6 +199,7 @@ class ASTVisitor: public ASTVisitorBase
 
   /** Print a name="..." attribute.  */
   void PrintNameAttribute(std::string const& name);
+  void PrintNameAttribute(clang::NamedDecl const* d);
 
   /** Print a type="..." attribute with the XML IDREF for
       the given (possibly cv-qualified) type.  Also queues
@@ -253,6 +259,8 @@ class ASTVisitor: public ASTVisitorBase
   void OutputNamespaceDecl(clang::NamespaceDecl const* d, DumpNode const* dn);
   void OutputRecordDecl(clang::RecordDecl const* d, DumpNode const* dn);
   void OutputCXXRecordDecl(clang::CXXRecordDecl const* d, DumpNode const* dn);
+  void OutputClassTemplateSpecializationDecl(
+    clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
 
@@ -386,9 +394,32 @@ unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
+                                      std::set<unsigned int>* emitted)
+{
+  // Queue all the instantiations of this class template.
+  for(clang::ClassTemplateDecl::spec_iterator i = d->spec_begin(),
+        e = d->spec_end(); i != e; ++i) {
+    clang::CXXRecordDecl const* rd = *i;
+    unsigned int id = this->AddDumpNode(rd, true);
+    if(id && emitted) {
+      emitted->insert(id);
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::AddStartDecl(clang::Decl const* d)
 {
-  this->AddDumpNode(d, true);
+  switch (d->getKind()) {
+  case clang::Decl::ClassTemplate:
+    this->AddClassTemplateDecl(
+      static_cast<clang::ClassTemplateDecl const*>(d));
+    break;
+  default:
+    this->AddDumpNode(d, true);
+    break;
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -579,6 +610,15 @@ void ASTVisitor::PrintNameAttribute(std::string const& name)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintNameAttribute(clang::NamedDecl const* d)
+{
+  std::string s;
+  llvm::raw_string_ostream rso(s);
+  d->getNameForDiagnostic(rso, this->CTX.getPrintingPolicy(), false);
+  this->PrintNameAttribute(rso.str());
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintTypeAttribute(clang::QualType t, bool complete)
 {
   this->OS << " type=\"";
@@ -647,6 +687,11 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
       }
     } break;
     case clang::Decl::AccessSpec: {
+      continue;
+    } break;
+    case clang::Decl::ClassTemplate: {
+      this->AddClassTemplateDecl(
+        static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
       continue;
     } break;
     default:
@@ -802,7 +847,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
   if(!d->isAnonymousStructOrUnion()) {
-    this->PrintNameAttribute(d->getName().str());
+    this->PrintNameAttribute(d);
   }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
@@ -823,6 +868,13 @@ void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
   this->CI.getSema().ForceDeclarationOfImplicitMembers(
     const_cast<clang::CXXRecordDecl*>(d));
   this->OutputRecordDecl(d, dn);
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputClassTemplateSpecializationDecl(
+  clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn)
+{
+  this->OutputCXXRecordDecl(d, dn);
 }
 
 //----------------------------------------------------------------------------
