@@ -79,3 +79,5 @@ castxml_test_gccxml(PointerType)
 castxml_test_gccxml(ReferenceType)
 castxml_test_gccxml(Typedef-to-Class-template)
 castxml_test_gccxml(Variable)
+
+castxml_test_gccxml(qualified-type-name)
