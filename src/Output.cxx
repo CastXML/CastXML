@@ -346,6 +346,13 @@ unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
     case clang::Type::Record:
       return this->AddDumpNode(t->getAs<clang::RecordType>()->getDecl(),
                                complete);
+    case clang::Type::TemplateSpecialization: {
+      clang::TemplateSpecializationType const* tst =
+        t->getAs<clang::TemplateSpecializationType>();
+      if(tst->isSugared()) {
+        return this->AddDumpNode(tst->desugar(), complete);
+      }
+    } break;
     case clang::Type::Typedef:
       return this->AddDumpNode(t->getAs<clang::TypedefType>()->getDecl(),
                                complete);
