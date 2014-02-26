@@ -838,6 +838,9 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
            e = d->param_end(); i != e; ++i) {
       this->OutputFunctionArgument(*i, dn->Complete);
     }
+    if(d->isVariadic()) {
+      this->OS << "    <Ellipsis/>\n";
+    }
     this->OS << "  </" << tag << ">\n";
   } else {
     this->OS << "/>\n";
@@ -858,6 +861,9 @@ void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
       this->OS << "    <Argument";
       this->PrintTypeAttribute(*i, dn->Complete);
       this->OS << "/>\n";
+    }
+    if(t->isVariadic()) {
+      this->OS << "    <Ellipsis/>\n";
     }
     this->OS << "  </" << tag << ">\n";
   } else {

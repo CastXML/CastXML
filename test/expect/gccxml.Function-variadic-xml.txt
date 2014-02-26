@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1">
+    <Argument type="_4" location="f1:1" file="f1" line="1"/>
+    <Ellipsis/>
+  </Function>
+  <FundamentalType id="_2" name="void"/>
+  <FundamentalType id="_4" name="int"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/Function-variadic.cxx"/>
+</GCC_XML>$
