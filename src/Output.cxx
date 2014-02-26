@@ -248,6 +248,12 @@ class ASTVisitor: public ASTVisitorBase
                             const char* tag, std::string const& name,
                             unsigned int flags);
 
+  /** Output a function type element using the tag given by the caller.
+      This encompasses functionality common to all the function type
+      output methods.  */
+  void OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
+                                DumpNode const* dn, const char* tag);
+
   /** Output an <Argument/> element inside a function element.  */
   void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete);
 
@@ -284,6 +290,8 @@ class ASTVisitor: public ASTVisitorBase
                                DumpNode const* dn);
   void OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
                                  DumpNode const* dn);
+  void OutputFunctionProtoType(clang::FunctionProtoType const* t,
+                               DumpNode const* dn);
   void OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                  DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
@@ -837,6 +845,27 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
+                                          DumpNode const* dn, const char* tag)
+{
+  this->OS << "  <" << tag;
+  this->PrintIdAttribute(dn);
+  this->PrintReturnsAttribute(t->getReturnType(), dn->Complete);
+  if(t->param_type_begin() != t->param_type_end()) {
+    this->OS << ">\n";
+    for (clang::FunctionProtoType::param_type_iterator
+           i = t->param_type_begin(), e = t->param_type_end(); i != e; ++i) {
+      this->OS << "    <Argument";
+      this->PrintTypeAttribute(*i, dn->Complete);
+      this->OS << "/>\n";
+    }
+    this->OS << "  </" << tag << ">\n";
+  } else {
+    this->OS << "/>\n";
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
                                         bool complete)
 {
@@ -1081,6 +1110,13 @@ void ASTVisitor::OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
   this->OS << " min=\"0\" max=\"\"";
   this->PrintTypeAttribute(t->getElementType(), dn->Complete);
   this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputFunctionProtoType(clang::FunctionProtoType const* t,
+                                         DumpNode const* dn)
+{
+  this->OutputFunctionTypeHelper(t, dn, "FunctionType");
 }
 
 //----------------------------------------------------------------------------

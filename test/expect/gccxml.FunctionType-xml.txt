@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:1" file="f1" line="1"/>
+  <FunctionType id="_2" returns="_4">
+    <Argument type="_5"/>
+  </FunctionType>
+  <FundamentalType id="_4" name="void"/>
+  <FundamentalType id="_5" name="int"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/FunctionType.cxx"/>
+</GCC_XML>$
