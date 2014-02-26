@@ -351,6 +351,9 @@ unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
     case clang::Type::Elaborated:
       return this->AddDumpNode(
         t->getAs<clang::ElaboratedType>()->getNamedType(), complete);
+    case clang::Type::Paren:
+      return this->AddDumpNode(
+        t->getAs<clang::ParenType>()->getInnerType(), complete);
     case clang::Type::Record:
       return this->AddDumpNode(t->getAs<clang::RecordType>()->getDecl(),
                                complete);
