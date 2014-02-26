@@ -151,6 +151,10 @@ class ASTVisitor: public ASTVisitorBase
   void AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
                             std::set<unsigned int>* emitted = 0);
 
+  /** Add function template specializations and instantiations for output.  */
+  void AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
+                               std::set<unsigned int>* emitted = 0);
+
   /** Add a starting declaration for output.  */
   void AddStartDecl(clang::Decl const* d);
 
@@ -349,6 +353,10 @@ unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
     case clang::Type::Record:
       return this->AddDumpNode(t->getAs<clang::RecordType>()->getDecl(),
                                complete);
+    case clang::Type::SubstTemplateTypeParm:
+      return this->AddDumpNode(
+        t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(),
+        complete);
     case clang::Type::TemplateSpecialization: {
       clang::TemplateSpecializationType const* tst =
         t->getAs<clang::TemplateSpecializationType>();
@@ -419,12 +427,31 @@ void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
+                                         std::set<unsigned int>* emitted)
+{
+  // Queue all the instantiations of this function template.
+  for(clang::FunctionTemplateDecl::spec_iterator i = d->spec_begin(),
+        e = d->spec_end(); i != e; ++i) {
+    clang::FunctionDecl const* fd = *i;
+    unsigned int id = this->AddDumpNode(fd, true);
+    if(id && emitted) {
+      emitted->insert(id);
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::AddStartDecl(clang::Decl const* d)
 {
   switch (d->getKind()) {
   case clang::Decl::ClassTemplate:
     this->AddClassTemplateDecl(
       static_cast<clang::ClassTemplateDecl const*>(d));
+    break;
+  case clang::Decl::FunctionTemplate:
+    this->AddFunctionTemplateDecl(
+      static_cast<clang::FunctionTemplateDecl const*>(d));
     break;
   default:
     this->AddDumpNode(d, true);
@@ -702,6 +729,11 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
     case clang::Decl::ClassTemplate: {
       this->AddClassTemplateDecl(
         static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
+      continue;
+    } break;
+    case clang::Decl::FunctionTemplate: {
+      this->AddFunctionTemplateDecl(
+        static_cast<clang::FunctionTemplateDecl const*>(d), &emitted);
       continue;
     } break;
     default:
