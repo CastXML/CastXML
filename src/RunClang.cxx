@@ -148,9 +148,6 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
     return false;
   }
 
-  // We do not need function bodies.
-  CI->getFrontendOpts().SkipFunctionBodies = true;
-
   // Set frontend options we captured directly.
   CI->getFrontendOpts().OutputFile = opts.OutputFile;
 
