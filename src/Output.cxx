@@ -266,6 +266,7 @@ class ASTVisitor: public ASTVisitorBase
   void OutputClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
+  void OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
 
   void OutputFunctionDecl(clang::FunctionDecl const* d, DumpNode const* dn);
@@ -929,6 +930,26 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintTypeAttribute(d->getTypeSourceInfo()->getType(), dn->Complete);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
+{
+  this->OS << "  <Field";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintTypeAttribute(d->getType(), dn->Complete);
+  if(d->isBitField()) {
+    unsigned bits = d->getBitWidthValue(this->CTX);
+    this->OS << " bits=\"" << bits << "\"";
+  }
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+  if(d->isMutable()) {
+    this->OS << " mutable=\"1\"";
+  }
+
   this->OS << "/>\n";
 }
 
