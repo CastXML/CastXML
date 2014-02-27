@@ -87,6 +87,30 @@ protected:
 //----------------------------------------------------------------------------
 class ASTVisitor: public ASTVisitorBase
 {
+  // Store a type to be visited, possibly as a record member.
+  struct DumpType {
+    DumpType(): Type(), Class(0) {}
+    DumpType(clang::QualType t, clang::Type const* c = 0): Type(t), Class(c) {}
+    friend bool operator < (DumpType const& l, DumpType const& r) {
+      // Order by pointer value without discarding low-order
+      // bits used to encode qualifiers.
+      void const* lpp = &l.Type;
+      void const* rpp = &r.Type;
+      void const* lpv = *static_cast<void const* const*>(lpp);
+      void const* rpv = *static_cast<void const* const*>(rpp);
+      if(lpv < rpv) {
+        return true;
+      } else if(lpv > rpv) {
+        return false;
+      } else {
+        return l.Class < r.Class;
+      }
+    }
+
+    clang::QualType    Type;
+    clang::Type const* Class;
+  };
+
   // Store an entry in the node traversal queue.
   struct QueueEntry {
     // Available node kinds.
@@ -98,7 +122,7 @@ class ASTVisitor: public ASTVisitorBase
     QueueEntry(): Kind(KindDecl), Decl(0), DN(0) {}
     QueueEntry(clang::Decl const* d, DumpNode const* dn):
       Kind(KindDecl), Decl(d), DN(dn) {}
-    QueueEntry(clang::QualType t, DumpNode const* dn):
+    QueueEntry(DumpType t, DumpNode const* dn):
       Kind(KindType), Decl(0), Type(t), DN(dn) {}
 
     // Kind of node at this entry.
@@ -108,21 +132,10 @@ class ASTVisitor: public ASTVisitorBase
     clang::Decl const* Decl;
 
     // The type when Kind == KindType.
-    clang::QualType Type;
+    DumpType Type;
 
     // The dump status for this node.
     DumpNode const* DN;
-  };
-
-  // Order clang::QualType values.
-  struct QualTypeCompare {
-    bool operator()(clang::QualType l, clang::QualType r) const {
-      // Order by pointer value without discarding low-order
-      // bits used to encode qualifiers.
-      void* lpp = &l;
-      void* rpp = &r;
-      return *static_cast<void**>(lpp) < *static_cast<void**>(rpp);
-    }
   };
 
   /** Get the dump status node for a Clang declaration.  */
@@ -131,7 +144,7 @@ class ASTVisitor: public ASTVisitorBase
   }
 
   /** Get the dump status node for a Clang type.  */
-  DumpNode* GetDumpNode(clang::QualType t) {
+  DumpNode* GetDumpNode(DumpType t) {
     return &this->TypeNodes[t];
   }
 
@@ -139,7 +152,7 @@ class ASTVisitor: public ASTVisitorBase
   unsigned int AddDumpNode(clang::Decl const* d, bool complete);
 
   /** Allocate a dump node for a Clang type.  */
-  unsigned int AddDumpNode(clang::QualType t, bool complete);
+  unsigned int AddDumpNode(DumpType dt, bool complete);
 
   /** Helper common to AddDumpNode implementation for every kind.  */
   template <typename K> unsigned int AddDumpNodeImpl(K k, bool complete);
@@ -169,7 +182,7 @@ class ASTVisitor: public ASTVisitorBase
   void OutputDecl(clang::Decl const* d, DumpNode const* dn);
 
   /** Dispatch output of a qualified or unqualified type.  */
-  void OutputType(clang::QualType t, DumpNode const* dn);
+  void OutputType(DumpType dt, DumpNode const* dn);
 
   /** Output a qualified type and queue its unqualified type.  */
   void OutputCvQualifiedType(clang::QualType t, DumpNode const* dn);
@@ -317,7 +330,7 @@ private:
   DeclNodesMap DeclNodes;
 
   // Map from clang AST type node to our dump status node.
-  typedef std::map<clang::QualType, DumpNode, QualTypeCompare> TypeNodesMap;
+  typedef std::map<DumpType, DumpNode> TypeNodesMap;
   TypeNodesMap TypeNodes;
 
   // Map from clang file entry to our source file index.
@@ -352,28 +365,31 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
 }
 
 //----------------------------------------------------------------------------
-unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
+unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
+  clang::QualType t = dt.Type;
+  clang::Type const* c = dt.Class;
+
   // Replace some types with their decls.
   if(!t.hasLocalQualifiers()) {
     switch (t->getTypeClass()) {
     case clang::Type::Elaborated:
-      return this->AddDumpNode(
-        t->getAs<clang::ElaboratedType>()->getNamedType(), complete);
+      return this->AddDumpNode(DumpType(
+        t->getAs<clang::ElaboratedType>()->getNamedType(), c), complete);
     case clang::Type::Paren:
-      return this->AddDumpNode(
-        t->getAs<clang::ParenType>()->getInnerType(), complete);
+      return this->AddDumpNode(DumpType(
+        t->getAs<clang::ParenType>()->getInnerType(), c), complete);
     case clang::Type::Record:
       return this->AddDumpNode(t->getAs<clang::RecordType>()->getDecl(),
                                complete);
     case clang::Type::SubstTemplateTypeParm:
-      return this->AddDumpNode(
-        t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(),
+      return this->AddDumpNode(DumpType(
+        t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(), c),
         complete);
     case clang::Type::TemplateSpecialization: {
       clang::TemplateSpecializationType const* tst =
         t->getAs<clang::TemplateSpecializationType>();
       if(tst->isSugared()) {
-        return this->AddDumpNode(tst->desugar(), complete);
+        return this->AddDumpNode(DumpType(tst->desugar(), c), complete);
       }
     } break;
     case clang::Type::Typedef:
@@ -383,7 +399,7 @@ unsigned int ASTVisitor::AddDumpNode(clang::QualType t, bool complete) {
       break;
     }
   }
-  return this->AddDumpNodeImpl(t, complete);
+  return this->AddDumpNodeImpl(dt, complete);
 }
 
 //----------------------------------------------------------------------------
@@ -540,8 +556,9 @@ void ASTVisitor::OutputDecl(clang::Decl const* d, DumpNode const* dn)
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::OutputType(clang::QualType t, DumpNode const* dn)
+void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
 {
+  clang::QualType t = dt.Type;
   if(t.hasLocalQualifiers()) {
     // Output the qualified type.  This will queue
     // the unqualified type if necessary.
