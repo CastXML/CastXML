@@ -218,6 +218,10 @@ class ASTVisitor: public ASTVisitorBase
   void PrintNameAttribute(std::string const& name);
   void PrintNameAttribute(clang::NamedDecl const* d);
 
+  /** Print a basetype="..." attribute with the XML IDREF for
+      the given type.  Also queues the given type for later output.  */
+  void PrintBaseTypeAttribute(clang::Type const* c, bool complete);
+
   /** Print a type="..." attribute with the XML IDREF for
       the given (possibly cv-qualified) type.  Also queues
       the given type for later output.  */
@@ -265,7 +269,8 @@ class ASTVisitor: public ASTVisitorBase
       This encompasses functionality common to all the function type
       output methods.  */
   void OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
-                                DumpNode const* dn, const char* tag);
+                                DumpNode const* dn, const char* tag,
+                                clang::Type const* c);
 
   /** Output an <Argument/> element inside a function element.  */
   void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete);
@@ -307,6 +312,12 @@ class ASTVisitor: public ASTVisitorBase
                                DumpNode const* dn);
   void OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                  DumpNode const* dn);
+  void OutputMemberPointerType(clang::MemberPointerType const* t,
+                               DumpNode const* dn);
+  void OutputMethodType(clang::FunctionProtoType const* t,
+                        clang::Type const* c, DumpNode const* dn);
+  void OutputOffsetType(clang::QualType t, clang::Type const* c,
+                        DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
@@ -559,7 +570,12 @@ void ASTVisitor::OutputDecl(clang::Decl const* d, DumpNode const* dn)
 void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
 {
   clang::QualType t = dt.Type;
-  if(t.hasLocalQualifiers()) {
+  clang::Type const* c = dt.Class;
+
+  if(c) {
+    // Output the method type.
+    this->OutputMethodType(t->getAs<clang::FunctionProtoType>(), c, dn);
+  } else if(t.hasLocalQualifiers()) {
     // Output the qualified type.  This will queue
     // the unqualified type if necessary.
     this->OutputCvQualifiedType(t, dn);
@@ -682,6 +698,14 @@ void ASTVisitor::PrintNameAttribute(clang::NamedDecl const* d)
   llvm::raw_string_ostream rso(s);
   d->getNameForDiagnostic(rso, this->CTX.getPrintingPolicy(), false);
   this->PrintNameAttribute(rso.str());
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintBaseTypeAttribute(clang::Type const* c, bool complete)
+{
+  this->OS << " basetype=\"";
+  this->PrintTypeIdRef(clang::QualType(c, 0), complete);
+  this->OS << "\"";
 }
 
 //----------------------------------------------------------------------------
@@ -866,11 +890,24 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 
 //----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
-                                          DumpNode const* dn, const char* tag)
+                                          DumpNode const* dn, const char* tag,
+                                          clang::Type const* c)
 {
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
+  if(c) {
+    this->PrintBaseTypeAttribute(c, dn->Complete);
+  }
   this->PrintReturnsAttribute(t->getReturnType(), dn->Complete);
+  if(t->isConst()) {
+    this->OS << " const=\"1\"";
+  }
+  if(t->isVolatile()) {
+    this->OS << " volatile=\"1\"";
+  }
+  if(t->isRestrict()) {
+    this->OS << " restrict=\"1\"";
+  }
   if(t->param_type_begin() != t->param_type_end()) {
     this->OS << ">\n";
     for (clang::FunctionProtoType::param_type_iterator
@@ -1139,7 +1176,7 @@ void ASTVisitor::OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
 void ASTVisitor::OutputFunctionProtoType(clang::FunctionProtoType const* t,
                                          DumpNode const* dn)
 {
-  this->OutputFunctionTypeHelper(t, dn, "FunctionType");
+  this->OutputFunctionTypeHelper(t, dn, "FunctionType", 0);
 }
 
 //----------------------------------------------------------------------------
@@ -1149,6 +1186,40 @@ void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
   this->OS << "  <ReferenceType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
+                                         DumpNode const* dn)
+{
+  if(t->isMemberDataPointerType()) {
+    this->OutputOffsetType(t->getPointeeType(), t->getClass(), dn);
+  } else {
+    this->OS << "  <PointerType";
+    this->PrintIdAttribute(dn);
+    unsigned int id = this->AddDumpNode(
+      DumpType(t->getPointeeType(), t->getClass()), false);
+    this->OS << " type=\"_" << id << "\"";
+    this->OS << "/>\n";
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputMethodType(clang::FunctionProtoType const* t,
+                                  clang::Type const* c, DumpNode const* dn)
+{
+  this->OutputFunctionTypeHelper(t, dn, "MethodType", c);
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputOffsetType(clang::QualType t, clang::Type const* c,
+                                  DumpNode const* dn)
+{
+  this->OS << "  <OffsetType";
+  this->PrintIdAttribute(dn);
+  this->PrintBaseTypeAttribute(c, dn->Complete);
+  this->PrintTypeAttribute(t, dn->Complete);
   this->OS << "/>\n";
 }
 

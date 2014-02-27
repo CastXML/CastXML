@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Typedef id="_1" name="start" type="_3cv" context="_4" location="f1:2" file="f1" line="2"/>
+  <CvQualifiedType id="_3cv" type="_3" const="1" volatile="1"/>
+  <OffsetType id="_3" basetype="_5" type="_7cv"/>
+  <Class id="_5" name="A" context="_4" location="f1:1" file="f1" line="1" incomplete="1"/>
+  <CvQualifiedType id="_7cv" type="_7" const="1" volatile="1"/>
+  <FundamentalType id="_7" name="int"/>
+  <Namespace id="_4" name="::"/>
+  <File id="f1" name=".*/test/input/OffsetType-cv.cxx"/>
+</GCC_XML>$
