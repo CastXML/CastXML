@@ -146,6 +146,9 @@ class ASTVisitor: public ASTVisitorBase
   /** Allocate a dump node for a source file entry.  */
   unsigned int AddDumpFile(clang::FileEntry const* f);
 
+  /** Add a starting declaration for output.  */
+  void AddStartDecl(clang::Decl const* d);
+
   /** Queue leftover nodes that do not need complete output.  */
   void QueueIncompleteDumpNodes();
 
@@ -380,6 +383,12 @@ unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
     this->FileQueue.push(f);
   }
   return index;
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::AddStartDecl(clang::Decl const* d)
+{
+  this->AddDumpNode(d, true);
 }
 
 //----------------------------------------------------------------------------
@@ -989,7 +998,7 @@ void ASTVisitor::LookupStart(clang::DeclContext const* dc,
   if(pos == name.npos) {
     for(clang::DeclContext::lookup_const_iterator i = r.begin(), e = r.end();
         i != e; ++i) {
-      this->AddDumpNode(*i, true);
+      this->AddStartDecl(*i);
     }
   } else {
     std::string rest = name.substr(pos+2);
@@ -1014,7 +1023,7 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
     }
   } else {
     // No start specified.  Use whole translation unit.
-    this->AddDumpNode(tu, true);
+    this->AddStartDecl(tu);
   }
 
   // Start dump with gccxml-compatible format.
