@@ -1,0 +1,7 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:2" file="f1" line="2" incomplete="1"/>
+  <Namespace id="_2" name="N" context="_3"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/using-declaration-start.cxx"/>
+</GCC_XML>$

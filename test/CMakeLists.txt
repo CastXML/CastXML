@@ -95,3 +95,7 @@ castxml_test_gccxml(Variable)
 castxml_test_gccxml(Variable-in-Class)
 
 castxml_test_gccxml(qualified-type-name)
+castxml_test_gccxml(using-declaration-ns)
+castxml_test_gccxml(using-declaration-start)
+castxml_test_gccxml(using-directive-ns)
+castxml_test_gccxml(using-directive-start)

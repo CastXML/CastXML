@@ -371,6 +371,16 @@ public:
 
 //----------------------------------------------------------------------------
 unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
+  // Replace some decls with those they reference.
+  switch (d->getKind()) {
+  case clang::Decl::UsingShadow:
+    return this->AddDumpNode(
+      static_cast<clang::UsingShadowDecl const*>(d)->getTargetDecl(),
+      complete);
+  default:
+    break;
+  }
+
   // Add the node for the canonical declaration instance.
   return this->AddDumpNodeImpl(d->getCanonicalDecl(), complete);
 }
@@ -492,6 +502,13 @@ void ASTVisitor::AddStartDecl(clang::Decl const* d)
     this->AddFunctionTemplateDecl(
       static_cast<clang::FunctionTemplateDecl const*>(d));
     break;
+  case clang::Decl::Using: {
+      clang::UsingDecl const* ud = static_cast<clang::UsingDecl const*>(d);
+      for(clang::UsingDecl::shadow_iterator i = ud->shadow_begin(),
+            e = ud->shadow_end(); i != e; ++i) {
+        this->AddDumpNode(*i, true);
+      }
+  } break;
   default:
     this->AddDumpNode(d, true);
     break;
@@ -787,6 +804,12 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
     case clang::Decl::FunctionTemplate: {
       this->AddFunctionTemplateDecl(
         static_cast<clang::FunctionTemplateDecl const*>(d), &emitted);
+      continue;
+    } break;
+    case clang::Decl::Using: {
+      continue;
+    } break;
+    case clang::Decl::UsingDirective: {
       continue;
     } break;
     default:
@@ -1256,6 +1279,11 @@ void ASTVisitor::LookupStart(clang::DeclContext const* dc,
         this->LookupStart(idc, rest);
       }
     }
+  }
+
+  for(clang::DeclContext::udir_iterator i = dc->using_directives_begin(),
+        e = dc->using_directives_end(); i != e; ++i) {
+    this->LookupStart((*i)->getNominatedNamespace(), name);
   }
 }
 
