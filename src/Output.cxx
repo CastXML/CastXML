@@ -1015,6 +1015,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   case clang::TTK_Enum: return;
   }
   clang::CXXRecordDecl const* dx = clang::dyn_cast<clang::CXXRecordDecl>(d);
+  bool doBases = false;
 
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
@@ -1029,11 +1030,25 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     }
     if(dn->Complete) {
       this->PrintMembersAttribute(d);
+      doBases = dx && dx->getNumBases();
     }
   } else {
     this->OS << " incomplete=\"1\"";
   }
-  this->OS << "/>\n";
+  if(doBases) {
+    this->OS << ">\n";
+    for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
+          e = dx->bases_end(); i != e; ++i) {
+      this->OS << "    <Base";
+      this->PrintTypeAttribute(i->getType(), true);
+      this->PrintAccessAttribute(i->getAccessSpecifier());
+      this->OS << " virtual=\"" << (i->isVirtual()? 1 : 0) << "\"";
+      this->OS << "/>\n";
+    }
+    this->OS << "  </" << tag << ">\n";
+  } else {
+    this->OS << "/>\n";
+  }
 }
 
 //----------------------------------------------------------------------------
