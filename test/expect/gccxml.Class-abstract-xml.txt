@@ -1,0 +1,17 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" abstract="1" members="_3 _4 _5 _6"/>
+  <Destructor id="_3" name="start" context="_1" access="private" location="f1:2" file="f1" line="2" virtual="1"/>
+  <OperatorMethod id="_4" name="=" returns="_7" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+    <Argument type="_8" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+    <Argument type="_8" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <ReferenceType id="_7" type="_1"/>
+  <ReferenceType id="_8" type="_1c"/>
+  <Namespace id="_2" name="::"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <File id="f1" name=".*/test/input/Class-abstract.cxx"/>
+</GCC_XML>$

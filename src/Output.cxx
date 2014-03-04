@@ -1005,6 +1005,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   case clang::TTK_Interface: return;
   case clang::TTK_Enum: return;
   }
+  clang::CXXRecordDecl const* dx = clang::dyn_cast<clang::CXXRecordDecl>(d);
 
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
@@ -1014,6 +1015,9 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   if(d->getDefinition()) {
+    if(dx && dx->isAbstract()) {
+      this->OS << " abstract=\"1\"";
+    }
     if(dn->Complete) {
       this->PrintMembersAttribute(d);
     }
