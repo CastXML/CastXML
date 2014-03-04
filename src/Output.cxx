@@ -1075,6 +1075,14 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
   this->PrintTypeAttribute(d->getType(), dn->Complete);
+  if(clang::Expr const* init = d->getInit()) {
+    this->OS << " init=\"";
+    std::string s;
+    llvm::raw_string_ostream rso(s);
+    init->printPretty(rso, 0, this->CTX.getPrintingPolicy());
+    this->OS << encodeXML(rso.str());
+    this->OS << "\"";
+  }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   if(d->getStorageClass() == clang::SC_Static) {

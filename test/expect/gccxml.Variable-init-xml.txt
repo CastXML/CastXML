@@ -1,0 +1,12 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
+  <Variable id="_3" name="var_int" type="_5" init="123" context="_1" location="f1:2" file="f1" line="2"/>
+  <Variable id="_4" name="var_str" type="_6" init="&quot;abc&quot;" context="_1" location="f1:3" file="f1" line="3"/>
+  <FundamentalType id="_5" name="int"/>
+  <PointerType id="_6" type="_8c"/>
+  <Namespace id="_2" name="::"/>
+  <FundamentalType id="_8" name="char"/>
+  <CvQualifiedType id="_8c" type="_8" const="1"/>
+  <File id="f1" name=".*/test/input/Variable-init.cxx"/>
+</GCC_XML>$

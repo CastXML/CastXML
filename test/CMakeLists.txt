@@ -93,6 +93,7 @@ castxml_test_gccxml(Typedef-paren)
 castxml_test_gccxml(Typedef-to-Class-template)
 castxml_test_gccxml(Variable)
 castxml_test_gccxml(Variable-in-Class)
+castxml_test_gccxml(Variable-init)
 
 castxml_test_gccxml(qualified-type-name)
 castxml_test_gccxml(using-declaration-ns)
