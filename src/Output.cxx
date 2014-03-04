@@ -275,6 +275,9 @@ class ASTVisitor: public ASTVisitorBase
   /** Output an <Argument/> element inside a function element.  */
   void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete);
 
+  /** Print an access="..." attribute.  */
+  void PrintAccessAttribute(clang::AccessSpecifier as);
+
   /** Print a context="..." attribute with the XML IDREF for
       the containing declaration context (namespace, class, etc.).
       Also prints access="..." attribute for class members to
@@ -765,19 +768,25 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
+{
+  if (as == clang::AS_private) {
+    this->OS << " access=\"private\"";
+  } else if (as == clang::AS_protected) {
+    this->OS << " access=\"protected\"";
+  } else {
+    this->OS << " access=\"public\"";
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
 {
   clang::DeclContext const* dc = d->getDeclContext();
   if(unsigned int id = this->GetContextIdRef(dc)) {
     this->OS << " context=\"_" << id << "\"";
     if (dc->isRecord()) {
-      if (d->getAccess() == clang::AS_private) {
-        this->OS << " access=\"private\"";
-      } else if (d->getAccess() == clang::AS_protected) {
-        this->OS << " access=\"protected\"";
-      } else {
-        this->OS << " access=\"public\"";
-      }
+      this->PrintAccessAttribute(d->getAccess());
     }
   }
 }
