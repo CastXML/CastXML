@@ -290,6 +290,7 @@ class ASTVisitor: public ASTVisitorBase
   void OutputClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
+  void OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn);
   void OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
 
@@ -396,6 +397,9 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
     case clang::Type::Elaborated:
       return this->AddDumpNode(DumpType(
         t->getAs<clang::ElaboratedType>()->getNamedType(), c), complete);
+    case clang::Type::Enum:
+      return this->AddDumpNode(t->getAs<clang::EnumType>()->getDecl(),
+                               complete);
     case clang::Type::Paren:
       return this->AddDumpNode(DumpType(
         t->getAs<clang::ParenType>()->getInnerType(), c), complete);
@@ -1046,6 +1050,32 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
+{
+  this->OS << "  <Enumeration";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+  clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
+  clang::EnumDecl::enumerator_iterator enum_end = d->enumerator_end();
+  if(enum_begin != enum_end) {
+    this->OS << ">\n";
+    for(clang::EnumDecl::enumerator_iterator i = enum_begin;
+        i != enum_end; ++i) {
+      clang::EnumConstantDecl const* ecd = *i;
+      this->OS << "    <EnumValue";
+      this->PrintNameAttribute(ecd->getName());
+      this->OS << " init=\"" << ecd->getInitVal() << "\"";
+      this->OS << "/>\n";
+    }
+    this->OS << "  </Enumeration>\n";
+  } else {
+    this->OS << "/>\n";
+  }
 }
 
 //----------------------------------------------------------------------------
