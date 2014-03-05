@@ -247,6 +247,11 @@ class ASTVisitor: public ASTVisitorBase
   void PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
                             bool complete);
 
+  /** Print a befriending="..." attribute listing the XML IDREFs for
+      friends of the given class.  Also queues the friends for later
+      output.  */
+  void PrintBefriendingAttribute(clang::CXXRecordDecl const* dx);
+
   /** Flags used by function output methods to pass information
       to the OutputFunctionHelper method.  */
   enum FunctionHelperFlags {
@@ -814,6 +819,9 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
         static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
       continue;
     } break;
+    case clang::Decl::Friend: {
+      continue;
+    } break;
     case clang::Decl::FunctionTemplate: {
       this->AddFunctionTemplateDecl(
         static_cast<clang::FunctionTemplateDecl const*>(d), &emitted);
@@ -860,6 +868,30 @@ void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
       this->OS << sep;
       this->PrintTypeIdRef(*i, complete);
       sep = " ";
+    }
+    this->OS << "\"";
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
+{
+  if(dx && dx->hasFriends()) {
+    this->OS << " befriending=\"";
+    const char* sep = "";
+    for(clang::CXXRecordDecl::friend_iterator i = dx->friend_begin(),
+          e = dx->friend_end(); i != e; ++i) {
+      clang::FriendDecl const* fd = *i;
+      if(clang::NamedDecl const* nd = fd->getFriendDecl()) {
+        if(unsigned int id = this->AddDumpNode(nd, false)) {
+          this->OS << sep << "_" << id;
+          sep = " ";
+        }
+      } else if(clang::TypeSourceInfo const* tsi = fd->getFriendType()) {
+        this->OS << sep;
+        this->PrintTypeIdRef(tsi->getType(), false);
+        sep = " ";
+      }
     }
     this->OS << "\"";
   }
@@ -1031,6 +1063,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     if(dn->Complete) {
       this->PrintMembersAttribute(d);
       doBases = dx && dx->getNumBases();
+      this->PrintBefriendingAttribute(dx);
     }
   } else {
     this->OS << " incomplete=\"1\"";

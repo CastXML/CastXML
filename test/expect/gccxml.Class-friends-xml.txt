@@ -1,0 +1,20 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:3" file="f1" line="3" members="_3 _4 _5 _6" befriending="_7 _8"/>
+  <Constructor id="_3" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
+    <Argument type="_9" location="f1:3" file="f1" line="3"/>
+  </Constructor>
+  <OperatorMethod id="_5" name="=" returns="_10" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
+    <Argument type="_9" location="f1:3" file="f1" line="3"/>
+  </OperatorMethod>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
+  <ReferenceType id="_9" type="_1c"/>
+  <ReferenceType id="_10" type="_1"/>
+  <Namespace id="_2" name="::"/>
+  <Class id="_8" name="A" context="_2" location="f1:1" file="f1" line="1"/>
+  <Function id="_7" name="f" returns="_12" context="_2" location="f1:2" file="f1" line="2"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <FundamentalType id="_12" name="void"/>
+  <File id="f1" name=".*/test/input/Class-friends.cxx"/>
+</GCC_XML>$
