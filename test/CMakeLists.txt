@@ -116,3 +116,8 @@ castxml_test_gccxml(using-declaration-ns)
 castxml_test_gccxml(using-declaration-start)
 castxml_test_gccxml(using-directive-ns)
 castxml_test_gccxml(using-directive-start)
+
+castxml_test_gccxml_c(FundamentalType)
+castxml_test_gccxml_c(Typedef-called-class)
+
+castxml_test_gccxml_c(invalid)
