@@ -1268,7 +1268,20 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
 {
   this->OS << "  <FundamentalType";
   this->PrintIdAttribute(dn);
-  this->PrintNameAttribute(t->getName(this->CTX.getPrintingPolicy()).str());
+
+  // gccxml used different name variants than Clang for some types
+  std::string name;
+  switch (t->getKind()) {
+  case clang::BuiltinType::Short: name = "short int"; break;
+  case clang::BuiltinType::UShort: name = "short unsigned int"; break;
+  case clang::BuiltinType::Long: name = "long int"; break;
+  case clang::BuiltinType::ULong: name = "long unsigned int"; break;
+  case clang::BuiltinType::LongLong: name = "long long int"; break;
+  case clang::BuiltinType::ULongLong: name = "long long unsigned int"; break;
+  default: name = t->getName(this->CTX.getPrintingPolicy()).str(); break;
+  };
+  this->PrintNameAttribute(name);
+
   this->OS << "/>\n";
 }
 

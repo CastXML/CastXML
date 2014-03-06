@@ -1,0 +1,32 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6 _7 _8 _9 _10 _11 _12 _13 _14 _15"/>
+  <Typedef id="_3" name="t_Char" type="_16" context="_1" location="f1:2" file="f1" line="2"/>
+  <Typedef id="_4" name="t_SChar" type="_17" context="_1" location="f1:3" file="f1" line="3"/>
+  <Typedef id="_5" name="t_UChar" type="_18" context="_1" location="f1:4" file="f1" line="4"/>
+  <Typedef id="_6" name="t_Short" type="_19" context="_1" location="f1:5" file="f1" line="5"/>
+  <Typedef id="_7" name="t_UShort" type="_20" context="_1" location="f1:6" file="f1" line="6"/>
+  <Typedef id="_8" name="t_Int" type="_21" context="_1" location="f1:7" file="f1" line="7"/>
+  <Typedef id="_9" name="t_UInt" type="_22" context="_1" location="f1:8" file="f1" line="8"/>
+  <Typedef id="_10" name="t_Long" type="_23" context="_1" location="f1:9" file="f1" line="9"/>
+  <Typedef id="_11" name="t_ULong" type="_24" context="_1" location="f1:10" file="f1" line="10"/>
+  <Typedef id="_12" name="t_LongLong" type="_25" context="_1" location="f1:11" file="f1" line="11"/>
+  <Typedef id="_13" name="t_ULongLong" type="_26" context="_1" location="f1:12" file="f1" line="12"/>
+  <Typedef id="_14" name="t_Float" type="_27" context="_1" location="f1:13" file="f1" line="13"/>
+  <Typedef id="_15" name="t_Double" type="_28" context="_1" location="f1:14" file="f1" line="14"/>
+  <FundamentalType id="_16" name="char"/>
+  <FundamentalType id="_17" name="signed char"/>
+  <FundamentalType id="_18" name="unsigned char"/>
+  <FundamentalType id="_19" name="short int"/>
+  <FundamentalType id="_20" name="short unsigned int"/>
+  <FundamentalType id="_21" name="int"/>
+  <FundamentalType id="_22" name="unsigned int"/>
+  <FundamentalType id="_23" name="long int"/>
+  <FundamentalType id="_24" name="long unsigned int"/>
+  <FundamentalType id="_25" name="long long int"/>
+  <FundamentalType id="_26" name="long long unsigned int"/>
+  <FundamentalType id="_27" name="float"/>
+  <FundamentalType id="_28" name="double"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/FundamentalTypes.cxx"/>
+</GCC_XML>$
