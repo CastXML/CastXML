@@ -27,21 +27,29 @@ macro(castxml_test_cmd test)
     )
 endmacro()
 
-macro(castxml_test_gccxml test)
+macro(castxml_test_gccxml_common prefix ext std test)
   set(command $<TARGET_FILE:castxml>
     --castxml-gccxml --castxml-start start
-    -std=c++98
-    ${CMAKE_CURRENT_LIST_DIR}/input/${test}.cxx
+    ${std}
+    ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
     )
   add_test(
-    NAME gccxml.${test}
+    NAME ${prefix}.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dtest=gccxml.${test}"
+    "-Dtest=${prefix}.${test}"
     "-Dxml=${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
+endmacro()
+
+macro(castxml_test_gccxml test)
+  castxml_test_gccxml_common(gccxml cxx -std=c++98 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_c test)
+  castxml_test_gccxml_common(gccxml.c c -std=c89 ${test})
 endmacro()
 
 set(empty_c ${CMAKE_CURRENT_LIST_DIR}/input/empty.c)
