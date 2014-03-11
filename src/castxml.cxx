@@ -21,13 +21,23 @@
 
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Allocator.h"
+#include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Process.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/system_error.h"
 
 #include <iostream>
+#include <set>
 #include <vector>
 #include <string.h>
+
+class StringSaver: public llvm::cl::StringSaver {
+  std::set<std::string> Strings;
+public:
+  const char* SaveString(const char* s) {
+    return this->Strings.insert(s).first->c_str();
+  }
+};
 
 //----------------------------------------------------------------------------
 int main(int argc_in, const char** argv_in)
@@ -45,6 +55,10 @@ int main(int argc_in, const char** argv_in)
     llvm::errs() << "error: no argv[0]?!\n";
     return 1;
   }
+
+  StringSaver argSaver;
+  llvm::cl::ExpandResponseFiles(
+    argSaver, llvm::cl::TokenizeGNUCommandLine, argv);
 
   size_t const argc = argv.size();
 
