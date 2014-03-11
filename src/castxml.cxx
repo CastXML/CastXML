@@ -20,20 +20,34 @@
 #include "Utils.h"
 
 #include "llvm/ADT/SmallVector.h"
+#include "llvm/Support/Allocator.h"
+#include "llvm/Support/Process.h"
+#include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/system_error.h"
 
-#include <cxsys/Encoding.hxx>
 #include <iostream>
 #include <vector>
 #include <string.h>
 
 //----------------------------------------------------------------------------
-int main(int argc, const char* const * argv)
+int main(int argc_in, const char** argv_in)
 {
   suppressInteractiveErrors();
-  cxsys::Encoding::CommandLineArguments args =
-    cxsys::Encoding::CommandLineArguments::Main(argc, argv);
-  argc = args.argc();
-  argv = args.argv();
+
+  llvm::SmallVector<const char*, 64> argv;
+  llvm::SpecificBumpPtrAllocator<char> argAlloc;
+  if(llvm::error_code e =
+     llvm::sys::Process::GetArgumentVector(
+       argv, llvm::ArrayRef<const char*>(argv_in, argc_in), argAlloc)) {
+    llvm::errs() << "error: could not get arguments: " << e.message() << "\n";
+    return 1;
+  } else if(argv.empty()) {
+    llvm::errs() << "error: no argv[0]?!\n";
+    return 1;
+  }
+
+  size_t const argc = argv.size();
+
   if(!findResourceDir(argv[0], std::cerr)) {
     return 1;
   }
@@ -49,7 +63,7 @@ int main(int argc, const char* const * argv)
   llvm::SmallVector<const char *, 16> cc_args;
   const char* cc_id = 0;
 
-  for(int i=1; i < argc; ++i) {
+  for(size_t i=1; i < argc; ++i) {
     if(strcmp(argv[i], "--castxml-gccxml") == 0) {
       if(!opts.GccXml) {
         opts.GccXml = true;
