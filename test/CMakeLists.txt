@@ -52,10 +52,11 @@ macro(castxml_test_gccxml_c test)
   castxml_test_gccxml_common(gccxml.c c -std=c89 ${test})
 endmacro()
 
-set(empty_c ${CMAKE_CURRENT_LIST_DIR}/input/empty.c)
-set(empty_cxx ${CMAKE_CURRENT_LIST_DIR}/input/empty.cxx)
-set(empty_m ${CMAKE_CURRENT_LIST_DIR}/input/empty.m)
-set(empty_mm ${CMAKE_CURRENT_LIST_DIR}/input/empty.mm)
+set(input ${CMAKE_CURRENT_LIST_DIR}/input)
+set(empty_c ${input}/empty.c)
+set(empty_cxx ${input}/empty.cxx)
+set(empty_m ${input}/empty.m)
+set(empty_mm ${input}/empty.mm)
 
 castxml_test_cmd(no-arguments)
 
