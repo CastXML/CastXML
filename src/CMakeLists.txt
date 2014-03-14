@@ -24,6 +24,11 @@ configure_file(
   "ClangResourceDir.txt.in"
   "${CastXML_BINARY_DIR}/CMakeFiles/castxmlClangResourceDir.txt" @ONLY
   )
+# Configure version number for C++ code.
+configure_file(
+  "Version.h.in"
+  "${CastXML_BINARY_DIR}/src/Version.h" @ONLY
+  )
 
 set(clang_libs
   clangFrontend

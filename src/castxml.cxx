@@ -129,6 +129,10 @@ int main(int argc_in, const char** argv_in)
           ;
         return 1;
       }
+    } else if(strcmp(argv[i], "--version") == 0) {
+      std::cout << "castxml version " << getVersionString() << std::endl;
+      // Also print Clang version.
+      clang_args.push_back(argv[i]);
     } else {
       clang_args.push_back(argv[i]);
     }

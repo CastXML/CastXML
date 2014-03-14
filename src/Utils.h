@@ -30,6 +30,9 @@ std::string getResourceDir();
 /// getClangResourceDir - Get Clang resource directory found at startup
 std::string getClangResourceDir();
 
+/// getVersionString - Get the CastXML version string
+std::string getVersionString();
+
 /// runCommand - Run a given command line and capture the output.
 bool runCommand(int argc, const char* const* argv,
                 int& ret, std::string& out, std::string& err,

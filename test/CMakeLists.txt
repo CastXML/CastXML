@@ -59,6 +59,7 @@ set(empty_m ${input}/empty.m)
 set(empty_mm ${input}/empty.mm)
 
 castxml_test_cmd(no-arguments)
+castxml_test_cmd(version --version)
 
 castxml_test_cmd(cc-missing --castxml-cc-gnu)
 castxml_test_cmd(cc-twice --castxml-cc-msvc cl --castxml-cc-gnu gcc)

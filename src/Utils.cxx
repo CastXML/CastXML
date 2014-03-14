@@ -15,6 +15,7 @@
 */
 
 #include "Utils.h"
+#include "Version.h"
 
 #include <cxsys/Process.h>
 #include <cxsys/SystemTools.hxx>
@@ -96,6 +97,12 @@ std::string getResourceDir()
 std::string getClangResourceDir()
 {
   return castxmlClangResourceDir;
+}
+
+//----------------------------------------------------------------------------
+std::string getVersionString()
+{
+  return CASTXML_VERSION;
 }
 
 //----------------------------------------------------------------------------
