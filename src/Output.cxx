@@ -881,7 +881,7 @@ void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
     case clang::AS_protected: this->OS << "protected:"; break;
     default: break;
     }
-    this->PrintTypeIdRef(i->getType(), true);
+    this->PrintTypeIdRef(i->getType().getCanonicalType(), true);
   }
   this->OS << "\"";
 }
@@ -1107,7 +1107,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
           e = dx->bases_end(); i != e; ++i) {
       this->OS << "    <Base";
-      this->PrintTypeAttribute(i->getType(), true);
+      this->PrintTypeAttribute(i->getType().getCanonicalType(), true);
       this->PrintAccessAttribute(i->getAccessSpecifier());
       this->OS << " virtual=\"" << (i->isVirtual()? 1 : 0) << "\"";
       this->OS << "/>\n";
