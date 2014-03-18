@@ -241,6 +241,11 @@ class ASTVisitor: public ASTVisitorBase
       context members for later output.  */
   void PrintMembersAttribute(clang::DeclContext const* dc);
 
+  /** Print a bases="..." attribute listing the XML IDREFs for
+      bases of the given class type.  Also queues the base classes
+      for later output.  */
+  void PrintBasesAttribute(clang::CXXRecordDecl const* dx);
+
   /** Print a throws="..." attribute listing the XML IDREFs for
       the types that the given function prototype declares in
       the throw() specification.  */
@@ -863,6 +868,25 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
+{
+  this->OS << " bases=\"";
+  const char* sep = "";
+  for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
+        e = dx->bases_end(); i != e; ++i) {
+    this->OS << sep;
+    sep = " ";
+    switch (i->getAccessSpecifier()) {
+    case clang::AS_private: this->OS << "private:"; break;
+    case clang::AS_protected: this->OS << "protected:"; break;
+    default: break;
+    }
+    this->PrintTypeIdRef(i->getType(), true);
+  }
+  this->OS << "\"";
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
                                       bool complete)
 {
@@ -1070,6 +1094,9 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     if(dn->Complete) {
       this->PrintMembersAttribute(d);
       doBases = dx && dx->getNumBases();
+      if(doBases) {
+        this->PrintBasesAttribute(dx);
+      }
       this->PrintBefriendingAttribute(dx);
     }
   } else {

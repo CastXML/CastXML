@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8">
+  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8" bases="_9">
     <Base type="_9" access="public" virtual="0"/>
   </Class>
   <Method id="_3" name="f" returns="_10" context="_9" access="protected" location="f1:3" file="f1" line="3">
