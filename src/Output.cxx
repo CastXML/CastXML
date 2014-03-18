@@ -284,7 +284,8 @@ class ASTVisitor: public ASTVisitorBase
                                 clang::Type const* c);
 
   /** Output an <Argument/> element inside a function element.  */
-  void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete);
+  void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete,
+                              clang::Expr const* def);
 
   /** Print an access="..." attribute.  */
   void PrintAccessAttribute(clang::AccessSpecifier as);
@@ -976,11 +977,20 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   this->PrintThrowsAttribute(
     ft->getAs<clang::FunctionProtoType>(), dn->Complete);
 
-  if(d->param_begin() != d->param_end()) {
+  if(unsigned np = d->getNumParams()) {
     this->OS << ">\n";
-    for (clang::FunctionDecl::param_const_iterator i = d->param_begin(),
-           e = d->param_end(); i != e; ++i) {
-      this->OutputFunctionArgument(*i, dn->Complete);
+    for (unsigned i = 0; i < np; ++i) {
+      // Use the default argument from the most recent declaration.
+      // Clang accumulates the defaults and only the last one has
+      // them all.
+      clang::ParmVarDecl const* pd = d->getMostRecentDecl()->getParamDecl(i);
+      clang::Expr const* def = pd->getInit();
+      if(!def && pd->hasUninstantiatedDefaultArg()) {
+        def = pd->getUninstantiatedDefaultArg();
+      }
+
+      // Use the parameter located in the canonical declaration.
+      this->OutputFunctionArgument(d->getParamDecl(i), dn->Complete, def);
     }
     if(d->isVariadic()) {
       this->OS << "    <Ellipsis/>\n";
@@ -1030,7 +1040,7 @@ void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
 
 //----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
-                                        bool complete)
+                                        bool complete, clang::Expr const* def)
 {
   this->OS << "    <Argument";
   std::string name = a->getName().str();
@@ -1039,6 +1049,14 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
   }
   this->PrintTypeAttribute(a->getOriginalType(), complete);
   this->PrintLocationAttribute(a);
+  if(def) {
+    this->OS << " default=\"";
+    std::string s;
+    llvm::raw_string_ostream rso(s);
+    def->printPretty(rso, 0, this->CTX.getPrintingPolicy());
+    this->OS << encodeXML(rso.str());
+    this->OS << "\"";
+  }
   this->OS << "/>\n";
 }
 
