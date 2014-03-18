@@ -1,16 +1,21 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" abstract="1" members="_3 _4 _5 _6"/>
-  <Destructor id="_3" name="start" context="_1" access="private" location="f1:2" file="f1" line="2" virtual="1"/>
-  <OperatorMethod id="_4" name="=" returns="_7" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
-    <Argument type="_8" location="f1:1" file="f1" line="1"/>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" abstract="1" members="_3 _4 _5 _6 _7 _8"/>
+  <Method id="_3" name="method" returns="_9" context="_1" access="private" location="f1:2" file="f1" line="2" virtual="1" pure_virtual="1">
+    <Argument type="_9" location="f1:2" file="f1" line="2"/>
+  </Method>
+  <Converter id="_4" returns="_9" context="_1" access="private" location="f1:3" file="f1" line="3" virtual="1" pure_virtual="1"/>
+  <Destructor id="_5" name="start" context="_1" access="private" location="f1:4" file="f1" line="4" virtual="1" pure_virtual="1"/>
+  <OperatorMethod id="_6" name="=" returns="_10" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+    <Argument type="_11" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
-  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
-    <Argument type="_8" location="f1:1" file="f1" line="1"/>
+  <Constructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+    <Argument type="_11" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <ReferenceType id="_7" type="_1"/>
-  <ReferenceType id="_8" type="_1c"/>
+  <FundamentalType id="_9" name="int"/>
+  <ReferenceType id="_10" type="_1"/>
+  <ReferenceType id="_11" type="_1c"/>
   <Namespace id="_2" name="::"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <File id="f1" name=".*/test/input/Class-abstract.cxx"/>

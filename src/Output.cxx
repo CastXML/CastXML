@@ -265,6 +265,7 @@ class ASTVisitor: public ASTVisitorBase
     FH_Explicit   = (1<<2),
     FH_Const      = (1<<3),
     FH_Virtual    = (1<<4),
+    FH_Pure       = (1<<5),
     FH__Last
   };
 
@@ -958,6 +959,9 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   if(flags & FH_Virtual) {
     this->OS << " virtual=\"1\"";
   }
+  if(flags & FH_Pure) {
+    this->OS << " pure_virtual=\"1\"";
+  }
   if(d->isInlined()) {
     this->OS << " inline=\"1\"";
   }
@@ -1250,6 +1254,9 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   if(d->isVirtual()) {
     flags |= FH_Virtual;
   }
+  if(d->isPure()) {
+    flags |= FH_Pure;
+  }
   if(d->isOverloadedOperator()) {
     this->OutputFunctionHelper(d, dn, "OperatorMethod",
       clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
@@ -1268,6 +1275,9 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   }
   if(d->isVirtual()) {
     flags |= FH_Virtual;
+  }
+  if(d->isPure()) {
+    flags |= FH_Pure;
   }
   this->OutputFunctionHelper(d, dn, "Converter", "", flags);
 }
@@ -1291,6 +1301,9 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
   unsigned int flags = 0;
   if(d->isVirtual()) {
     flags |= FH_Virtual;
+  }
+  if(d->isPure()) {
+    flags |= FH_Pure;
   }
   this->OutputFunctionHelper(d, dn, "Destructor",
                              this->GetContextName(d), flags);
