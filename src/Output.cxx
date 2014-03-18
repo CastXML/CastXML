@@ -416,6 +416,12 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
   // Replace some types with their decls.
   if(!t.hasLocalQualifiers()) {
     switch (t->getTypeClass()) {
+    case clang::Type::Adjusted:
+      return this->AddDumpNode(DumpType(
+        t->getAs<clang::AdjustedType>()->getAdjustedType(), c), complete);
+    case clang::Type::Decayed:
+      return this->AddDumpNode(DumpType(
+        t->getAs<clang::DecayedType>()->getDecayedType(), c), complete);
     case clang::Type::Elaborated:
       return this->AddDumpNode(DumpType(
         t->getAs<clang::ElaboratedType>()->getNamedType(), c), complete);
@@ -1047,7 +1053,7 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
   if(!name.empty()) {
     this->PrintNameAttribute(name);
   }
-  this->PrintTypeAttribute(a->getOriginalType(), complete);
+  this->PrintTypeAttribute(a->getType(), complete);
   this->PrintLocationAttribute(a);
   if(def) {
     this->OS << " default=\"";
