@@ -1,0 +1,7 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3"/>
+  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" incomplete="1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Class-incomplete-twice.cxx"/>
+</GCC_XML>$
