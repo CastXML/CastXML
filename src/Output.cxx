@@ -1174,7 +1174,13 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
 {
   this->OS << "  <Enumeration";
   this->PrintIdAttribute(dn);
-  this->PrintNameAttribute(d->getName().str());
+  std::string name = d->getName().str();
+  if(name.empty()) {
+    if(clang::TypedefNameDecl const* td = d->getTypedefNameForAnonDecl()) {
+      name = td->getName().str();
+    }
+  }
+  this->PrintNameAttribute(name);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
