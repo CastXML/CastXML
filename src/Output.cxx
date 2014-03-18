@@ -380,6 +380,14 @@ public:
 
 //----------------------------------------------------------------------------
 unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
+  // Select the definition or canonical declaration.
+  d = d->getCanonicalDecl();
+  if(clang::RecordDecl const* rd = clang::dyn_cast<clang::RecordDecl>(d)) {
+    if(clang::RecordDecl const* rdd = rd->getDefinition()) {
+      d = rdd;
+    }
+  }
+
   // Replace some decls with those they reference.
   switch (d->getKind()) {
   case clang::Decl::UsingShadow:
@@ -390,8 +398,7 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
     break;
   }
 
-  // Add the node for the canonical declaration instance.
-  return this->AddDumpNodeImpl(d->getCanonicalDecl(), complete);
+  return this->AddDumpNodeImpl(d, complete);
 }
 
 //----------------------------------------------------------------------------
