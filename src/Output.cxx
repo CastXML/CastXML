@@ -1169,7 +1169,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->OS << "  <Typedef";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
-  this->PrintTypeAttribute(d->getTypeSourceInfo()->getType(), dn->Complete);
+  this->PrintTypeAttribute(d->getUnderlyingType(), dn->Complete);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->OS << "/>\n";
