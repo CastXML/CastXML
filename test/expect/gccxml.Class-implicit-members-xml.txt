@@ -1,0 +1,20 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7"/>
+  <Method id="_3" name="method" returns="_1" context="_1" access="private" location="f1:2" file="f1" line="2" inline="1">
+    <Argument name="x" type="_8" location="f1:2" file="f1" line="2"/>
+  </Method>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+    <Argument type="_8" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_6" name="=" returns="_9" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+    <Argument type="_8" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <ReferenceType id="_8" type="_1c"/>
+  <ReferenceType id="_9" type="_1"/>
+  <Namespace id="_2" name="::"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <File id="f1" name=".*/test/input/Class-implicit-members.cxx"/>
+</GCC_XML>$

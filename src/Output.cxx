@@ -26,7 +26,6 @@
 #include "clang/AST/DeclTemplate.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
-#include "clang/Sema/Sema.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <fstream>
@@ -403,6 +402,11 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
       complete);
   default:
     break;
+  }
+
+  // Skip invalid declarations.
+  if(d->isInvalidDecl()) {
+    return 0;
   }
 
   return this->AddDumpNodeImpl(d, complete);
@@ -1150,8 +1154,6 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
                                      DumpNode const* dn)
 {
-  this->CI.getSema().ForceDeclarationOfImplicitMembers(
-    const_cast<clang::CXXRecordDecl*>(d));
   this->OutputRecordDecl(d, dn);
 }
 

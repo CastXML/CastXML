@@ -22,6 +22,8 @@
 #include <cxsys/SystemTools.hxx>
 
 #include "clang/AST/ASTConsumer.h"
+#include "clang/AST/Decl.h"
+#include "clang/AST/DeclCXX.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
@@ -33,6 +35,7 @@
 #include "clang/Frontend/TextDiagnosticPrinter.h"
 #include "clang/Frontend/Utils.h"
 #include "clang/Lex/Preprocessor.h"
+#include "clang/Sema/Sema.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Host.h"
@@ -50,6 +53,54 @@ public:
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
               std::vector<std::string> const& startNames):
     CI(ci), OS(os), StartNames(startNames) {}
+
+  void AddImplicitMembers(clang::CXXRecordDecl* rd) {
+    clang::Sema& sema = this->CI.getSema();
+    sema.ForceDeclarationOfImplicitMembers(rd);
+
+#   define DEFINE_IMPLICIT(name, decl) do {                           \
+      clang::Sema::SFINAETrap trap(sema, /*AccessChecking=*/ true);   \
+      sema.DefineImplicit##name(clang::SourceLocation(), (decl));     \
+      if (trap.hasErrorOccurred()) {                                  \
+        (decl)->setInvalidDecl();                                     \
+      }                                                               \
+    } while(0)
+
+    for(clang::DeclContext::decl_iterator i = rd->decls_begin(),
+          e = rd->decls_end(); i != e; ++i) {
+      clang::CXXMethodDecl* m = clang::dyn_cast<clang::CXXMethodDecl>(*i);
+      if(m && m->isImplicit() && !m->isDeleted() &&
+         !m->doesThisDeclarationHaveABody()) {
+        if (clang::CXXConstructorDecl* c =
+            clang::dyn_cast<clang::CXXConstructorDecl>(m)) {
+          if (c->isDefaultConstructor()) {
+            DEFINE_IMPLICIT(DefaultConstructor, c);
+          } else if (c->isCopyConstructor()) {
+            DEFINE_IMPLICIT(CopyConstructor, c);
+          } else if (c->isMoveConstructor()) {
+            DEFINE_IMPLICIT(MoveConstructor, c);
+          }
+        } else if (clang::CXXDestructorDecl* d =
+                   clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
+          DEFINE_IMPLICIT(Destructor, d);
+        } else if (m->isCopyAssignmentOperator()) {
+          DEFINE_IMPLICIT(CopyAssignment, m);
+        } else if (m->isMoveAssignmentOperator()) {
+          DEFINE_IMPLICIT(MoveAssignment, m);
+        }
+      }
+    }
+
+#   undef DEFINE_IMPLICIT
+  }
+
+  void HandleTagDeclDefinition(clang::TagDecl* d) {
+    if(clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
+      if(!rd->isDependentContext()) {
+        this->AddImplicitMembers(rd);
+      }
+    }
+  }
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
     outputXML(this->CI, ctx, this->OS, this->StartNames);
