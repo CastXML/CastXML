@@ -828,6 +828,11 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
         e = dc->decls_end(); i != e; ++i) {
     clang::Decl const* d = *i;
 
+    // Skip declarations that are not really members of this context.
+    if(d->getDeclContext() != dc) {
+      continue;
+    }
+
     // Ignore certain members.
     switch (d->getKind()) {
     case clang::Decl::CXXRecord: {
