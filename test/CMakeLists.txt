@@ -48,6 +48,10 @@ macro(castxml_test_gccxml test)
   castxml_test_gccxml_common(gccxml cxx -std=c++98 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_broken test)
+  castxml_test_gccxml_common(gccxml.broken cxx -std=c++98 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_c test)
   castxml_test_gccxml_common(gccxml.c c -std=c89 ${test})
 endmacro()
@@ -148,3 +152,6 @@ castxml_test_gccxml_c(FundamentalType)
 castxml_test_gccxml_c(Typedef-called-class)
 
 castxml_test_gccxml_c(invalid)
+
+castxml_test_gccxml_broken(Class-template-constructor-template)
+castxml_test_gccxml_broken(ReferenceType-to-Class-template)

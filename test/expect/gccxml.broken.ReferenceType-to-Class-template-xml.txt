@@ -1,0 +1,25 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_4" context="_5" location="f1:2" file="f1" line="2">
+    <Argument type="_6" location="f1:2" file="f1" line="2"/>
+    <Argument type="_7" location="f1:2" file="f1" line="2"/>
+  </Function>
+  <Function id="_2" name="start" returns="_4" context="_5" location="f1:3" file="f1" line="3">
+    <Argument type="_8" location="f1:3" file="f1" line="3"/>
+    <Argument type="_9" location="f1:3" file="f1" line="3"/>
+  </Function>
+  <Function id="_3" name="start" returns="_4" context="_5" location="f1:4" file="f1" line="4">
+    <Argument type="_10" location="f1:4" file="f1" line="4"/>
+    <Argument type="_11" location="f1:4" file="f1" line="4"/>
+  </Function>
+  <FundamentalType id="_4" name="void"/>
+  <ReferenceType id="_6" type="_12"/>
+  <FundamentalType id="_7" name="short int"/>
+  <ReferenceType id="_8" type="_12"/>(broken: duplicate ReferenceType)?
+  <FundamentalType id="_9" name="int"/>
+  <ReferenceType id="_10" type="_12"/>(broken: duplicate ReferenceType)?
+  <FundamentalType id="_11" name="long int"/>
+  <Namespace id="_5" name="::"/>
+  <Class id="_12" name="A&lt;int&gt;" context="_5" location="f1:1" file="f1" line="1" incomplete="1"/>
+  <File id="f1" name=".*/test/input/ReferenceType-to-Class-template.cxx"/>
+</GCC_XML>$
