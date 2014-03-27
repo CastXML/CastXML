@@ -32,13 +32,14 @@ macro(castxml_test_gccxml_common prefix ext std test)
     --castxml-gccxml --castxml-start start
     ${std}
     ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
+    -o ${prefix}.${test}.xml
     )
   add_test(
     NAME ${prefix}.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
     "-Dtest=${prefix}.${test}"
-    "-Dxml=${test}.xml"
+    "-Dxml=${prefix}.${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
