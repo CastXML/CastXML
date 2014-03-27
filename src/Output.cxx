@@ -449,9 +449,25 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
         return this->AddDumpNode(DumpType(tst->desugar(), c), complete);
       }
     } break;
-    case clang::Type::Typedef:
-      return this->AddDumpNode(t->getAs<clang::TypedefType>()->getDecl(),
-                               complete);
+    case clang::Type::Typedef: {
+      clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+      if(!tdt->isInstantiationDependentType() && tdt->isSugared()) {
+        if(clang::DeclContext const* tdc = tdt->getDecl()->getDeclContext()) {
+          if(clang::CXXRecordDecl const* tdx =
+             clang::dyn_cast<clang::CXXRecordDecl>(tdc)) {
+            if(tdx->getDescribedClassTemplate()) {
+              // This TypedefType refers to a non-dependent
+              // TypedefDecl member of a class template.  Since gccxml
+              // format does not include uninstantiated templates we
+              // must use the desugared type so that we do not end up
+              // referencing a class template as context.
+              return this->AddDumpNode(tdt->desugar(), complete);
+            }
+          }
+        }
+      }
+      return this->AddDumpNode(tdt->getDecl(), complete);
+    } break;
     default:
       break;
     }
