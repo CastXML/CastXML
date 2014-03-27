@@ -1175,6 +1175,12 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
                                      DumpNode const* dn)
 {
+  if(d->getDescribedClassTemplate()) {
+    // We do not implement class template output yet.
+    this->ASTVisitorBase::OutputCXXRecordDecl(d, dn);
+    return;
+  }
+
   this->OutputRecordDecl(d, dn);
 }
 
@@ -1281,6 +1287,12 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
 void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
                                     DumpNode const* dn)
 {
+  if(d->getDescribedFunctionTemplate()) {
+    // We do not implement function template output yet.
+    this->ASTVisitorBase::OutputFunctionDecl(d, dn);
+    return;
+  }
+
   unsigned int flags = FH_Returns;
   if(d->getStorageClass() == clang::SC_Static) {
     flags |= FH_Static;
@@ -1297,6 +1309,12 @@ void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
 void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
                                      DumpNode const* dn)
 {
+  if(d->getDescribedFunctionTemplate()) {
+    // We do not implement function template output yet.
+    this->ASTVisitorBase::OutputCXXMethodDecl(d, dn);
+    return;
+  }
+
   unsigned int flags = FH_Returns;
   if(d->isStatic()) {
     flags |= FH_Static;
@@ -1322,6 +1340,12 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
 void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
                                          DumpNode const* dn)
 {
+  if(d->getDescribedFunctionTemplate()) {
+    // We do not implement function template output yet.
+    this->ASTVisitorBase::OutputCXXConversionDecl(d, dn);
+    return;
+  }
+
   unsigned int flags = FH_Returns;
   if(d->isConst()) {
     flags |= FH_Const;
@@ -1339,6 +1363,12 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
 void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
                                           DumpNode const* dn)
 {
+  if(d->getDescribedFunctionTemplate()) {
+    // We do not implement function template output yet.
+    this->ASTVisitorBase::OutputCXXConstructorDecl(d, dn);
+    return;
+  }
+
   unsigned int flags = 0;
   if(d->isExplicit()) {
     flags |= FH_Explicit;
@@ -1351,6 +1381,12 @@ void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
 void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
                                          DumpNode const* dn)
 {
+  if(d->getDescribedFunctionTemplate()) {
+    // We do not implement function template output yet.
+    this->ASTVisitorBase::OutputCXXDestructorDecl(d, dn);
+    return;
+  }
+
   unsigned int flags = 0;
   if(d->isVirtual()) {
     flags |= FH_Virtual;
