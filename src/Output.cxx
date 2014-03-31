@@ -400,6 +400,11 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
     return this->AddDumpNode(
       static_cast<clang::UsingShadowDecl const*>(d)->getTargetDecl(),
       complete);
+  case clang::Decl::LinkageSpec: {
+    clang::DeclContext const* dc =
+      static_cast<clang::LinkageSpecDecl const*>(d)->getDeclContext();
+    return this->AddDumpNode(clang::Decl::castFromDeclContext(dc), complete);
+  } break;
   default:
     break;
   }
