@@ -74,10 +74,10 @@ int main(int argc_in, const char** argv_in)
     "\n"
     "Options:\n"
     "\n"
-    "  --castxml-cc-<id> <cc> [ <cc-args>... ]\n"
+    "  --castxml-cc-<id> <cc>\n"
+    "  --castxml-cc-<id> \"(\" <cc> <cc-opt>... \")\"\n"
     "    Simulate given <id>-like compiler command, where <id> is\n"
     "    one of: gnu, msvc\n"
-    "    (This option must appear last and consumes remaining options)\n"
     "\n"
     "  --castxml-gccxml\n"
     "    Write gccxml-format output to <src>.xml or file named by '-o'\n"
@@ -125,10 +125,54 @@ int main(int argc_in, const char** argv_in)
     } else if(strncmp(argv[i], "--castxml-cc-", 13) == 0) {
       if(!cc_id) {
         cc_id = argv[i] + 13;
-        for(++i;i < argc && strncmp(argv[i], "--castxml-", 10) != 0; ++i) {
+        if((i+1) >= argc) {
+          continue;
+        }
+        ++i;
+        if(strncmp(argv[i], "-", 1) == 0) {
+          std::cerr <<
+            "error: argument to '--castxml-cc-" << cc_id <<
+            "' may not start with '-'\n"
+            "\n" <<
+            usage
+            ;
+          return 1;
+        }
+        if(strcmp(argv[i], "(") == 0) {
+          unsigned int depth = 1;
+          for(++i; i < argc && depth > 0; ++i) {
+            if(strncmp(argv[i], "--castxml-", 10) == 0) {
+              std::cerr <<
+                "error: arguments to '--castxml-cc-" << cc_id <<
+                "' may not start with '--castxml-'\n"
+                "\n" <<
+                usage
+                ;
+              return 1;
+            } else if(strcmp(argv[i], "(") == 0) {
+              ++depth;
+              cc_args.push_back(argv[i]);
+            } else if(strcmp(argv[i], ")") == 0) {
+              if(--depth) {
+                cc_args.push_back(argv[i]);
+              }
+            } else {
+              cc_args.push_back(argv[i]);
+            }
+          }
+          if(depth) {
+            std::cerr <<
+              "error: unbalanced parentheses after '--castxml-cc-" <<
+              cc_id << "'\n"
+              "\n" <<
+              usage
+              ;
+            return 1;
+          }
+          --i;
+        } else {
           cc_args.push_back(argv[i]);
         }
-        --i;
       } else {
         std::cerr <<
           "error: '--castxml-cc-<id>' may be given at most once!\n"
