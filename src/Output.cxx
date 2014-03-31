@@ -947,6 +947,11 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
           e = dx->friend_end(); i != e; ++i) {
       clang::FriendDecl const* fd = *i;
       if(clang::NamedDecl const* nd = fd->getFriendDecl()) {
+        if(nd->isTemplateDecl()) {
+          // gccxml output format does not have uninstantiated templates
+          continue;
+        }
+
         if(unsigned int id = this->AddDumpNode(nd, false)) {
           this->OS << sep << "_" << id;
           sep = " ";
