@@ -67,9 +67,30 @@ int main(int argc_in, const char** argv_in)
   }
 
   const char* usage =
-    "Usage: castxml [--castxml-gccxml] [<clang-args>...] \\\n"
-    "               [--castxml-start <qualified-name>]... \\\n"
-    "               [--castxml-cc-<id> <cc> [<cc-args>...]]\n"
+    "Usage: castxml ( <castxml-opt> | <clang-opt> | <src> )...\n"
+    "\n"
+    "  Options interpreted by castxml are listed below.\n"
+    "  Remaining options are given to the internal Clang compiler.\n"
+    "\n"
+    "Options:\n"
+    "\n"
+    "  --castxml-cc-<id> <cc> [ <cc-args>... ]\n"
+    "    Simulate given <id>-like compiler command, where <id> is\n"
+    "    one of: gnu, msvc\n"
+    "    (This option must appear last and consumes remaining options)\n"
+    "\n"
+    "  --castxml-gccxml\n"
+    "    Write gccxml-format output to <src>.xml or file named by '-o'\n"
+    "\n"
+    "  --castxml-start <name>\n"
+    "    Start AST traversal at declaration with given (qualified) name\n"
+    "\n"
+    "  -o <file>\n"
+    "    Write output to <file>\n"
+    "\n"
+    "  --version\n"
+    "    Print castxml and internal Clang compiler version information\n"
+    "\n"
     ;
 
   Options opts;
