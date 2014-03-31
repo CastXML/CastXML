@@ -85,6 +85,9 @@ int main(int argc_in, const char** argv_in)
     "  --castxml-start <name>\n"
     "    Start AST traversal at declaration with given (qualified) name\n"
     "\n"
+    "  -help, --help\n"
+    "    Print castxml and internal Clang compiler usage information\n"
+    "\n"
     "  -o <file>\n"
     "    Write output to <file>\n"
     "\n"
@@ -194,6 +197,18 @@ int main(int argc_in, const char** argv_in)
           ;
         return 1;
       }
+    } else if(strcmp(argv[i], "-help") == 0 ||
+              strcmp(argv[i], "--help") == 0) {
+      std::cout <<
+        usage <<
+        "\n"
+        "Help for the internal Clang compiler appears below.\n"
+        "\n"
+        "---------------------------------------------------------------"
+        "\n" <<
+        std::endl;
+      // Also print Clang help.
+      clang_args.push_back(argv[i]);
     } else if(strcmp(argv[i], "--version") == 0) {
       std::cout << "castxml version " << getVersionString() << std::endl;
       // Also print Clang version.

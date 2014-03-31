@@ -63,6 +63,8 @@ set(empty_cxx ${input}/empty.cxx)
 set(empty_m ${input}/empty.m)
 set(empty_mm ${input}/empty.mm)
 
+castxml_test_cmd(help1 -help)
+castxml_test_cmd(help2 --help)
 castxml_test_cmd(no-arguments)
 castxml_test_cmd(version --version)
 
