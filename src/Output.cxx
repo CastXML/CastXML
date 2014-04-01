@@ -869,6 +869,9 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
         static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
       continue;
     } break;
+    case clang::Decl::Empty: {
+      continue;
+    } break;
     case clang::Decl::Friend: {
       continue;
     } break;
