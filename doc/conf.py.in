@@ -1,0 +1,62 @@
+#=============================================================================
+# Copyright Kitware, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#=============================================================================
+import sys
+import os
+import re
+import glob
+
+sys.path.insert(0, r'@conf_path@')
+
+source_suffix = '.rst'
+master_doc = 'index'
+
+project = 'CastXML'
+copyright = '@conf_copyright@'
+version = '@conf_version@' # feature version
+release = '@conf_release@' # full version string
+
+exclude_patterns = []
+
+extensions = []
+templates_path = []
+
+castxml_manuals = sorted(glob.glob(r'@conf_docs@/manual/*.rst'))
+castxml_manual_description = re.compile('^\.\. castxml-manual-description:(.*)$')
+man_pages = []
+for fpath in castxml_manuals:
+    try:
+        name, sec, rst = os.path.basename(fpath).split('.')
+        desc = None
+        f = open(fpath, 'r')
+        for l in f:
+            m = castxml_manual_description.match(l)
+            if m:
+                desc = m.group(1).strip()
+                break
+        f.close()
+        if desc:
+            man_pages.append(('manual/%s.%s' % (name, sec),
+                              name, desc, [], int(sec)))
+        else:
+            sys.stderr.write("ERROR: No castxml-manual-description in '%s'\n" % fpath)
+    except Exception, e:
+        sys.stderr.write("ERROR: %s\n" % str(e))
+man_show_urls = False
+
+html_show_sourcelink = True
+html_theme = 'default'
+html_title = 'CastXML %s Documentation' % release
+html_short_title = '%s Documentation' % release

@@ -3,3 +3,4 @@
 *                text=auto
 
 *                whitespace=tab-in-indent
+*.rst            conflict-marker-size=81
