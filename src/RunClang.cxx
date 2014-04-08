@@ -49,11 +49,11 @@ class ASTConsumer: public clang::ASTConsumer
 {
   clang::CompilerInstance& CI;
   llvm::raw_ostream& OS;
-  std::vector<std::string> const& StartNames;
+  Options const& Opts;
 public:
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
-              std::vector<std::string> const& startNames):
-    CI(ci), OS(os), StartNames(startNames) {}
+              Options const& opts):
+    CI(ci), OS(os), Opts(opts) {}
 
   void AddImplicitMembers(clang::CXXRecordDecl* rd) {
     clang::Sema& sema = this->CI.getSema();
@@ -104,7 +104,7 @@ public:
   }
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
-    outputXML(this->CI, ctx, this->OS, this->StartNames);
+    outputXML(this->CI, ctx, this->OS, this->Opts.StartNames);
   }
 };
 
@@ -164,7 +164,7 @@ class CastXMLSyntaxOnlyAction:
       return clang::SyntaxOnlyAction::CreateASTConsumer(CI, InFile);
     } else if(llvm::raw_ostream* OS =
               CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
-      return new ASTConsumer(CI, *OS, this->Opts.StartNames);
+      return new ASTConsumer(CI, *OS, this->Opts);
     } else {
       return 0;
     }
