@@ -17,3 +17,46 @@ CastXML is licensed under the `Apache License, Version 2.0`_.
 See the `<LICENSE>`__ and `<NOTICE>`__ files for details.
 
 .. _`Apache License, Version 2.0`: http://www.apache.org/licenses/LICENSE-2.0
+
+Build
+=====
+
+To build CastXML from source, first obtain the prerequisites:
+
+* A C++ compiler
+
+* `CMake`_ cross-platform build system generator.
+
+* `LLVM/Clang`_ compiler SDK install tree built using the C++ compiler.
+  This version of CastXML has been tested with LLVM/Clang SVN revision
+  ``202532``.
+
+* Optionally, the `Sphinx`_ documentation generator to build documentation.
+
+Run CMake on the CastXML source tree to generate a build tree using
+a C++ compiler compatible with that used to build the LLVM/Clang SDK.
+CMake options include:
+
+``LLVM_DIR``
+  Location of the LLVM/Clang SDK.
+  Set to ``<prefix>/share/llvm/cmake``, where ``<prefix>`` is the top
+  of the LLVM/Clang SDK install tree.
+
+``SPHINX_EXECUTABLE``
+  Location of the ``sphinx-build`` executable.
+  Required only if building documentation.
+
+``SPHINX_HTML``
+  Build documentation in ``html`` format.
+
+``SPHINX_MAN``
+  Build documentation in ``man`` format.
+
+Run the corresponding native build tool (e.g. ``make``) in the CastXML
+build tree, and optionally build the ``install`` target.  The ``castxml``
+command-line tool may be used either from the build tree or the install tree.
+The install tree is relocatable.
+
+.. _`CMake`: http://www.cmake.org/
+.. _`LLVM/Clang`: http://clang.llvm.org/
+.. _`Sphinx`: http://sphinx-doc.org/
