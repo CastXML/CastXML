@@ -1542,9 +1542,8 @@ void ASTVisitor::LookupStart(clang::DeclContext const* dc,
     }
   }
 
-  for(clang::DeclContext::udir_iterator i = dc->using_directives_begin(),
-        e = dc->using_directives_end(); i != e; ++i) {
-    this->LookupStart((*i)->getNominatedNamespace(), name);
+  for (clang::UsingDirectiveDecl const* i : dc->using_directives()) {
+    this->LookupStart(i->getNominatedNamespace(), name);
   }
 }
 
