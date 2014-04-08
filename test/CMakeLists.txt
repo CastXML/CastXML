@@ -163,5 +163,6 @@ castxml_test_gccxml_c(Typedef-called-class)
 
 castxml_test_gccxml_c(invalid)
 
+castxml_test_gccxml_broken(Class-implicit-member-bad-base)
 castxml_test_gccxml_broken(Class-template-constructor-template)
 castxml_test_gccxml_broken(ReferenceType-to-Class-template)
