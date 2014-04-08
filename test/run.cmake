@@ -15,6 +15,10 @@
 #=============================================================================
 cmake_minimum_required(VERSION 2.8.5)
 
+if(xml)
+  file(REMOVE "${xml}")
+endif()
+
 execute_process(
   COMMAND ${command}
   OUTPUT_VARIABLE actual_stdout
