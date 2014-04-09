@@ -104,7 +104,7 @@ public:
   }
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
-    outputXML(this->CI, ctx, this->OS, this->Opts.StartNames);
+    outputXML(this->CI, ctx, this->OS, this->Opts);
   }
 };
 

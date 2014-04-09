@@ -15,6 +15,7 @@
 */
 
 #include "Output.h"
+#include "Options.h"
 #include "Utils.h"
 
 #include "clang/AST/ASTContext.h"
@@ -31,6 +32,8 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <string>
+#include <vector>
 
 //----------------------------------------------------------------------------
 class ASTVisitorBase
@@ -340,7 +343,7 @@ class ASTVisitor: public ASTVisitorBase
 
 private:
   // List of starting declaration names.
-  std::vector<std::string> const& StartNames;
+  Options const& Opts;
 
   // Total number of nodes to be dumped.
   unsigned int NodeCount;
@@ -373,9 +376,9 @@ public:
   ASTVisitor(clang::CompilerInstance& ci,
              clang::ASTContext const& ctx,
              llvm::raw_ostream& os,
-             std::vector<std::string> const& startNames):
+             Options const& opts):
     ASTVisitorBase(ci, ctx, os),
-    StartNames(startNames),
+    Opts(opts),
     NodeCount(0), FileCount(0),
     RequireComplete(true) {}
 
@@ -1551,10 +1554,11 @@ void ASTVisitor::LookupStart(clang::DeclContext const* dc,
 void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 {
   // Add the starting nodes for the dump.
-  if(!this->StartNames.empty()) {
+  if(!this->Opts.StartNames.empty()) {
     // Use the specified starting locations.
-    for(std::vector<std::string>::const_iterator i = this->StartNames.begin(),
-          e = this->StartNames.end(); i != e; ++i) {
+    for(std::vector<std::string>::const_iterator
+          i = this->Opts.StartNames.begin(), e = this->Opts.StartNames.end();
+        i != e; ++i) {
       this->LookupStart(tu, *i);
     }
   } else {
@@ -1591,8 +1595,8 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 void outputXML(clang::CompilerInstance& ci,
                clang::ASTContext const& ctx,
                llvm::raw_ostream& os,
-               std::vector<std::string> const& startNames)
+               Options const& opts)
 {
-  ASTVisitor v(ci, ctx, os, startNames);
+  ASTVisitor v(ci, ctx, os, opts);
   v.HandleTranslationUnit(ctx.getTranslationUnitDecl());
 }
