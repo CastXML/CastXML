@@ -22,7 +22,7 @@ macro(castxml_test_cmd test)
     NAME cmd.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dtest=cmd.${test}"
+    "-Dexpect=cmd.${test}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
 endmacro()
@@ -38,7 +38,7 @@ macro(castxml_test_gccxml_common prefix ext std test)
     NAME ${prefix}.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dtest=${prefix}.${test}"
+    "-Dexpect=${prefix}.${test}"
     "-Dxml=${prefix}.${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
