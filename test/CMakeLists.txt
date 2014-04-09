@@ -30,7 +30,7 @@ endmacro()
 macro(castxml_test_gccxml_common prefix ext std test)
   set(command $<TARGET_FILE:castxml>
     --castxml-gccxml --castxml-start start
-    ${std}
+    -std=${std}
     ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
     -o ${prefix}.${test}.xml
     )
@@ -46,15 +46,15 @@ macro(castxml_test_gccxml_common prefix ext std test)
 endmacro()
 
 macro(castxml_test_gccxml test)
-  castxml_test_gccxml_common(gccxml cxx -std=c++98 ${test})
+  castxml_test_gccxml_common(gccxml cxx c++98 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken test)
-  castxml_test_gccxml_common(gccxml.broken cxx -std=c++98 ${test})
+  castxml_test_gccxml_common(gccxml.broken cxx c++98 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_c test)
-  castxml_test_gccxml_common(gccxml.c c -std=c89 ${test})
+  castxml_test_gccxml_common(gccxml.c c c89 ${test})
 endmacro()
 
 set(input ${CMAKE_CURRENT_LIST_DIR}/input)
