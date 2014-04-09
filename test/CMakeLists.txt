@@ -32,14 +32,14 @@ macro(castxml_test_gccxml_common prefix ext std test)
     --castxml-gccxml --castxml-start start
     -std=${std}
     ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
-    -o ${prefix}.${test}.xml
+    -o ${prefix}.${std}.${test}.xml
     )
   add_test(
-    NAME ${prefix}.${test}
+    NAME ${prefix}.${std}.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dexpect=${prefix}.${test}"
-    "-Dxml=${prefix}.${test}.xml"
+    "-Dexpect=${prefix}.${std}.${test};${prefix}.any.${test}"
+    "-Dxml=${prefix}.${std}.${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
@@ -54,7 +54,7 @@ macro(castxml_test_gccxml_broken test)
 endmacro()
 
 macro(castxml_test_gccxml_c test)
-  castxml_test_gccxml_common(gccxml.c c c89 ${test})
+  castxml_test_gccxml_common(gccxml c c89 ${test})
 endmacro()
 
 set(input ${CMAKE_CURRENT_LIST_DIR}/input)
