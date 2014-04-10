@@ -213,10 +213,6 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
       std::cerr << MSG("c++1y");
       return false;
     }
-    if(CI->getLangOpts().CPlusPlus11) {
-      std::cerr << MSG("c++11");
-      return false;
-    }
     if(CI->getLangOpts().C11) {
       std::cerr << MSG("c11");
       return false;

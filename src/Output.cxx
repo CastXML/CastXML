@@ -417,6 +417,28 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
     return 0;
   }
 
+  // Skip C++11 declarations gccxml does not support.
+  if (this->Opts.GccXml) {
+    if (clang::FunctionDecl const* fd =
+        clang::dyn_cast<clang::FunctionDecl>(d)) {
+      if (fd->isDeleted()) {
+        return 0;
+      } else if (clang::CXXMethodDecl const* md =
+                 clang::dyn_cast<clang::CXXMethodDecl>(fd)) {
+        if (md->isImplicit()) {
+          if (clang::CXXConstructorDecl const* cd =
+              clang::dyn_cast<clang::CXXConstructorDecl>(md)) {
+            if (cd->isMoveConstructor()) {
+              return 0;
+            }
+          } else if (md->isMoveAssignmentOperator()) {
+            return 0;
+          }
+        }
+      }
+    }
+  }
+
   return this->AddDumpNodeImpl(d, complete);
 }
 

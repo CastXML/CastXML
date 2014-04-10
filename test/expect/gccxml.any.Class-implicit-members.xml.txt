@@ -5,10 +5,10 @@
     <Argument name="x" type="_8" location="f1:2" file="f1" line="2"/>
   </Method>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_8" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_6" name="=" returns="_9" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+  <OperatorMethod id="_6" name="=" returns="_9" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_8" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
