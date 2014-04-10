@@ -33,6 +33,7 @@ macro(castxml_test_gccxml_common prefix ext std test)
     -std=${std}
     ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
     -o ${prefix}.${std}.${test}.xml
+    ${castxml_test_gccxml_extra_arguments}
     )
   add_test(
     NAME ${prefix}.${std}.${test}
@@ -180,6 +181,12 @@ castxml_test_gccxml(using-declaration-ns)
 castxml_test_gccxml(using-declaration-start)
 castxml_test_gccxml(using-directive-ns)
 castxml_test_gccxml(using-directive-start)
+
+if(";${LLVM_TARGETS_TO_BUILD};" MATCHES ";X86;")
+  set(castxml_test_gccxml_extra_arguments -target i386-pc-windows-msvc)
+  castxml_test_gccxml(inline-asm-ms)
+  unset(castxml_test_gccxml_extra_arguments)
+endif()
 
 castxml_test_gccxml_c(FundamentalType)
 castxml_test_gccxml_c(Typedef-called-class)

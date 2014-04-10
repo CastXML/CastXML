@@ -1,0 +1,7 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1"/>
+  <FundamentalType id="_2" name="void"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/inline-asm-ms.cxx"/>
+</GCC_XML>$

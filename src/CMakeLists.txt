@@ -43,7 +43,12 @@ set(clang_libs
   clangBasic
   )
 
-llvm_map_components_to_libraries(llvm_libs native option bitreader)
+llvm_map_components_to_libraries(llvm_libs
+  native
+  option
+  bitreader
+  ${LLVM_TARGETS_TO_BUILD}
+  )
 
 add_executable(castxml
   castxml.cxx

@@ -23,6 +23,7 @@
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Process.h"
+#include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/system_error.h"
 
@@ -43,6 +44,11 @@ public:
 int main(int argc_in, const char** argv_in)
 {
   suppressInteractiveErrors();
+
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmPrinters();
+  llvm::InitializeAllAsmParsers();
 
   llvm::SmallVector<const char*, 64> argv;
   llvm::SpecificBumpPtrAllocator<char> argAlloc;
