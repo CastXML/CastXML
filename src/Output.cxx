@@ -427,17 +427,18 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
         clang::dyn_cast<clang::FunctionDecl>(d)) {
       if (fd->isDeleted()) {
         return 0;
-      } else if (clang::CXXMethodDecl const* md =
-                 clang::dyn_cast<clang::CXXMethodDecl>(fd)) {
-        if (md->isImplicit()) {
-          if (clang::CXXConstructorDecl const* cd =
-              clang::dyn_cast<clang::CXXConstructorDecl>(md)) {
-            if (cd->isMoveConstructor()) {
-              return 0;
-            }
-          } else if (md->isMoveAssignmentOperator()) {
-            return 0;
-          }
+      }
+
+      clang::FunctionProtoType const* fpt =
+        fd->getType()->getAs<clang::FunctionProtoType>();
+      if (fpt->getReturnType()->isRValueReferenceType()) {
+        return 0;
+      }
+      for (clang::FunctionProtoType::param_type_iterator
+             i = fpt->param_type_begin(), e = fpt->param_type_end();
+           i != e; ++i) {
+        if((*i)->isRValueReferenceType()) {
+          return 0;
         }
       }
     }

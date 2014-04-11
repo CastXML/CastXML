@@ -1,0 +1,1 @@
+warning: rvalue references are a C\+\+11 extension
