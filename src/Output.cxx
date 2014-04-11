@@ -625,6 +625,11 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
         static_cast<clang::FunctionTemplateDecl const*>(d), &emitted);
       continue;
     } break;
+    case clang::Decl::LinkageSpec: {
+      this->AddDeclContextMembers(
+        static_cast<clang::LinkageSpecDecl const*>(d), emitted);
+      continue;
+    } break;
     case clang::Decl::Using: {
       continue;
     } break;
