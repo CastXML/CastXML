@@ -33,7 +33,7 @@
   <ReferenceType id="_19" type="_9c"/>
   <ReferenceType id="_20" type="_9"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_9c" type="_9" const="1"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
   <File id="f1" name=".*/test/input/using-declaration-class.cxx"/>
 </GCC_XML>$

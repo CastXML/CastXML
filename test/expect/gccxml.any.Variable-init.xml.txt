@@ -6,7 +6,7 @@
   <FundamentalType id="_5" name="int"/>
   <PointerType id="_6" type="_8c"/>
   <Namespace id="_2" name="::"/>
-  <FundamentalType id="_8" name="char"/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
+  <FundamentalType id="_8" name="char"/>
   <File id="f1" name=".*/test/input/Variable-init.cxx"/>
 </GCC_XML>$

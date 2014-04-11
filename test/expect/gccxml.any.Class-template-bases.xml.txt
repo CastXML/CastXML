@@ -37,8 +37,8 @@
   <ReferenceType id="_22" type="_8c"/>
   <ReferenceType id="_23" type="_8"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_7c" type="_7" const="1"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <CvQualifiedType id="_7c" type="_7" const="1"/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
   <File id="f1" name=".*/test/input/Class-template-bases.cxx"/>
 </GCC_XML>$

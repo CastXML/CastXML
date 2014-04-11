@@ -32,6 +32,7 @@
 #include <fstream>
 #include <iostream>
 #include <queue>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -121,7 +122,6 @@ class ASTVisitor: public ASTVisitorBase
       KindType
     };
 
-    QueueEntry(): Kind(KindDecl), Decl(0), DN(0) {}
     QueueEntry(clang::Decl const* d, DumpNode const* dn):
       Kind(KindDecl), Decl(d), DN(dn) {}
     QueueEntry(DumpType t, DumpNode const* dn):
@@ -138,6 +138,10 @@ class ASTVisitor: public ASTVisitorBase
 
     // The dump status for this node.
     DumpNode const* DN;
+
+    friend bool operator < (QueueEntry const& l, QueueEntry const& r) {
+      return l.DN->Index < r.DN->Index;
+    }
   };
 
   /** Get the dump status node for a Clang declaration.  */
@@ -367,7 +371,7 @@ private:
   FileNodesMap FileNodes;
 
   // Node traversal queue.
-  std::queue<QueueEntry> Queue;
+  std::set<QueueEntry> Queue;
 
   // File traversal queue.
   std::queue<clang::FileEntry const*> FileQueue;
@@ -516,7 +520,7 @@ unsigned int ASTVisitor::AddDumpNodeImpl(K k, bool complete)
     if(complete && !dn->Complete) {
       // Node is now complete, but wasn't before.  Queue it.
       dn->Complete = true;
-      this->Queue.push(QueueEntry(k, dn));
+      this->Queue.insert(QueueEntry(k, dn));
     }
   } else {
     // This is a new node.  Assign it an index.
@@ -524,7 +528,7 @@ unsigned int ASTVisitor::AddDumpNodeImpl(K k, bool complete)
     dn->Complete = complete;
     if(complete || !this->RequireComplete) {
       // Node is complete.  Queue it.
-      this->Queue.push(QueueEntry(k, dn));
+      this->Queue.insert(QueueEntry(k, dn));
     }
   }
   // Return node's index.
@@ -604,7 +608,7 @@ void ASTVisitor::QueueIncompleteDumpNodes()
   for(DeclNodesMap::const_iterator i = this->DeclNodes.begin(),
         e = this->DeclNodes.end(); i != e; ++i) {
     if(!i->second.Complete) {
-      this->Queue.push(QueueEntry(i->first, &i->second));
+      this->Queue.insert(QueueEntry(i->first, &i->second));
     }
   }
 
@@ -612,7 +616,7 @@ void ASTVisitor::QueueIncompleteDumpNodes()
   for(TypeNodesMap::const_iterator i = this->TypeNodes.begin(),
         e = this->TypeNodes.end(); i != e; ++i) {
     if(!i->second.Complete) {
-      this->Queue.push(QueueEntry(i->first, &i->second));
+      this->Queue.insert(QueueEntry(i->first, &i->second));
     }
   }
 }
@@ -622,8 +626,8 @@ void ASTVisitor::ProcessQueue()
 {
   // Dispatch each entry in the queue based on its node kind.
   while(!this->Queue.empty()) {
-    QueueEntry qe = this->Queue.front();
-    this->Queue.pop();
+    QueueEntry qe = *this->Queue.begin();
+    this->Queue.erase(this->Queue.begin());
     switch(qe.Kind) {
     case QueueEntry::KindDecl:
       this->OutputDecl(qe.Decl, qe.DN);

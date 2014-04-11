@@ -49,9 +49,9 @@
   <ReferenceType id="_29" type="_9c"/>
   <ReferenceType id="_30" type="_9"/>
   <Namespace id="_2" name="::"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
   <CvQualifiedType id="_9c" type="_9" const="1"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <File id="f1" name=".*/test/input/Class-bases.cxx"/>
 </GCC_XML>$

@@ -8,7 +8,7 @@
   <FundamentalType id="_4" name="int"/>
   <PointerType id="_5" type="_7c"/>
   <Namespace id="_3" name="::"/>
-  <FundamentalType id="_7" name="char"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
+  <FundamentalType id="_7" name="char"/>
   <File id="f1" name=".*/test/input/Function-Argument-default.cxx"/>
 </GCC_XML>$

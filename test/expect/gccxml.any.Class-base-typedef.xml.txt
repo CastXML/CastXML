@@ -25,7 +25,7 @@
   <ReferenceType id="_15" type="_7c"/>
   <ReferenceType id="_16" type="_7"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_7c" type="_7" const="1"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <CvQualifiedType id="_7c" type="_7" const="1"/>
   <File id="f1" name=".*/test/input/Class-base-typedef.cxx"/>
 </GCC_XML>$
