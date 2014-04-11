@@ -359,6 +359,9 @@ private:
   // Total number of source files to be referenced.
   unsigned int FileCount;
 
+  // Whether we need a File element for compiler builtins.
+  bool FileBuiltin;
+
   // Whether we are in the complete or incomplete output step.
   bool RequireComplete;
 
@@ -388,6 +391,7 @@ public:
     ASTVisitorBase(ci, ctx, os),
     Opts(opts),
     NodeCount(0), FileCount(0),
+    FileBuiltin(false),
     RequireComplete(true) {}
 
   /** Visit declarations in the given translation unit.
@@ -713,6 +717,11 @@ void ASTVisitor::ProcessQueue()
 //----------------------------------------------------------------------------
 void ASTVisitor::ProcessFileQueue()
 {
+  if(this->FileBuiltin) {
+    this->OS <<
+      "  <File id=\"f0\" name=\"" << encodeXML("<builtin>") << "\"/>\n"
+      ;
+  }
   while(!this->FileQueue.empty()) {
     clang::FileEntry const* f = this->FileQueue.front();
     this->FileQueue.pop();
@@ -902,18 +911,22 @@ void ASTVisitor::PrintReturnsAttribute(clang::QualType t, bool complete)
 void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 {
   clang::SourceLocation sl = d->getLocation();
-  if(!sl.isValid()) {
-    return;
+  if(sl.isValid()) {
+    clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
+    if (clang::FileEntry const* f =
+        this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
+      unsigned int id = this->AddDumpFile(f);
+      unsigned int line = fsl.getExpansionLineNumber();
+      this->OS <<
+        " location=\"f" << id << ":" << line << "\""
+        " file=\"f" << id << "\""
+        " line=\"" << line << "\"";
+      return;
+    }
   }
-  clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
-  if (clang::FileEntry const* f =
-      this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
-    unsigned int id = this->AddDumpFile(f);
-    unsigned int line = fsl.getExpansionLineNumber();
-    this->OS <<
-      " location=\"f" << id << ":" << line << "\""
-      " file=\"f" << id << "\""
-      " line=\"" << line << "\"";
+  if(d->isImplicit()) {
+    this->FileBuiltin = true;
+    this->OS << " location=\"f0:0\" file=\"f0\" line=\"0\"";
   }
 }
 
