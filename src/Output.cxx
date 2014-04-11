@@ -174,6 +174,10 @@ class ASTVisitor: public ASTVisitorBase
   void AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
                                std::set<unsigned int>* emitted = 0);
 
+  /** Add declaration context members for output.  */
+  void AddDeclContextMembers(clang::DeclContext const* dc,
+                             std::set<unsigned int>& emitted);
+
   /** Add a starting declaration for output.  */
   void AddStartDecl(clang::Decl const* d);
 
@@ -580,6 +584,65 @@ void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
+                                       std::set<unsigned int>& emitted)
+{
+  for(clang::DeclContext::decl_iterator i = dc->decls_begin(),
+        e = dc->decls_end(); i != e; ++i) {
+    clang::Decl const* d = *i;
+
+    // Skip declarations that are not really members of this context.
+    if(d->getDeclContext() != dc) {
+      continue;
+    }
+
+    // Ignore certain members.
+    switch (d->getKind()) {
+    case clang::Decl::CXXRecord: {
+      if(static_cast<clang::CXXRecordDecl const*>(d)->isInjectedClassName()) {
+        continue;
+      }
+    } break;
+    case clang::Decl::AccessSpec: {
+      continue;
+    } break;
+    case clang::Decl::ClassTemplate: {
+      this->AddClassTemplateDecl(
+        static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
+      continue;
+    } break;
+    case clang::Decl::ClassTemplatePartialSpecialization: {
+      continue;
+    } break;
+    case clang::Decl::Empty: {
+      continue;
+    } break;
+    case clang::Decl::Friend: {
+      continue;
+    } break;
+    case clang::Decl::FunctionTemplate: {
+      this->AddFunctionTemplateDecl(
+        static_cast<clang::FunctionTemplateDecl const*>(d), &emitted);
+      continue;
+    } break;
+    case clang::Decl::Using: {
+      continue;
+    } break;
+    case clang::Decl::UsingDirective: {
+      continue;
+    } break;
+    default:
+      break;
+    }
+
+    // Queue this decl and print its id.
+    if(unsigned int id = this->AddDumpNode(d, true)) {
+      emitted.insert(id);
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::AddStartDecl(clang::Decl const* d)
 {
   switch (d->getKind()) {
@@ -877,59 +940,8 @@ void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
 void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
 {
   std::set<unsigned int> emitted;
-  for(clang::DeclContext::decl_iterator i = dc->decls_begin(),
-        e = dc->decls_end(); i != e; ++i) {
-    clang::Decl const* d = *i;
 
-    // Skip declarations that are not really members of this context.
-    if(d->getDeclContext() != dc) {
-      continue;
-    }
-
-    // Ignore certain members.
-    switch (d->getKind()) {
-    case clang::Decl::CXXRecord: {
-      if(static_cast<clang::CXXRecordDecl const*>(d)->isInjectedClassName()) {
-        continue;
-      }
-    } break;
-    case clang::Decl::AccessSpec: {
-      continue;
-    } break;
-    case clang::Decl::ClassTemplate: {
-      this->AddClassTemplateDecl(
-        static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
-      continue;
-    } break;
-    case clang::Decl::ClassTemplatePartialSpecialization: {
-      continue;
-    } break;
-    case clang::Decl::Empty: {
-      continue;
-    } break;
-    case clang::Decl::Friend: {
-      continue;
-    } break;
-    case clang::Decl::FunctionTemplate: {
-      this->AddFunctionTemplateDecl(
-        static_cast<clang::FunctionTemplateDecl const*>(d), &emitted);
-      continue;
-    } break;
-    case clang::Decl::Using: {
-      continue;
-    } break;
-    case clang::Decl::UsingDirective: {
-      continue;
-    } break;
-    default:
-      break;
-    }
-
-    // Queue this decl and print its id.
-    if(unsigned int id = this->AddDumpNode(d, true)) {
-      emitted.insert(id);
-    }
-  }
+  this->AddDeclContextMembers(dc, emitted);
 
   if(!emitted.empty()) {
     this->OS << " members=\"";
