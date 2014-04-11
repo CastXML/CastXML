@@ -490,7 +490,9 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
         if(clang::DeclContext const* tdc = tdt->getDecl()->getDeclContext()) {
           if(clang::CXXRecordDecl const* tdx =
              clang::dyn_cast<clang::CXXRecordDecl>(tdc)) {
-            if(tdx->getDescribedClassTemplate()) {
+            if(tdx->getDescribedClassTemplate() ||
+               clang::isa<clang::ClassTemplatePartialSpecializationDecl>(tdx)
+               ) {
               // This TypedefType refers to a non-dependent
               // TypedefDecl member of a class template.  Since gccxml
               // format does not include uninstantiated templates we
@@ -897,6 +899,9 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
     case clang::Decl::ClassTemplate: {
       this->AddClassTemplateDecl(
         static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
+      continue;
+    } break;
+    case clang::Decl::ClassTemplatePartialSpecialization: {
       continue;
     } break;
     case clang::Decl::Empty: {
