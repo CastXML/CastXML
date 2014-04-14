@@ -26,8 +26,14 @@ struct Options
   bool PPOnly;
   bool GccXml;
   bool HaveCC;
+  struct Include {
+    Include(std::string const& d, bool f = false):
+      Directory(d), Framework(f) {}
+    std::string Directory;
+    bool Framework;
+  };
   std::string OutputFile;
-  std::vector<std::string> Includes;
+  std::vector<Include> Includes;
   std::string Predefines;
   std::string Triple;
   std::vector<std::string> StartNames;

@@ -81,6 +81,8 @@ static bool detectCC_GNU(const char* const* argBeg,
                          const char* const* argEnd,
                          Options& opts)
 {
+  std::string const fwExplicitSuffix = " (framework directory)";
+  std::string const fwImplicitSuffix = "/Frameworks";
   std::vector<const char*> cc_args(argBeg, argEnd);
   std::string empty_cpp = getResourceDir() + "/empty.cpp";
   int ret;
@@ -106,7 +108,17 @@ static bool detectCC_GNU(const char* const* argBeg,
             }
             std::string inc(s, e-s);
             cxsys::SystemTools::ConvertToUnixSlashes(inc);
-            opts.Includes.push_back(inc);
+            bool fw = ((inc.size() > fwExplicitSuffix.size()) &&
+                       (inc.substr(inc.size()-fwExplicitSuffix.size()) ==
+                        fwExplicitSuffix));
+            if(fw) {
+              inc = inc.substr(0, inc.size()-fwExplicitSuffix.size());
+            } else {
+              fw = ((inc.size() > fwImplicitSuffix.size()) &&
+                    (inc.substr(inc.size()-fwImplicitSuffix.size()) ==
+                     fwImplicitSuffix));
+            }
+            opts.Includes.push_back(Options::Include(inc, fw));
           }
         }
       }

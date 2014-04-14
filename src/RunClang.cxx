@@ -352,10 +352,15 @@ int runClang(const char* const* argBeg,
     args.push_back("-nostdinc");
 
     // Add header search paths detected from given compiler.
-    for(std::vector<std::string>::const_iterator i = opts.Includes.begin(),
-          e = opts.Includes.end(); i != e; ++i) {
-      args.push_back("-isystem");
-      args.push_back(i->c_str());
+    for(std::vector<Options::Include>::const_iterator
+          i = opts.Includes.begin(), e = opts.Includes.end();
+        i != e; ++i) {
+      if(i->Framework) {
+        args.push_back("-iframework");
+      } else {
+        args.push_back("-isystem");
+      }
+      args.push_back(i->Directory.c_str());
     }
 
     // Tell Clang not to add its predefines.
