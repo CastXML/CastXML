@@ -25,6 +25,7 @@
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
+#include "clang/Basic/Specifiers.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/Support/raw_ostream.h"
@@ -256,6 +257,10 @@ class ASTVisitor: public ASTVisitorBase
       for later output.  */
   void PrintBasesAttribute(clang::CXXRecordDecl const* dx);
 
+  /** Print an attributes="..." attribute listing the attributes
+      of the given function type.  */
+  void PrintFunctionTypeAttributes(clang::FunctionProtoType const* t);
+
   /** Print a throws="..." attribute listing the XML IDREFs for
       the types that the given function prototype declares in
       the throw() specification.  */
@@ -466,6 +471,9 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
     case clang::Type::Adjusted:
       return this->AddDumpNode(DumpType(
         t->getAs<clang::AdjustedType>()->getAdjustedType(), c), complete);
+    case clang::Type::Attributed:
+      return this->AddDumpNode(DumpType(
+        t->getAs<clang::AttributedType>()->getEquivalentType(), c), complete);
     case clang::Type::Decayed:
       return this->AddDumpNode(DumpType(
         t->getAs<clang::DecayedType>()->getDecayedType(), c), complete);
@@ -993,6 +1001,26 @@ void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintFunctionTypeAttributes(clang::FunctionProtoType const* t)
+{
+  switch (t->getExtInfo().getCC()) {
+  case clang::CallingConv::CC_C:
+    break;
+  case clang::CallingConv::CC_X86StdCall:
+    this->OS << " attributes=\"__stdcall__\"";
+    break;
+  case clang::CallingConv::CC_X86FastCall:
+    this->OS << " attributes=\"__fastcall__\"";
+    break;
+  case clang::CallingConv::CC_X86ThisCall:
+    this->OS << " attributes=\"__thiscall__\"";
+    break;
+  default:
+    break;
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
                                       bool complete)
 {
@@ -1083,6 +1111,7 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   }
 
   clang::QualType ft = d->getType();
+  this->PrintFunctionTypeAttributes(ft->getAs<clang::FunctionProtoType>());
   this->PrintThrowsAttribute(
     ft->getAs<clang::FunctionProtoType>(), dn->Complete);
 
@@ -1130,6 +1159,7 @@ void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
   if(t->isRestrict()) {
     this->OS << " restrict=\"1\"";
   }
+  this->PrintFunctionTypeAttributes(t);
   if(t->param_type_begin() != t->param_type_end()) {
     this->OS << ">\n";
     for (clang::FunctionProtoType::param_type_iterator

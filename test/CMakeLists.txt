@@ -189,6 +189,7 @@ castxml_test_gccxml(using-directive-start)
 
 if(";${LLVM_TARGETS_TO_BUILD};" MATCHES ";X86;")
   set(castxml_test_gccxml_extra_arguments -target i386-pc-windows-msvc)
+  castxml_test_gccxml(Function-calling-convention-ms)
   castxml_test_gccxml(implicit-decl-ms)
   castxml_test_gccxml(inline-asm-ms)
   unset(castxml_test_gccxml_extra_arguments)
