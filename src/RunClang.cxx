@@ -349,7 +349,8 @@ int runClang(const char* const* argBeg,
     }
 
     // Tell Clang driver not to add its header search paths.
-    args.push_back("-nostdinc");
+    args.push_back("-nobuiltininc");
+    args.push_back("-nostdlibinc");
 
     // Add header search paths detected from given compiler.
     for(std::vector<Options::Include>::const_iterator
