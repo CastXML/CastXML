@@ -19,6 +19,10 @@ if(xml)
   file(REMOVE "${xml}")
 endif()
 
+if(prologue)
+  include(${prologue})
+endif()
+
 execute_process(
   COMMAND ${command}
   OUTPUT_VARIABLE actual_stdout

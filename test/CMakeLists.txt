@@ -14,6 +14,11 @@
 # limitations under the License.
 #=============================================================================
 
+# Keep test binaries away from main binaries.
+unset(CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+unset(CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+unset(CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+
 find_package(LibXml2 QUIET)
 
 macro(castxml_test_cmd test)
@@ -23,6 +28,7 @@ macro(castxml_test_cmd test)
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
     "-Dexpect=cmd.${test}"
+    ${castxml_test_cmd_extra_arguments}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
 endmacro()
@@ -112,6 +118,22 @@ castxml_test_cmd(start-missing --castxml-start)
 castxml_test_cmd(rsp-empty @${input}/empty.rsp)
 castxml_test_cmd(rsp-missing @${input}/does-not-exist.rsp)
 castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
+
+# Test --castxml-cc-gnu detection.
+add_executable(cc-gnu cc-gnu.c)
+castxml_test_cmd(cc-gnu-c-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} -E -dM)
+castxml_test_cmd(cc-gnu-c-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} "-###")
+castxml_test_cmd(cc-gnu-cxx-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} -E -dM)
+castxml_test_cmd(cc-gnu-cxx-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} "-###")
+
+# Test --castxml-cc-msvc detection.
+add_executable(cc-msvc cc-msvc.c)
+set(castxml_test_cmd_extra_arguments "-Dprologue=${CMAKE_CURRENT_SOURCE_DIR}/cc-msvc.cmake")
+castxml_test_cmd(cc-msvc-c-E --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_c} -E -dM)
+castxml_test_cmd(cc-msvc-c-cmd --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_c} "-###")
+castxml_test_cmd(cc-msvc-cxx-E --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_cxx} -E -dM)
+castxml_test_cmd(cc-msvc-cxx-cmd --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_cxx} "-###")
+unset(castxml_test_cmd_extra_arguments)
 
 castxml_test_gccxml(ArrayType)
 castxml_test_gccxml(ArrayType-incomplete)

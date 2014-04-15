@@ -1,0 +1,1 @@
+"clang" .* "-[^i][^"]*" "[^-"][^"]*" "-isystem" "/some/include" "-iframework" "/some/Frameworks" "-iframework" "/some/CustomFW" "-[^i]
