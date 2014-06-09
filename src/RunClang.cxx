@@ -270,7 +270,7 @@ static int runClangImpl(const char* const* argBeg,
   // Use the approach in clang::createInvocationFromCommandLine to
   // get system compiler setting arguments from the Driver.
   clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(),
-                          "dummy.out", *diags);
+                          *diags);
   if(!cxsys::SystemTools::FileIsFullPath(d.ResourceDir.c_str()) ||
      !cxsys::SystemTools::FileIsDirectory(d.ResourceDir.c_str())) {
     d.ResourceDir = getClangResourceDir();
