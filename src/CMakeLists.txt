@@ -43,7 +43,7 @@ set(clang_libs
   clangBasic
   )
 
-llvm_map_components_to_libraries(llvm_libs
+llvm_map_components_to_libnames(llvm_libs
   native
   option
   bitreader

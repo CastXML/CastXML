@@ -25,10 +25,10 @@
 #include "llvm/Support/Process.h"
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
-#include "llvm/Support/system_error.h"
 
 #include <iostream>
 #include <set>
+#include <system_error>
 #include <vector>
 #include <string.h>
 
@@ -52,7 +52,7 @@ int main(int argc_in, const char** argv_in)
 
   llvm::SmallVector<const char*, 64> argv;
   llvm::SpecificBumpPtrAllocator<char> argAlloc;
-  if(llvm::error_code e =
+  if(std::error_code e =
      llvm::sys::Process::GetArgumentVector(
        argv, llvm::ArrayRef<const char*>(argv_in, argc_in), argAlloc)) {
     llvm::errs() << "error: could not get arguments: " << e.message() << "\n";

@@ -37,12 +37,12 @@
 #include "clang/Lex/Preprocessor.h"
 #include "clang/Sema/Sema.h"
 #include "llvm/ADT/ArrayRef.h"
-#include "llvm/ADT/OwningPtr.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Host.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <iostream>
+#include <memory>
 
 //----------------------------------------------------------------------------
 class ASTConsumer: public clang::ASTConsumer
@@ -227,7 +227,7 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
   // Construct our Clang front-end action.  This dispatches
   // handling of each input file with an action based on the
   // flags provided (e.g. -E to preprocess-only).
-  llvm::OwningPtr<clang::FrontendAction>
+  std::unique_ptr<clang::FrontendAction>
     action(CreateFrontendAction(CI, opts));
   if(action) {
     return CI->ExecuteAction(*action);
@@ -244,10 +244,10 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
     diagOpts(new clang::DiagnosticOptions);
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs>
     diagID(new clang::DiagnosticIDs());
-  llvm::OwningPtr<llvm::opt::OptTable>
+  std::unique_ptr<llvm::opt::OptTable>
     opts(clang::driver::createDriverOptTable());
   unsigned missingArgIndex, missingArgCount;
-  llvm::OwningPtr<llvm::opt::InputArgList>
+  std::unique_ptr<llvm::opt::InputArgList>
     args(opts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, *args);
   clang::TextDiagnosticPrinter* diagClient =
@@ -287,7 +287,7 @@ static int runClangImpl(const char* const* argBeg,
   }
 
   // Ask the driver to build the compiler commands for us.
-  llvm::OwningPtr<clang::driver::Compilation> c(d.BuildCompilation(cArgs));
+  std::unique_ptr<clang::driver::Compilation> c(d.BuildCompilation(cArgs));
 
   // For '-###' just print the jobs and exit early.
   if(c->getArgs().hasArg(clang::driver::options::OPT__HASH_HASH_HASH)) {
@@ -309,7 +309,7 @@ static int runClangImpl(const char* const* argBeg,
     clang::driver::Command* cmd = llvm::dyn_cast<clang::driver::Command>(*i);
     if(cmd && strcmp(cmd->getCreator().getName(), "clang") == 0) {
       // Invoke Clang with this set of arguments.
-      llvm::OwningPtr<clang::CompilerInstance>
+      std::unique_ptr<clang::CompilerInstance>
         CI(new clang::CompilerInstance());
       const char* const* cmdArgBeg = cmd->getArguments().data();
       const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
