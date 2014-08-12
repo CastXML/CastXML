@@ -37,6 +37,7 @@
 #include "clang/Lex/Preprocessor.h"
 #include "clang/Sema/Sema.h"
 #include "llvm/ADT/ArrayRef.h"
+#include "llvm/ADT/STLExtras.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Host.h"
 #include "llvm/Support/raw_ostream.h"
@@ -157,14 +158,15 @@ public:
 class CastXMLSyntaxOnlyAction:
   public CastXMLPredefines<clang::SyntaxOnlyAction>
 {
-  clang::ASTConsumer* CreateASTConsumer(clang::CompilerInstance &CI,
-                                        llvm::StringRef InFile) {
+  std::unique_ptr<clang::ASTConsumer>
+  CreateASTConsumer(clang::CompilerInstance &CI,
+                    llvm::StringRef InFile) override {
     using llvm::sys::path::filename;
     if(!this->Opts.GccXml) {
       return clang::SyntaxOnlyAction::CreateASTConsumer(CI, InFile);
     } else if(llvm::raw_ostream* OS =
               CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
-      return new ASTConsumer(CI, *OS, this->Opts);
+      return llvm::make_unique<ASTConsumer>(CI, *OS, this->Opts);
     } else {
       return 0;
     }
