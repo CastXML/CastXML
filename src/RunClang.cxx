@@ -211,8 +211,8 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
       std::cerr << MSG("Objective C");
       return false;
     }
-    if(CI->getLangOpts().CPlusPlus1y) {
-      std::cerr << MSG("c++1y");
+    if(CI->getLangOpts().CPlusPlus14) {
+      std::cerr << MSG("c++14");
       return false;
     }
     if(CI->getLangOpts().C11) {
