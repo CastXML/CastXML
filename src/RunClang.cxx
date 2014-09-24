@@ -308,7 +308,8 @@ static int runClangImpl(const char* const* argBeg,
   bool result = true;
   for(clang::driver::JobList::const_iterator i = c->getJobs().begin(),
         e = c->getJobs().end(); i != e; ++i) {
-    clang::driver::Command* cmd = llvm::dyn_cast<clang::driver::Command>(*i);
+    clang::driver::Command const* cmd =
+      llvm::dyn_cast<clang::driver::Command>(i->get());
     if(cmd && strcmp(cmd->getCreator().getName(), "clang") == 0) {
       // Invoke Clang with this set of arguments.
       std::unique_ptr<clang::CompilerInstance>
