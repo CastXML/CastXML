@@ -88,15 +88,6 @@ typedef int siginfo_t;
 #  include <ifaddrs.h>
 #  define KWSYS_SYSTEMINFORMATION_IMPLEMENT_FQDN
 # endif
-# if defined(KWSYS_SYSTEMINFORMATION_HAS_BACKTRACE)
-#  include <execinfo.h>
-#  if defined(KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE)
-#    include <cxxabi.h>
-#  endif
-#  if defined(KWSYS_SYSTEMINFORMATION_HAS_SYMBOL_LOOKUP)
-#    include <dlfcn.h>
-#  endif
-# endif
 #endif
 
 #if defined(__OpenBSD__) || defined(__NetBSD__)
@@ -126,16 +117,8 @@ typedef int siginfo_t;
 #  include <ifaddrs.h>
 #  define KWSYS_SYSTEMINFORMATION_IMPLEMENT_FQDN
 # endif
-# if __ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__-0 >= 1050
-#  if defined(KWSYS_SYSTEMINFORMATION_HAS_BACKTRACE)
-#   include <execinfo.h>
-#   if defined(KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE)
-#     include <cxxabi.h>
-#   endif
-#   if defined(KWSYS_SYSTEMINFORMATION_HAS_SYMBOL_LOOKUP)
-#     include <dlfcn.h>
-#   endif
-#  endif
+# if !(__ENVIRONMENT_MAC_OS_X_VERSION_MIN_REQUIRED__-0 >= 1050)
+#  undef KWSYS_SYSTEMINFORMATION_HAS_BACKTRACE
 # endif
 #endif
 
@@ -148,15 +131,6 @@ typedef int siginfo_t;
 #  include <ifaddrs.h>
 #  if !defined(__LSB_VERSION__) /* LSB has no getifaddrs */
 #   define KWSYS_SYSTEMINFORMATION_IMPLEMENT_FQDN
-#  endif
-# endif
-# if defined(KWSYS_SYSTEMINFORMATION_HAS_BACKTRACE)
-#  include <execinfo.h>
-#  if defined(KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE)
-#    include <cxxabi.h>
-#  endif
-#  if defined(KWSYS_SYSTEMINFORMATION_HAS_SYMBOL_LOOKUP)
-#    include <dlfcn.h>
 #  endif
 # endif
 # if defined(KWSYS_CXX_HAS_RLIMIT64)
@@ -176,6 +150,19 @@ typedef struct rlimit ResourceLimitType;
 
 #ifdef __HAIKU__
 # include <OS.h>
+#endif
+
+#if defined(KWSYS_SYSTEMINFORMATION_HAS_BACKTRACE)
+# include <execinfo.h>
+# if defined(KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE)
+#  include <cxxabi.h>
+# endif
+# if defined(KWSYS_SYSTEMINFORMATION_HAS_SYMBOL_LOOKUP)
+#  include <dlfcn.h>
+# endif
+#else
+# undef KWSYS_SYSTEMINFORMATION_HAS_CPP_DEMANGLE
+# undef KWSYS_SYSTEMINFORMATION_HAS_SYMBOL_LOOKUP
 #endif
 
 #include <memory.h>
@@ -3709,7 +3696,10 @@ void SystemInformationImplementation::SetStackTraceOnError(int enable)
     // install ours
     struct sigaction sa;
     sa.sa_sigaction=(SigAction)StacktraceSignalHandler;
-    sa.sa_flags=SA_SIGINFO|SA_RESTART|SA_RESETHAND;
+    sa.sa_flags=SA_SIGINFO|SA_RESETHAND;
+# ifdef SA_RESTART
+    sa.sa_flags|=SA_RESTART;
+# endif
     sigemptyset(&sa.sa_mask);
 
     sigaction(SIGABRT,&sa,0);
@@ -3796,7 +3786,7 @@ bool SystemInformationImplementation::QueryLinuxMemory()
     return false;
     }
 
-  if( unameInfo.release!=0 && strlen(unameInfo.release)>=3 )
+  if( strlen(unameInfo.release)>=3 )
     {
     // release looks like "2.6.3-15mdk-i686-up-4GB"
     char majorChar=unameInfo.release[0];
@@ -4698,11 +4688,28 @@ bool SystemInformationImplementation::QueryHaikuInfo()
 {
 #if defined(__HAIKU__)
 
+  // CPU count
   system_info info;
   get_system_info(&info);
-
   this->NumberOfPhysicalCPU = info.cpu_count;
-  this->CPUSpeedInMHz = info.cpu_clock_speed / 1000000.0F;
+
+  // CPU speed
+  uint32 topologyNodeCount = 0;
+  cpu_topology_node_info* topology = 0;
+  get_cpu_topology_info(0, &topologyNodeCount);
+  if (topologyNodeCount != 0)
+    topology = new cpu_topology_node_info[topologyNodeCount];
+  get_cpu_topology_info(topology, &topologyNodeCount);
+
+  for (uint32 i = 0; i < topologyNodeCount; i++) {
+    if (topology[i].type == B_TOPOLOGY_CORE) {
+      this->CPUSpeedInMHz = topology[i].data.core.default_frequency /
+        1000000.0f;
+      break;
+    }
+  }
+
+  delete[] topology;
 
   // Physical Memory
   this->TotalPhysicalMemory = (info.max_pages * B_PAGE_SIZE) / (1024 * 1024) ;
@@ -5006,21 +5013,26 @@ bool SystemInformationImplementation::QueryHPUXProcessor()
     case CPU_PA_RISC1_0:
       this->ChipID.Vendor = "Hewlett-Packard";
       this->ChipID.Family = 0x100;
+      break;
     case CPU_PA_RISC1_1:
       this->ChipID.Vendor = "Hewlett-Packard";
       this->ChipID.Family = 0x110;
+      break;
     case CPU_PA_RISC2_0:
       this->ChipID.Vendor = "Hewlett-Packard";
       this->ChipID.Family = 0x200;
-#  ifdef CPU_HP_INTEL_EM_1_0
+      break;
+#  if defined(CPU_HP_INTEL_EM_1_0) || defined(CPU_IA64_ARCHREV_0)
+#   ifdef CPU_HP_INTEL_EM_1_0
     case CPU_HP_INTEL_EM_1_0:
-#  endif
-#  ifdef CPU_IA64_ARCHREV_0
+#   endif
+#   ifdef CPU_IA64_ARCHREV_0
     case CPU_IA64_ARCHREV_0:
-#  endif
+#   endif
       this->ChipID.Vendor = "GenuineIntel";
       this->Features.HasIA64 = true;
       break;
+#  endif
     default:
       return false;
     }
