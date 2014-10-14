@@ -1,0 +1,44 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:4" file="f1" line="4" members="_3 _4 _5 _6" bases="_7 _8">
+    <Base type="_7" access="public" virtual="0"/>
+    <Base type="_8" access="public" virtual="0"/>
+  </Class>
+  <Constructor id="_3" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throws=""/>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throws="">
+    <Argument type="_9" location="f1:4" file="f1" line="4"/>
+  </Constructor>
+  <OperatorMethod id="_5" name="=" returns="_10" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throws="">
+    <Argument type="_9" location="f1:4" file="f1" line="4"/>
+  </OperatorMethod>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throws=""/>
+  <Class id="_7" name="non_dependent_base" context="_2" location="f1:1" file="f1" line="1" members="_11 _12 _13 _14"/>
+  <Class id="_8" name="dependent_base&lt;int&gt;" context="_2" location="f1:2" file="f1" line="2" members="_15 _16 _17 _18"/>
+  <ReferenceType id="_9" type="_1c"/>
+  <ReferenceType id="_10" type="_1"/>
+  <Constructor id="_11" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws=""/>
+  <Constructor id="_12" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+    <Argument type="_20" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_13" name="=" returns="_21" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+    <Argument type="_20" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_14" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws=""/>
+  <Constructor id="_15" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws=""/>
+  <Constructor id="_16" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws="">
+    <Argument type="_22" location="f1:2" file="f1" line="2"/>
+  </Constructor>
+  <OperatorMethod id="_17" name="=" returns="_23" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws="">
+    <Argument type="_22" location="f1:2" file="f1" line="2"/>
+  </OperatorMethod>
+  <Destructor id="_18" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws=""/>
+  <ReferenceType id="_20" type="_7c"/>
+  <ReferenceType id="_21" type="_7"/>
+  <ReferenceType id="_22" type="_8c"/>
+  <ReferenceType id="_23" type="_8"/>
+  <Namespace id="_2" name="::"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <CvQualifiedType id="_7c" type="_7" const="1"/>
+  <CvQualifiedType id="_8c" type="_8" const="1"/>
+  <File id="f1" name=".*/test/input/Class-template-bases.cxx"/>
+</GCC_XML>$

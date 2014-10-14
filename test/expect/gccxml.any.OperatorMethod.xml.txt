@@ -4,14 +4,14 @@
   <OperatorMethod id="_3" name="&lt;&lt;" returns="_8" context="_1" access="private" location="f1:2" file="f1" line="2">
     <Argument type="_9" location="f1:2" file="f1" line="2"/>
   </OperatorMethod>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_10" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_6" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+  <OperatorMethod id="_6" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_10" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_8" type="_1"/>
   <FundamentalType id="_9" name="int"/>
   <ReferenceType id="_10" type="_1c"/>

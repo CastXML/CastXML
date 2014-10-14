@@ -1,14 +1,14 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6"/>
-  <Constructor id="_3" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+  <Constructor id="_3" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_7" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+  <OperatorMethod id="_5" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_7" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_7" type="_1c"/>
   <ReferenceType id="_8" type="_1"/>
   <Namespace id="_2" name="::"/>

@@ -306,10 +306,9 @@ static int runClangImpl(const char* const* argBeg,
   // Run Clang for each compilation computed by the driver.
   // This should be once per input source file.
   bool result = true;
-  for(clang::driver::JobList::const_iterator i = c->getJobs().begin(),
-        e = c->getJobs().end(); i != e; ++i) {
+  for(clang::driver::Job const& job : c->getJobs()) {
     clang::driver::Command const* cmd =
-      llvm::dyn_cast<clang::driver::Command>(i->get());
+      llvm::dyn_cast<clang::driver::Command>(&job);
     if(cmd && strcmp(cmd->getCreator().getName(), "clang") == 0) {
       // Invoke Clang with this set of arguments.
       std::unique_ptr<clang::CompilerInstance>
@@ -326,7 +325,7 @@ static int runClangImpl(const char* const* argBeg,
       // Skip this unexpected job.
       llvm::SmallString<128> buf;
       llvm::raw_svector_ostream msg(buf);
-      (*i)->Print(msg, "\n", true);
+      job.Print(msg, "\n", true);
       diags->Report(clang::diag::err_fe_expected_clang_command);
       diags->Report(clang::diag::err_fe_expected_compiler_job)
         << msg.str();

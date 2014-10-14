@@ -7,10 +7,10 @@
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:4" file="f1" line="4">
     <Argument type="_8" location="f1:4" file="f1" line="4"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_9" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+  <OperatorMethod id="_5" name="=" returns="_9" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_7" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_7" type="_1c"/>
   <ReferenceType id="_8" type="_1c"/>(broken: duplicate ReferenceType)?
   <ReferenceType id="_9" type="_1"/>
