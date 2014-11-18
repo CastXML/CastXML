@@ -39,7 +39,7 @@ if(NOT CastXML_INSTALL_MAN_DIR)
   set(CastXML_INSTALL_MAN_DIR man)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" MATCHES "GNU|Clang")
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -std=c++11")
 endif()
 
