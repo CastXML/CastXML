@@ -61,40 +61,16 @@ public:
     clang::Sema& sema = this->CI.getSema();
     sema.ForceDeclarationOfImplicitMembers(rd);
 
-#   define DEFINE_IMPLICIT(name, decl) do {                           \
-      clang::Sema::SFINAETrap trap(sema, /*AccessChecking=*/ true);   \
-      sema.DefineImplicit##name(clang::SourceLocation(), (decl));     \
-      if (trap.hasErrorOccurred()) {                                  \
-        (decl)->setInvalidDecl();                                     \
-      }                                                               \
-    } while(0)
-
     for(clang::DeclContext::decl_iterator i = rd->decls_begin(),
           e = rd->decls_end(); i != e; ++i) {
       clang::CXXMethodDecl* m = clang::dyn_cast<clang::CXXMethodDecl>(*i);
-      if(m && m->isImplicit() && !m->isDeleted() &&
-         !m->doesThisDeclarationHaveABody()) {
-        if (clang::CXXConstructorDecl* c =
-            clang::dyn_cast<clang::CXXConstructorDecl>(m)) {
-          if (c->isDefaultConstructor()) {
-            DEFINE_IMPLICIT(DefaultConstructor, c);
-          } else if (c->isCopyConstructor()) {
-            DEFINE_IMPLICIT(CopyConstructor, c);
-          } else if (c->isMoveConstructor()) {
-            DEFINE_IMPLICIT(MoveConstructor, c);
-          }
-        } else if (clang::CXXDestructorDecl* d =
-                   clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
-          DEFINE_IMPLICIT(Destructor, d);
-        } else if (m->isCopyAssignmentOperator()) {
-          DEFINE_IMPLICIT(CopyAssignment, m);
-        } else if (m->isMoveAssignmentOperator()) {
-          DEFINE_IMPLICIT(MoveAssignment, m);
-        }
+      if(m && !m->isDeleted() && !m->isInvalidDecl()) {
+        /* Ensure the member is defined.  */
+        sema.MarkFunctionReferenced(clang::SourceLocation(), m);
+        /* Finish implicitly instantiated member.  */
+        sema.PerformPendingInstantiations();
       }
     }
-
-#   undef DEFINE_IMPLICIT
   }
 
   void HandleTagDeclDefinition(clang::TagDecl* d) {
@@ -107,6 +83,12 @@ public:
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
     clang::Sema& sema = this->CI.getSema();
+
+    // Perform instantiations needed by the original translation unit.
+    sema.PerformPendingInstantiations();
+
+    // Suppress diagnostics from below extensions to the translation unit.
+    sema.getDiagnostics().setSuppressAllDiagnostics(true);
 
     // Add implicit members to classes.
     for(clang::CXXRecordDecl* rd : this->Classes) {

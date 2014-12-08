@@ -1,2 +1,0 @@
-.*/test/input/Class-implicit-member-bad-base.cxx:6:16: error: read-only variable is not assignable
-.*/test/input/Class-implicit-member-bad-base.cxx:9:7: note: in instantiation of member function 'base<const int>::operator=' requested here
