@@ -44,6 +44,7 @@
 
 #include <iostream>
 #include <memory>
+#include <queue>
 
 //----------------------------------------------------------------------------
 class ASTConsumer: public clang::ASTConsumer
@@ -51,7 +52,7 @@ class ASTConsumer: public clang::ASTConsumer
   clang::CompilerInstance& CI;
   llvm::raw_ostream& OS;
   Options const& Opts;
-  std::vector<clang::CXXRecordDecl*> Classes;
+  std::queue<clang::CXXRecordDecl*> Classes;
 public:
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
               Options const& opts):
@@ -76,7 +77,7 @@ public:
   void HandleTagDeclDefinition(clang::TagDecl* d) {
     if(clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
       if(!rd->isDependentContext()) {
-        this->Classes.push_back(rd);
+        this->Classes.push(rd);
       }
     }
   }
@@ -92,7 +93,9 @@ public:
       sema.getDiagnostics().setSuppressAllDiagnostics(true);
 
       // Add implicit members to classes.
-      for(clang::CXXRecordDecl* rd : this->Classes) {
+      while (!this->Classes.empty()) {
+        clang::CXXRecordDecl* rd = this->Classes.front();
+        this->Classes.pop();
         this->AddImplicitMembers(rd);
       }
     }
