@@ -51,6 +51,7 @@ class ASTConsumer: public clang::ASTConsumer
   clang::CompilerInstance& CI;
   llvm::raw_ostream& OS;
   Options const& Opts;
+  std::vector<clang::CXXRecordDecl*> Classes;
 public:
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
               Options const& opts):
@@ -99,12 +100,23 @@ public:
   void HandleTagDeclDefinition(clang::TagDecl* d) {
     if(clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
       if(!rd->isDependentContext()) {
-        this->AddImplicitMembers(rd);
+        this->Classes.push_back(rd);
       }
     }
   }
 
   void HandleTranslationUnit(clang::ASTContext& ctx) {
+    clang::Sema& sema = this->CI.getSema();
+
+    // Add implicit members to classes.
+    for(clang::CXXRecordDecl* rd : this->Classes) {
+      this->AddImplicitMembers(rd);
+    }
+
+    // Tell Clang to finish the translation unit and tear down the parser.
+    sema.ActOnEndOfTranslationUnit();
+
+    // Process the AST.
     outputXML(this->CI, ctx, this->OS, this->Opts);
   }
 };
@@ -141,6 +153,10 @@ protected:
       CI.getPreprocessor().setPredefines(
       this->UpdatePredefines(CI.getPreprocessor().getPredefines()));
     }
+
+    // Tell Clang not to tear down the parser at EOF.
+    CI.getPreprocessor().enableIncrementalProcessing();
+
     return true;
   }
 };
