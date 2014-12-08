@@ -87,12 +87,14 @@ public:
     // Perform instantiations needed by the original translation unit.
     sema.PerformPendingInstantiations();
 
-    // Suppress diagnostics from below extensions to the translation unit.
-    sema.getDiagnostics().setSuppressAllDiagnostics(true);
+    if (!sema.getDiagnostics().hasErrorOccurred()) {
+      // Suppress diagnostics from below extensions to the translation unit.
+      sema.getDiagnostics().setSuppressAllDiagnostics(true);
 
-    // Add implicit members to classes.
-    for(clang::CXXRecordDecl* rd : this->Classes) {
-      this->AddImplicitMembers(rd);
+      // Add implicit members to classes.
+      for(clang::CXXRecordDecl* rd : this->Classes) {
+        this->AddImplicitMembers(rd);
+      }
     }
 
     // Tell Clang to finish the translation unit and tear down the parser.
