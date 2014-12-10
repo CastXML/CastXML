@@ -66,10 +66,25 @@ public:
           e = rd->decls_end(); i != e; ++i) {
       clang::CXXMethodDecl* m = clang::dyn_cast<clang::CXXMethodDecl>(*i);
       if(m && !m->isDeleted() && !m->isInvalidDecl()) {
-        /* Ensure the member is defined.  */
-        sema.MarkFunctionReferenced(clang::SourceLocation(), m);
-        /* Finish implicitly instantiated member.  */
-        sema.PerformPendingInstantiations();
+        bool mark = false;
+        if (clang::CXXConstructorDecl* c =
+           clang::dyn_cast<clang::CXXConstructorDecl>(m)) {
+          mark = (c->isDefaultConstructor() ||
+                  c->isCopyConstructor() ||
+                  c->isMoveConstructor());
+        } else if (clang::CXXDestructorDecl* d =
+                   clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
+          mark = true;
+        } else {
+          mark = (m->isCopyAssignmentOperator() ||
+                  m->isMoveAssignmentOperator());
+        }
+        if (mark) {
+          /* Ensure the member is defined.  */
+          sema.MarkFunctionReferenced(clang::SourceLocation(), m);
+          /* Finish implicitly instantiated member.  */
+          sema.PerformPendingInstantiations();
+        }
       }
     }
   }
