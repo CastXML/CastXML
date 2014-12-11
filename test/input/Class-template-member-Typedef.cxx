@@ -1,6 +1,6 @@
 template <typename T> class start {
-  typedef int Int;
+  typedef T Int;
 public:
-  int method(Int);
+  T method(Int);
 };
 template class start<int>;

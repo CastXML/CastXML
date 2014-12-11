@@ -3,7 +3,7 @@
   <Class id="_1" name="start&lt;int &amp;&gt;" context="_2" location="f1:7" file="f1" line="7" members="_3 _4 _5 _6 _7 _8"/>
   <Typedef id="_3" name="Int" type="_9" context="_1" access="private" location="f1:3" file="f1" line="3"/>
   <Method id="_4" name="method" returns="_9" context="_1" access="public" location="f1:5" file="f1" line="5">
-    <Argument type="_9" location="f1:5" file="f1" line="5"/>
+    <Argument type="_3" location="f1:5" file="f1" line="5"/>
   </Method>
   <Constructor id="_5" name="start" context="_1" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_6" name="start" context="_1" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throws="")?>
