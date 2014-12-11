@@ -159,7 +159,8 @@ class ASTVisitor: public ASTVisitorBase
   unsigned int AddDumpNode(clang::Decl const* d, bool complete);
 
   /** Allocate a dump node for a Clang type.  */
-  unsigned int AddDumpNode(DumpType dt, bool complete);
+  unsigned int AddDumpNode(DumpType dt, bool complete,
+                           clang::QualType* pt = 0);
 
   /** Helper common to AddDumpNode implementation for every kind.  */
   template <typename K> unsigned int AddDumpNodeImpl(K k, bool complete);
@@ -461,7 +462,8 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
 }
 
 //----------------------------------------------------------------------------
-unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
+unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete,
+                                     clang::QualType* pt) {
   clang::QualType t = dt.Type;
   clang::Type const* c = dt.Class;
 
@@ -470,34 +472,39 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
     switch (t->getTypeClass()) {
     case clang::Type::Adjusted:
       return this->AddDumpNode(DumpType(
-        t->getAs<clang::AdjustedType>()->getAdjustedType(), c), complete);
+        t->getAs<clang::AdjustedType>()->getAdjustedType(), c),
+        complete, pt);
     case clang::Type::Attributed:
       return this->AddDumpNode(DumpType(
-        t->getAs<clang::AttributedType>()->getEquivalentType(), c), complete);
+        t->getAs<clang::AttributedType>()->getEquivalentType(), c),
+        complete, pt);
     case clang::Type::Decayed:
       return this->AddDumpNode(DumpType(
-        t->getAs<clang::DecayedType>()->getDecayedType(), c), complete);
+        t->getAs<clang::DecayedType>()->getDecayedType(), c),
+        complete, pt);
     case clang::Type::Elaborated:
       return this->AddDumpNode(DumpType(
-        t->getAs<clang::ElaboratedType>()->getNamedType(), c), complete);
+        t->getAs<clang::ElaboratedType>()->getNamedType(), c),
+        complete, pt);
     case clang::Type::Enum:
       return this->AddDumpNode(t->getAs<clang::EnumType>()->getDecl(),
                                complete);
     case clang::Type::Paren:
       return this->AddDumpNode(DumpType(
-        t->getAs<clang::ParenType>()->getInnerType(), c), complete);
+        t->getAs<clang::ParenType>()->getInnerType(), c),
+        complete, pt);
     case clang::Type::Record:
       return this->AddDumpNode(t->getAs<clang::RecordType>()->getDecl(),
                                complete);
     case clang::Type::SubstTemplateTypeParm:
       return this->AddDumpNode(DumpType(
         t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(), c),
-        complete);
+        complete, pt);
     case clang::Type::TemplateSpecialization: {
       clang::TemplateSpecializationType const* tst =
         t->getAs<clang::TemplateSpecializationType>();
       if(tst->isSugared()) {
-        return this->AddDumpNode(DumpType(tst->desugar(), c), complete);
+        return this->AddDumpNode(DumpType(tst->desugar(), c), complete, pt);
       }
     } break;
     case clang::Type::Typedef: {
@@ -514,7 +521,7 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
               // format does not include uninstantiated templates we
               // must use the desugared type so that we do not end up
               // referencing a class template as context.
-              return this->AddDumpNode(tdt->desugar(), complete);
+              return this->AddDumpNode(tdt->desugar(), complete, pt);
             }
           }
         }
@@ -525,6 +532,12 @@ unsigned int ASTVisitor::AddDumpNode(DumpType dt, bool complete) {
       break;
     }
   }
+
+  // Report to caller the type we actually will dump.
+  if (pt) {
+    *pt = t;
+  }
+
   return this->AddDumpNodeImpl(dt, complete);
 }
 
@@ -838,7 +851,7 @@ unsigned int ASTVisitor::GetTypeIdRef(clang::QualType t, bool complete,
                                       bool& qc, bool& qv, bool& qr)
 {
   // Add the type node.
-  unsigned int id = this->AddDumpNode(t, complete);
+  unsigned int id = this->AddDumpNode(t, complete, &t);
 
   // Check for qualifiers.
   qc = t.isLocalConstQualified();
