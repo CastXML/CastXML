@@ -1,7 +1,16 @@
 CastXML
 *******
 
+Introduction
+============
+
 CastXML is a C-family abstract syntax tree XML output tool.
+
+This project is maintained by `Kitware`_ in support of `ITK`_,
+the Insight Segmentation and Registration Toolkit.
+
+.. _`Kitware`: http://www.kitware.com
+.. _`ITK`: http://www.itk.org
 
 Manual
 ======
