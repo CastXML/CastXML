@@ -1,2 +1,5 @@
 ^castxml version [0-9]+\.[0-9]+[^\n]*
+
+CastXML project maintained and supported by Kitware \(kitware.com\).
+
 clang version [0-9]+\.[0-9]+

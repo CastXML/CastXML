@@ -216,7 +216,12 @@ int main(int argc_in, const char** argv_in)
       // Also print Clang help.
       clang_args.push_back(argv[i]);
     } else if(strcmp(argv[i], "--version") == 0) {
-      std::cout << "castxml version " << getVersionString() << std::endl;
+      std::cout <<
+        "castxml version " << getVersionString() << "\n"
+        "\n"
+        "CastXML project maintained and supported by Kitware "
+        "(kitware.com).\n" <<
+        std::endl;
       // Also print Clang version.
       clang_args.push_back(argv[i]);
     } else {
