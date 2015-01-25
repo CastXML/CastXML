@@ -31,6 +31,7 @@
 #include <system_error>
 #include <vector>
 #include <string.h>
+#include <fstream>
 
 class StringSaver: public llvm::cl::StringSaver {
   std::set<std::string> Strings;
@@ -39,6 +40,37 @@ public:
     return this->Strings.insert(s).first->c_str();
   }
 };
+
+bool ReadArgumentFile(const char* fname,
+  llvm::SmallVector<const char *, 16>& clang_args)
+{
+  std::ifstream fin(fname, std::ios::in);
+  if(!fin) {
+    std::cerr << strerror(errno) << std::endl;
+    return false;
+  }
+
+  std::string option;
+  // to store the strings
+  static std::vector<std::string> options;
+  while(std::getline(fin, option)) {
+    // Remove leading and trailing whitespace.
+    std::string::size_type first = option.find_first_not_of(" \t");
+    std::string::size_type last = option.find_last_not_of(" \t");
+    if(first != std::string::npos && last != std::string::npos) {
+      // There is at least one non-whitespace character.
+      option = option.substr(first, last-first+1);
+
+      // Look for comments.
+      if(option[0] != '#') {
+        options.push_back(option);
+        clang_args.push_back(options.back().c_str());
+      }
+    }
+  }
+
+  return true;
+}
 
 //----------------------------------------------------------------------------
 int main(int argc_in, const char** argv_in)
@@ -90,6 +122,10 @@ int main(int argc_in, const char** argv_in)
     "\n"
     "  --castxml-start <name>\n"
     "    Start AST traversal at declaration with given (qualified) name\n"
+    "\n"
+    "  --clang-options <file>\n"
+    "    Read options from <file> and pass them to clang. The options are\n"
+    "    separated by a space, a tab or a carriage return.\n"
     "\n"
     "  -help, --help\n"
     "    Print castxml and internal Clang compiler usage information\n"
@@ -198,6 +234,23 @@ int main(int argc_in, const char** argv_in)
       } else {
         std::cerr <<
           "error: argument to '-o' is missing (expected 1 value)\n"
+          "\n" <<
+          usage
+          ;
+        return 1;
+      }
+    } else if(strcmp(argv[i], "--clang-options") == 0) {
+      if((i+1) < argc) {
+        ++i;
+        if(!ReadArgumentFile(argv[i], clang_args)) {
+          std::cerr << "error: can't read options from file \""
+                    << argv[i] << "\".\n";
+          return 1;
+        }
+      } else {
+        std::cerr <<
+          "error: argument to '--clang-options' is missing "
+          "(expected 1 value)\n"
           "\n" <<
           usage
           ;
