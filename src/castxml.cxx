@@ -229,15 +229,6 @@ int main(int argc_in, const char** argv_in)
     }
   }
 
-  if(opts.PPOnly && opts.GccXml) {
-    std::cerr <<
-      "error: '--castxml-gccxml' and '-E' may not both be given\n"
-      "\n" <<
-      usage
-      ;
-    return 1;
-  }
-
   if(cc_id) {
     opts.HaveCC = true;
     if(cc_args.empty()) {
