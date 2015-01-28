@@ -105,7 +105,7 @@ int main(int argc_in, const char** argv_in)
   Options opts;
   llvm::SmallVector<const char *, 16> clang_args;
   llvm::SmallVector<const char *, 16> cc_args;
-  const char* cc_id = 0;
+  std::string cc_id;
 
   for(size_t i=1; i < argc; ++i) {
     if(strcmp(argv[i], "--castxml-gccxml") == 0) {
@@ -132,55 +132,63 @@ int main(int argc_in, const char** argv_in)
         return 1;
       }
     } else if(strncmp(argv[i], "--castxml-cc-", 13) == 0) {
-      if(!cc_id) {
+      if(cc_id.empty()) {
         cc_id = argv[i] + 13;
-        if((i+1) >= argc) {
-          continue;
+        size_t equalPos = cc_id.find("=");
+        if(equalPos != std::string::npos) {
+          // this is the = form that doesn't support the paren
+          cc_args.push_back(argv[i] + 13 + equalPos + 1);
+          cc_id = cc_id.substr(0, equalPos);
         }
-        ++i;
-        if(strncmp(argv[i], "-", 1) == 0) {
-          std::cerr <<
-            "error: argument to '--castxml-cc-" << cc_id <<
-            "' may not start with '-'\n"
-            "\n" <<
-            usage
-            ;
-          return 1;
-        }
-        if(strcmp(argv[i], "(") == 0) {
-          unsigned int depth = 1;
-          for(++i; i < argc && depth > 0; ++i) {
-            if(strncmp(argv[i], "--castxml-", 10) == 0) {
-              std::cerr <<
-                "error: arguments to '--castxml-cc-" << cc_id <<
-                "' may not start with '--castxml-'\n"
-                "\n" <<
-                usage
-                ;
-              return 1;
-            } else if(strcmp(argv[i], "(") == 0) {
-              ++depth;
-              cc_args.push_back(argv[i]);
-            } else if(strcmp(argv[i], ")") == 0) {
-              if(--depth) {
-                cc_args.push_back(argv[i]);
-              }
-            } else {
-              cc_args.push_back(argv[i]);
-            }
+        else {
+          if((i+1) >= argc) {
+            continue;
           }
-          if(depth) {
+          ++i;
+          if(strncmp(argv[i], "-", 1) == 0) {
             std::cerr <<
-              "error: unbalanced parentheses after '--castxml-cc-" <<
-              cc_id << "'\n"
+              "error: argument to '--castxml-cc-" << cc_id <<
+              "' may not start with '-'\n"
               "\n" <<
               usage
               ;
             return 1;
           }
-          --i;
-        } else {
-          cc_args.push_back(argv[i]);
+          if(strcmp(argv[i], "(") == 0) {
+            unsigned int depth = 1;
+            for(++i; i < argc && depth > 0; ++i) {
+              if(strncmp(argv[i], "--castxml-", 10) == 0) {
+                std::cerr <<
+                  "error: arguments to '--castxml-cc-" << cc_id <<
+                  "' may not start with '--castxml-'\n"
+                  "\n" <<
+                  usage
+                  ;
+                return 1;
+              } else if(strcmp(argv[i], "(") == 0) {
+                ++depth;
+                cc_args.push_back(argv[i]);
+              } else if(strcmp(argv[i], ")") == 0) {
+                if(--depth) {
+                  cc_args.push_back(argv[i]);
+                }
+              } else {
+                cc_args.push_back(argv[i]);
+              }
+            }
+            if(depth) {
+              std::cerr <<
+                "error: unbalanced parentheses after '--castxml-cc-" <<
+                cc_id << "'\n"
+                "\n" <<
+                usage
+                ;
+              return 1;
+            }
+            --i;
+          } else {
+            cc_args.push_back(argv[i]);
+          }
         }
       } else {
         std::cerr <<
@@ -229,16 +237,7 @@ int main(int argc_in, const char** argv_in)
     }
   }
 
-  if(opts.PPOnly && opts.GccXml) {
-    std::cerr <<
-      "error: '--castxml-gccxml' and '-E' may not both be given\n"
-      "\n" <<
-      usage
-      ;
-    return 1;
-  }
-
-  if(cc_id) {
+  if(!cc_id.empty()) {
     opts.HaveCC = true;
     if(cc_args.empty()) {
       std::cerr <<
@@ -249,7 +248,7 @@ int main(int argc_in, const char** argv_in)
         ;
       return 1;
     }
-    if(!detectCC(cc_id, cc_args.data(), cc_args.data() + cc_args.size(),
+    if(!detectCC(cc_id.c_str(), cc_args.data(), cc_args.data() + cc_args.size(),
                  opts)) {
       return 1;
     }
