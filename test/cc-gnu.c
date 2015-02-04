@@ -8,6 +8,7 @@ int main(void)
   fprintf(stderr,
     "#include <...> search starts here:\n"
     " /some/include\n"
+    " " TEST_DIR "/cc-gnu-builtin\n"
     " /some/Frameworks\n"
     " /some/CustomFW (framework directory)\n"
     );

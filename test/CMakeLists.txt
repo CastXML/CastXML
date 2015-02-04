@@ -123,6 +123,8 @@ castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
 
 # Test --castxml-cc-gnu detection.
 add_executable(cc-gnu cc-gnu.c)
+set_property(SOURCE cc-gnu.c APPEND PROPERTY COMPILE_DEFINITIONS
+  "TEST_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
 castxml_test_cmd(cc-gnu-c-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} -E -dM)
 castxml_test_cmd(cc-gnu-c-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-cxx-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} -E -dM)

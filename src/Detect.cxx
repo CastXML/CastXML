@@ -24,6 +24,12 @@
 #include <string.h>
 
 //----------------------------------------------------------------------------
+static std::string getClangBuiltinIncludeDir()
+{
+  return getClangResourceDir() + "/include";
+}
+
+//----------------------------------------------------------------------------
 static bool failedCC(const char* id,
                      std::vector<const char*> const& args,
                      std::string const& out,
@@ -118,6 +124,10 @@ static bool detectCC_GNU(const char* const* argBeg,
                     (inc.substr(inc.size()-fwImplicitSuffix.size()) ==
                      fwImplicitSuffix));
             }
+            // Replace the compiler builtin include directory with ours.
+            if(!fw && cxsys::SystemTools::FileExists((inc+"/emmintrin.h"))) {
+              inc = getClangBuiltinIncludeDir();
+            }
             opts.Includes.push_back(Options::Include(inc, fw));
           }
         }
@@ -149,6 +159,8 @@ static bool detectCC_MSVC(const char* const* argBeg,
     if(const char* predefs = strstr(out.c_str(), "\n#define")) {
       opts.Predefines = predefs+1;
     }
+    // Prepend the Clang compiler builtin include directory.
+    opts.Includes.push_back(getClangBuiltinIncludeDir());
     if(const char* includes_str = cxsys::SystemTools::GetEnv("INCLUDE")) {
       std::vector<std::string> includes;
       cxsys::SystemTools::Split(includes_str, includes, ';');

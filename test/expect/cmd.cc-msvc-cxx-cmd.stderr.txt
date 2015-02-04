@@ -1,1 +1,1 @@
-"clang" .* "-[^i][^"]*" "[^-"][^"]*" "-isystem" "/some/include" "-isystem" "/some/other/include" "-[^i]
+"clang" .* "-[^i][^"]*" "[^-"][^"]*" "-isystem" "[^"]*/include" "-isystem" "/some/include" "-isystem" "/some/other/include" "-[^i]
