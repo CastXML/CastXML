@@ -1,1 +1,2 @@
-^#define __cc_gnu__ 1$
+^#define __cc_gnu__ 1
+#define __cc_gnu_minor__ 1$

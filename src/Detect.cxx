@@ -53,6 +53,22 @@ static bool failedCC(const char* id,
 }
 
 //----------------------------------------------------------------------------
+static void fixPredefines(Options& opts)
+{
+  // Remove any detected conflicting definition of a Clang builtin macro.
+  std::string::size_type beg = 0;
+  while ((beg = opts.Predefines.find("#define __has", beg),
+          beg != std::string::npos)) {
+    std::string::size_type end = opts.Predefines.find('\n', beg);
+    if (end != std::string::npos) {
+      opts.Predefines.erase(beg, end+1 - beg);
+    } else {
+      opts.Predefines.erase(beg);
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
 static void setTriple(Options& opts)
 {
   std::string const& pd = opts.Predefines;
@@ -133,6 +149,7 @@ static bool detectCC_GNU(const char* const* argBeg,
         }
       }
     }
+    fixPredefines(opts);
     setTriple(opts);
     return true;
   } else {
@@ -173,6 +190,7 @@ static bool detectCC_MSVC(const char* const* argBeg,
         }
       }
     }
+    fixPredefines(opts);
     setTriple(opts);
     return true;
   } else {

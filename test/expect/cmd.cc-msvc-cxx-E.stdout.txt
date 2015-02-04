@@ -1,1 +1,2 @@
-^#define __cc_msvc__ 1$
+^#define __cc_msvc__ 1
+#define __cc_msvc_minor__ 1$
