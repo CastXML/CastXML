@@ -176,8 +176,6 @@ static bool detectCC_MSVC(const char* const* argBeg,
     if(const char* predefs = strstr(out.c_str(), "\n#define")) {
       opts.Predefines = predefs+1;
     }
-    // Prepend the Clang compiler builtin include directory.
-    opts.Includes.push_back(getClangBuiltinIncludeDir());
     if(const char* includes_str = cxsys::SystemTools::GetEnv("INCLUDE")) {
       std::vector<std::string> includes;
       cxsys::SystemTools::Split(includes_str, includes, ';');
