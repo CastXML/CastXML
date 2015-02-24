@@ -230,3 +230,39 @@ castxml_test_gccxml_c(invalid)
 
 castxml_test_gccxml_broken(Class-template-constructor-template)
 castxml_test_gccxml_broken(ReferenceType-to-Class-template)
+
+#-----------------------------------------------------------------------------
+# Find a real GNU compiler to test with --castxml-cc-gnu.
+
+set(_gnu_C gcc)
+set(_gnu_CXX g++)
+
+foreach(lang C CXX)
+  find_program(TEST_GNU_${lang} NAMES ${_gnu_${lang}} DOC "Path to GNU ${_gnu_${lang}} compiler for testing")
+  # Exclude the Apple LLVM tool that is not really a GNU compiler.
+  if(TEST_GNU_${lang})
+    execute_process(
+      COMMAND ${TEST_GNU_${lang}} --version
+      OUTPUT_VARIABLE version
+      ERROR_VARIABLE version
+      RESULT_VARIABLE failed
+      )
+    if(failed OR version MATCHES "Apple LLVM")
+      set(TEST_GNU_${lang} TEST_GNU_${lang}-NOTFOUND)
+    endif()
+  endif()
+  if(TEST_GNU_${lang})
+    set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_C})
+    message(STATUS "Found GNU ${lang} compiler '${TEST_GNU_C}' to drive tests")
+  endif()
+endforeach()
+
+if(TEST_GNU_C)
+  set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_C})
+  unset(castxml_test_gccxml_extra_arguments)
+endif()
+
+if(TEST_GNU_CXX)
+  set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_CXX})
+  unset(castxml_test_gccxml_extra_arguments)
+endif()
