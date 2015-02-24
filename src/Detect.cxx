@@ -67,6 +67,22 @@ static void fixPredefines(Options& opts)
       pd.erase(beg);
     }
   }
+
+  // Provide __float128 if simulating the actual GNU compiler.
+  if (pd.find("#define __GNUC__ ") != pd.npos &&
+      pd.find("#define __clang__ ") == pd.npos &&
+      pd.find("#define __INTEL_COMPILER ") == pd.npos &&
+      pd.find("#define __CUDACC__ ") == pd.npos &&
+      pd.find("#define __PGI ") == pd.npos &&
+      (pd.find("#define __i386__ ") != pd.npos ||
+       pd.find("#define __x86_64__ ") != pd.npos ||
+       pd.find("#define __ia64__ ") != pd.npos)) {
+    pd += "\n"
+      "typedef struct { "
+      "  char x[16] __attribute__((aligned(16))); "
+      "} __float128;\n"
+      ;
+  }
 }
 
 //----------------------------------------------------------------------------

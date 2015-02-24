@@ -1,0 +1,25 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1">
+    <Argument type="_2" location="f1:1" file="f1" line="1"/>
+  </Function>
+  <Typedef id="_2" name="__float128" type="_4" context="_3"/>
+  <Struct id="_4" name="" context="_3" members="_5 _6 _7 _8 _9"/>
+  <Field id="_5" name="x" type="_10" context="_4" access="public"/>
+  <Constructor id="_6" context="_4" access="public" location="f0:0" file="f0" line="0" inline="1" artificial="1"( throws="")?/>
+  <Constructor id="_7" context="_4" access="public" location="f0:0" file="f0" line="0" inline="1" artificial="1"( throws="")?>
+    <Argument type="_11"/>
+  </Constructor>
+  <OperatorMethod id="_8" name="=" returns="_12" context="_4" access="public" location="f0:0" file="f0" line="0" inline="1" artificial="1"( throws="")?>
+    <Argument type="_11"/>
+  </OperatorMethod>
+  <Destructor id="_9" context="_4" access="public" location="f0:0" file="f0" line="0" inline="1" artificial="1"( throws="")?/>
+  <ArrayType id="_10" min="0" max="15" type="_13"/>
+  <ReferenceType id="_11" type="_4c"/>
+  <ReferenceType id="_12" type="_4"/>
+  <FundamentalType id="_13" name="char"/>
+  <Namespace id="_3" name="::"/>
+  <CvQualifiedType id="_4c" type="_4" const="1"/>
+  <File id="f0" name="&lt;builtin&gt;"/>
+  <File id="f1" name=".*/test/input/GNU-float128.cxx"/>
+</GCC_XML>$

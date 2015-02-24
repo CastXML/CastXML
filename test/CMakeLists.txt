@@ -259,10 +259,12 @@ endforeach()
 
 if(TEST_GNU_C)
   set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_C})
+  castxml_test_gccxml_c(GNU-float128)
   unset(castxml_test_gccxml_extra_arguments)
 endif()
 
 if(TEST_GNU_CXX)
   set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_CXX})
+  castxml_test_gccxml(GNU-float128)
   unset(castxml_test_gccxml_extra_arguments)
 endif()
