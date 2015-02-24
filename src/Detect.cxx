@@ -56,14 +56,15 @@ static bool failedCC(const char* id,
 static void fixPredefines(Options& opts)
 {
   // Remove any detected conflicting definition of a Clang builtin macro.
+  std::string& pd = opts.Predefines;
   std::string::size_type beg = 0;
-  while ((beg = opts.Predefines.find("#define __has", beg),
+  while ((beg = pd.find("#define __has", beg),
           beg != std::string::npos)) {
-    std::string::size_type end = opts.Predefines.find('\n', beg);
+    std::string::size_type end = pd.find('\n', beg);
     if (end != std::string::npos) {
-      opts.Predefines.erase(beg, end+1 - beg);
+      pd.erase(beg, end+1 - beg);
     } else {
-      opts.Predefines.erase(beg);
+      pd.erase(beg);
     }
   }
 }
