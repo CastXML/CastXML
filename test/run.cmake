@@ -42,6 +42,8 @@ else()
 endif()
 
 set(default_result 0)
+set(default_stdout "^$")
+set(default_stderr "^$")
 
 foreach(o result stdout stderr ${maybe_xml})
   string(REGEX REPLACE "\n+$" "" actual_${o} "${actual_${o}}")
