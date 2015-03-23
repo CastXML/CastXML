@@ -1642,18 +1642,17 @@ void ASTVisitor::LookupStart(clang::DeclContext const* dc,
   std::string cur = name.substr(0, pos);
 
   clang::IdentifierTable& ids = CI.getPreprocessor().getIdentifierTable();
-  clang::DeclContext::lookup_const_result r =
+  clang::DeclContext::lookup_const_result result =
     dc->lookup(clang::DeclarationName(&ids.get(cur)));
   if(pos == name.npos) {
-    for(clang::DeclContext::lookup_const_iterator i = r.begin(), e = r.end();
-        i != e; ++i) {
-      this->AddStartDecl(*i);
+    for (clang::NamedDecl const* n: result) {
+      this->AddStartDecl(n);
     }
   } else {
     std::string rest = name.substr(pos+2);
-    for(clang::DeclContext::lookup_const_iterator i = r.begin(), e = r.end();
-        i != e; ++i) {
-      if (clang::DeclContext* idc = clang::dyn_cast<clang::DeclContext>(*i)) {
+    for (clang::NamedDecl const* n: result) {
+      if (clang::DeclContext const* idc =
+          clang::dyn_cast<clang::DeclContext const>(n)) {
         this->LookupStart(idc, rest);
       }
     }
