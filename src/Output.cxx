@@ -252,6 +252,7 @@ class ASTVisitor: public ASTVisitorBase
       members of the given declaration context.  Also queues the
       context members for later output.  */
   void PrintMembersAttribute(clang::DeclContext const* dc);
+  void PrintMembersAttribute(std::set<unsigned int> const& emitted);
 
   /** Print a bases="..." attribute listing the XML IDREFs for
       bases of the given class type.  Also queues the base classes
@@ -979,9 +980,13 @@ void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
 void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
 {
   std::set<unsigned int> emitted;
-
   this->AddDeclContextMembers(dc, emitted);
+  this->PrintMembersAttribute(emitted);
+}
 
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintMembersAttribute(std::set<unsigned int> const& emitted)
+{
   if(!emitted.empty()) {
     this->OS << " members=\"";
     const char* sep = "";
