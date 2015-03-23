@@ -1239,7 +1239,11 @@ void ASTVisitor::OutputNamespaceDecl(
   this->PrintNameAttribute(d->getName().str());
   this->PrintContextAttribute(d);
   if(dn->Complete) {
-    this->PrintMembersAttribute(d);
+    std::set<unsigned int> emitted;
+    for (clang::NamespaceDecl const* r: d->redecls()) {
+      this->AddDeclContextMembers(r, emitted);
+    }
+    this->PrintMembersAttribute(emitted);
   }
   this->OS << "/>\n";
 }
