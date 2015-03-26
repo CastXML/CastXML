@@ -27,6 +27,13 @@ See the `<LICENSE>`__ and `<NOTICE>`__ files for details.
 
 .. _`Apache License, Version 2.0`: http://www.apache.org/licenses/LICENSE-2.0
 
+Community
+=========
+
+Subscribe and post to the `CastXML Mailing List`_ for discussion of CastXML.
+
+.. _`CastXML Mailing List`: http://public.kitware.com/mailman/listinfo/castxml
+
 Build
 =====
 
