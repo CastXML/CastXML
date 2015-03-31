@@ -444,16 +444,17 @@ unsigned int ASTVisitor::AddDumpNode(clang::Decl const* d, bool complete) {
         return 0;
       }
 
-      clang::FunctionProtoType const* fpt =
-        fd->getType()->getAs<clang::FunctionProtoType>();
-      if (fpt->getReturnType()->isRValueReferenceType()) {
-        return 0;
-      }
-      for (clang::FunctionProtoType::param_type_iterator
-             i = fpt->param_type_begin(), e = fpt->param_type_end();
-           i != e; ++i) {
-        if((*i)->isRValueReferenceType()) {
+      if (clang::FunctionProtoType const* fpt =
+          fd->getType()->getAs<clang::FunctionProtoType>()) {
+        if (fpt->getReturnType()->isRValueReferenceType()) {
           return 0;
+        }
+        for (clang::FunctionProtoType::param_type_iterator
+               i = fpt->param_type_begin(), e = fpt->param_type_end();
+             i != e; ++i) {
+          if((*i)->isRValueReferenceType()) {
+            return 0;
+          }
         }
       }
     }
@@ -1128,10 +1129,11 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
     this->OS << " artificial=\"1\"";
   }
 
-  clang::QualType ft = d->getType();
-  this->PrintFunctionTypeAttributes(ft->getAs<clang::FunctionProtoType>());
-  this->PrintThrowsAttribute(
-    ft->getAs<clang::FunctionProtoType>(), dn->Complete);
+  if (clang::FunctionProtoType const* fpt =
+      d->getType()->getAs<clang::FunctionProtoType>()) {
+    this->PrintFunctionTypeAttributes(fpt);
+    this->PrintThrowsAttribute(fpt, dn->Complete);
+  }
 
   if(unsigned np = d->getNumParams()) {
     this->OS << ">\n";

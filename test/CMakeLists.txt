@@ -225,6 +225,7 @@ if(";${LLVM_TARGETS_TO_BUILD};" MATCHES ";X86;")
   unset(castxml_test_gccxml_extra_arguments)
 endif()
 
+castxml_test_gccxml_c(FunctionNoProto)
 castxml_test_gccxml_c(FundamentalType)
 castxml_test_gccxml_c(Typedef-called-class)
 
