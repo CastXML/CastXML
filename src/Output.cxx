@@ -230,6 +230,9 @@ class ASTVisitor: public ASTVisitorBase
   void PrintNameAttribute(std::string const& name);
   void PrintNameAttribute(clang::NamedDecl const* d);
 
+  /** Print an offset="..." attribute. */
+  void PrintOffsetAttribute(unsigned int const& offset);
+
   /** Print a basetype="..." attribute with the XML IDREF for
       the given type.  Also queues the given type for later output.  */
   void PrintBaseTypeAttribute(clang::Type const* c, bool complete);
@@ -907,6 +910,12 @@ void ASTVisitor::PrintNameAttribute(clang::NamedDecl const* d)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
+{
+  this->OS << " offset=\"" << offset << "\"";
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintBaseTypeAttribute(clang::Type const* c, bool complete)
 {
   this->OS << " basetype=\"";
@@ -1381,6 +1390,7 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
   }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->PrintOffsetAttribute(this->CTX.getFieldOffset(d));
   if(d->isMutable()) {
     this->OS << " mutable=\"1\"";
   }

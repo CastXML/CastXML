@@ -5,7 +5,7 @@
   </Function>
   <Typedef id="_2" name="__float128" type="_4" context="_3"/>
   <Struct id="_4" name="" context="_3" members="_5"/>
-  <Field id="_5" name="x" type="_6" context="_4" access="public"/>
+  <Field id="_5" name="x" type="_6" context="_4" access="public" offset="0"/>
   <ArrayType id="_6" min="0" max="15" type="_7"/>
   <FundamentalType id="_7" name="char"/>
   <Namespace id="_3" name="::"/>

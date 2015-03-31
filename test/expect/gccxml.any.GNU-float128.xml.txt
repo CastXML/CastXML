@@ -5,7 +5,7 @@
   </Function>
   <Typedef id="_2" name="__float128" type="_4" context="_3"/>
   <Struct id="_4" name="" context="_3" members="_5 _6 _7 _8 _9"/>
-  <Field id="_5" name="x" type="_10" context="_4" access="public"/>
+  <Field id="_5" name="x" type="_10" context="_4" access="public" offset="0"/>
   <Constructor id="_6" context="_4" access="public" location="f0:0" file="f0" line="0" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_7" context="_4" access="public" location="f0:0" file="f0" line="0" inline="1" artificial="1"( throws="")?>
     <Argument type="_11"/>
