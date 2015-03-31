@@ -1,9 +1,9 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8 _9"/>
-  <Field id="_3" name="field" type="_10" context="_1" access="private" location="f1:2" file="f1" line="2"/>
-  <Field id="_4" name="bit_field" type="_11" bits="2" context="_1" access="private" location="f1:3" file="f1" line="3"/>
-  <Field id="_5" name="mutable_field" type="_10" context="_1" access="private" location="f1:4" file="f1" line="4" mutable="1"/>
+  <Field id="_3" name="field" type="_10" context="_1" access="private" location="f1:2" file="f1" line="2" offset="0"/>
+  <Field id="_4" name="bit_field" type="_11" bits="2" context="_1" access="private" location="f1:3" file="f1" line="3" offset="32"/>
+  <Field id="_5" name="mutable_field" type="_10" context="_1" access="private" location="f1:4" file="f1" line="4" offset="64" mutable="1"/>
   <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_12" location="f1:1" file="f1" line="1"/>
   </Constructor>

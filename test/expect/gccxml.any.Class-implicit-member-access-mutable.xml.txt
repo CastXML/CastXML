@@ -14,7 +14,7 @@
   <OperatorMethod id="_9" name="=" returns="_12" context="_5" access="private" location="f1:7" file="f1" line="7">
     <Argument type="_11" location="f1:7" file="f1" line="7"/>
   </OperatorMethod>
-  <Field id="_10" name="data" type="_13" context="_5" access="private" location="f1:8" file="f1" line="8" mutable="1"/>
+  <Field id="_10" name="data" type="_13" context="_5" access="private" location="f1:8" file="f1" line="8" offset="0" mutable="1"/>
   <ReferenceType id="_11" type="_5c"/>
   <ReferenceType id="_12" type="_5"/>
   <FundamentalType id="_13" name="int"/>
