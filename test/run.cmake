@@ -73,6 +73,8 @@ foreach(o result stdout stderr ${maybe_xml})
 endforeach()
 
 if(msg)
+  string(REPLACE ";" "\" \"" command_string "\"${command}\"")
+  set(msg "${msg}Command was:\n command> ${command_string}\n")
   message(SEND_ERROR
     "${msg}"
     "${expect-result}"
