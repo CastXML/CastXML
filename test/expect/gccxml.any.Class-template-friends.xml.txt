@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:8" file="f1" line="8" members="_3 _4 _5 _6" befriending="_7 _8"/>
+  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:8" file="f1" line="8" members="_3 _4 _5 _6" befriending="_7 _8" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_3" name="start" context="_1" access="public" location="f1:8" file="f1" line="8" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:8" file="f1" line="8" inline="1" artificial="1"( throws="")?>
     <Argument type="_9" location="f1:8" file="f1" line="8"/>
@@ -17,6 +17,6 @@
   </Function>
   <Class id="_8" name="A&lt;int&gt;" context="_2" location="f1:1" file="f1" line="1" incomplete="1"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <FundamentalType id="_12" name="int"/>
+  <FundamentalType id="_12" name="int" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/Class-template-friends.cxx"/>
 </GCC_XML>$

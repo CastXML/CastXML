@@ -5,8 +5,8 @@
     <Argument type="_5"/>
     <Ellipsis/>
   </FunctionType>
-  <FundamentalType id="_4" name="void"/>
-  <FundamentalType id="_5" name="int"/>
+  <FundamentalType id="_4" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/FunctionType-variadic.cxx"/>
 </GCC_XML>$

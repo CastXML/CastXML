@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:3" file="f1" line="3" members="_3 _4 _5 _6" bases="_7">
+  <Class id="_1" name="start" context="_2" location="f1:3" file="f1" line="3" members="_3 _4 _5 _6" bases="_7" size="[0-9]+" align="[0-9]+">
     <Base type="_7" access="public" virtual="0"/>
   </Class>
   <Constructor id="_3" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?/>
@@ -11,7 +11,7 @@
     <Argument type="_8" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?/>
-  <Class id="_7" name="base" context="_2" location="f1:1" file="f1" line="1" members="_10 _11 _12 _13"/>
+  <Class id="_7" name="base" context="_2" location="f1:1" file="f1" line="1" members="_10 _11 _12 _13" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_8" type="_1c"/>
   <ReferenceType id="_9" type="_1"/>
   <Constructor id="_10" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>

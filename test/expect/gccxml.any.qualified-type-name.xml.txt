@@ -2,7 +2,7 @@
 <GCC_XML[^>]*>
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:2" file="f1" line="2"/>
   <Typedef id="_2" name="type" type="_4" context="_5" location="f1:1" file="f1" line="1"/>
-  <FundamentalType id="_4" name="int"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <Namespace id="_5" name="ns" context="_3"/>
   <File id="f1" name=".*/test/input/qualified-type-name.cxx"/>

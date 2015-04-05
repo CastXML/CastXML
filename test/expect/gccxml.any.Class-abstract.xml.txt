@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" abstract="1" members="_3 _4 _5 _6 _7 _8"/>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" abstract="1" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
   <Method id="_3" name="method" returns="_9" context="_1" access="private" location="f1:2" file="f1" line="2" virtual="1" pure_virtual="1">
     <Argument type="_9" location="f1:2" file="f1" line="2"/>
   </Method>
@@ -13,7 +13,7 @@
   <Constructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_11" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <FundamentalType id="_9" name="int"/>
+  <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_10" type="_1"/>
   <ReferenceType id="_11" type="_1c"/>
   <Namespace id="_2" name="::"/>

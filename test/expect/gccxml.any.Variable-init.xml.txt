@@ -3,10 +3,10 @@
   <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
   <Variable id="_3" name="var_int" type="_5" init="123" context="_1" location="f1:2" file="f1" line="2"/>
   <Variable id="_4" name="var_str" type="_6" init="&quot;abc&quot;" context="_1" location="f1:3" file="f1" line="3"/>
-  <FundamentalType id="_5" name="int"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_6" type="_8c"/>
   <Namespace id="_2" name="::"/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
-  <FundamentalType id="_8" name="char"/>
+  <FundamentalType id="_8" name="char" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/Variable-init.cxx"/>
 </GCC_XML>$

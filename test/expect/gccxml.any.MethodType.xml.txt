@@ -7,6 +7,6 @@
     <Argument type="_6"/>
   </MethodType>
   <Class id="_5" name="A" context="_3" location="f1:1" file="f1" line="1" incomplete="1"/>
-  <FundamentalType id="_6" name="int"/>
+  <FundamentalType id="_6" name="int" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/MethodType.cxx"/>
 </GCC_XML>$

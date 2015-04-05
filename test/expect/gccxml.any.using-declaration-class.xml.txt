@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8" bases="_9">
+  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8" bases="_9" size="[0-9]+" align="[0-9]+">
     <Base type="_9" access="public" virtual="0"/>
   </Class>
   <Method id="_3" name="f" returns="_10" context="_9" access="protected" location="f1:3" file="f1" line="3">
@@ -17,9 +17,9 @@
     <Argument type="_12" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
   <Destructor id="_8" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")?/>
-  <Class id="_9" name="base" context="_2" location="f1:1" file="f1" line="1" members="_3 _14 _15 _16 _17"/>
-  <FundamentalType id="_10" name="int"/>
-  <FundamentalType id="_11" name="char"/>
+  <Class id="_9" name="base" context="_2" location="f1:1" file="f1" line="1" members="_3 _14 _15 _16 _17" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_11" name="char" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_12" type="_1c"/>
   <ReferenceType id="_13" type="_1"/>
   <Constructor id="_14" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
