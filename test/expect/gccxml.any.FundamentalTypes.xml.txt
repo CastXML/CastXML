@@ -14,19 +14,19 @@
   <Typedef id="_13" name="t_ULongLong" type="_26" context="_1" location="f1:12" file="f1" line="12"/>
   <Typedef id="_14" name="t_Float" type="_27" context="_1" location="f1:13" file="f1" line="13"/>
   <Typedef id="_15" name="t_Double" type="_28" context="_1" location="f1:14" file="f1" line="14"/>
-  <FundamentalType id="_16" name="char"/>
-  <FundamentalType id="_17" name="signed char"/>
-  <FundamentalType id="_18" name="unsigned char"/>
-  <FundamentalType id="_19" name="short int"/>
-  <FundamentalType id="_20" name="short unsigned int"/>
-  <FundamentalType id="_21" name="int"/>
-  <FundamentalType id="_22" name="unsigned int"/>
-  <FundamentalType id="_23" name="long int"/>
-  <FundamentalType id="_24" name="long unsigned int"/>
-  <FundamentalType id="_25" name="long long int"/>
-  <FundamentalType id="_26" name="long long unsigned int"/>
-  <FundamentalType id="_27" name="float"/>
-  <FundamentalType id="_28" name="double"/>
+  <FundamentalType id="_16" name="char" size="8" align="8"/>
+  <FundamentalType id="_17" name="signed char" size="8" align="8"/>
+  <FundamentalType id="_18" name="unsigned char" size="8" align="8"/>
+  <FundamentalType id="_19" name="short int" size="16" align="16"/>
+  <FundamentalType id="_20" name="short unsigned int" size="16" align="16"/>
+  <FundamentalType id="_21" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_22" name="unsigned int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_23" name="long int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_24" name="long unsigned int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_25" name="long long int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_26" name="long long unsigned int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_27" name="float" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_28" name="double" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/FundamentalTypes.cxx"/>
 </GCC_XML>$

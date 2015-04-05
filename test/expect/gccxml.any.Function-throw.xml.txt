@@ -3,9 +3,9 @@
   <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" throws="_4 _5">
     <Argument type="_4" location="f1:1" file="f1" line="1"/>
   </Function>
-  <FundamentalType id="_2" name="void"/>
-  <FundamentalType id="_4" name="int"/>
-  <FundamentalType id="_5" name="char"/>
+  <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_5" name="char" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/Function-throw.cxx"/>
 </GCC_XML>$

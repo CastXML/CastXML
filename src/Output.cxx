@@ -233,6 +233,10 @@ class ASTVisitor: public ASTVisitorBase
   /** Print an offset="..." attribute. */
   void PrintOffsetAttribute(unsigned int const& offset);
 
+  /** Print size="..." and align="..." attributes. */
+  void PrintABIAttributes(clang::TypeInfo const& t);
+  void PrintABIAttributes(clang::TypeDecl const* d);
+
   /** Print a basetype="..." attribute with the XML IDREF for
       the given type.  Also queues the given type for later output.  */
   void PrintBaseTypeAttribute(clang::Type const* c, bool complete);
@@ -916,6 +920,24 @@ void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintABIAttributes(clang::TypeDecl const* d)
+{
+  if(clang::TypeDecl const* td = clang::dyn_cast<clang::TypeDecl>(d)) {
+    clang::Type const* ty = td->getTypeForDecl();
+    if(!ty->isIncompleteType()) {
+      this->PrintABIAttributes(this->CTX.getTypeInfo(ty));
+    }
+  }
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::PrintABIAttributes(clang::TypeInfo const& t)
+{
+  this->OS << " size=\"" << t.Width << "\"";
+  this->OS << " align=\"" << t.Align << "\"";
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintBaseTypeAttribute(clang::Type const* c, bool complete)
 {
   this->OS << " basetype=\"";
@@ -1296,6 +1318,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   } else {
     this->OS << " incomplete=\"1\"";
   }
+  this->PrintABIAttributes(d);
   if(doBases) {
     this->OS << ">\n";
     for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
@@ -1559,6 +1582,7 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   default: name = t->getName(this->CTX.getPrintingPolicy()).str(); break;
   };
   this->PrintNameAttribute(name);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
 
   this->OS << "/>\n";
 }

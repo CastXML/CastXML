@@ -3,6 +3,6 @@
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:1" file="f1" line="1"/>
   <PointerType id="_2" type="_4"/>
   <Namespace id="_3" name="::"/>
-  <FundamentalType id="_4" name="int"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/PointerType.cxx"/>
 </GCC_XML>$

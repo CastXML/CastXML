@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:9" file="f1" line="9" members="_3 _4 _5" bases="_6">
+  <Class id="_1" name="start" context="_2" location="f1:9" file="f1" line="9" members="_3 _4 _5" bases="_6" size="[0-9]+" align="[0-9]+">
     <Base type="_6" access="public" virtual="0"/>
   </Class>
   <Constructor id="_3" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throws="")?/>
@@ -8,7 +8,7 @@
     <Argument type="_7" location="f1:9" file="f1" line="9"/>
   </Constructor>
   <Destructor id="_5" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throws="")?/>
-  <Class id="_6" name="base&lt;const int&gt;" context="_2" location="f1:1" file="f1" line="1" members="_8 _9 _10 _11"/>
+  <Class id="_6" name="base&lt;const int&gt;" context="_2" location="f1:1" file="f1" line="1" members="_8 _9 _10 _11" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_7" type="_1c"/>
   <Field id="_8" name="data" type="_14c" context="_6" access="protected" location="f1:3" file="f1" line="3" offset="0"/>
   <Constructor id="_9" name="base" context="_6" access="protected" location="f1:4" file="f1" line="4"/>
@@ -17,7 +17,7 @@
   </Constructor>
   <Destructor id="_11" name="base" context="_6" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <CvQualifiedType id="_14c" type="_14" const="1"/>
-  <FundamentalType id="_14" name="int"/>
+  <FundamentalType id="_14" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_15" type="_6c"/>
   <Namespace id="_2" name="::"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>

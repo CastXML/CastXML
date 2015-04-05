@@ -12,7 +12,7 @@
   <Function id="_4" name="start" returns="_5" context="_6" location="f1:4" file="f1" line="4" attributes="__thiscall__">
     <Argument type="_10" location="f1:4" file="f1" line="4"/>
   </Function>
-  <FundamentalType id="_5" name="void"/>
+  <FundamentalType id="_5" name="void" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_7" type="_11"/>
   <PointerType id="_8" type="_12"/>
   <PointerType id="_9" type="_13"/>
