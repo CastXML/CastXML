@@ -6,8 +6,8 @@
   <Function id="_2" name="start" returns="_5" context="_4" location="f1:1" file="f1" line="1">
     <Argument type="_5" location="f1:1" file="f1" line="1"/>
   </Function>
-  <FundamentalType id="_3" name="char"/>
-  <FundamentalType id="_5" name="int"/>
+  <FundamentalType id="_3" name="char" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_4" name="::"/>
   <File id="f1" name=".*/test/input/Function-template.cxx"/>
 </GCC_XML>$

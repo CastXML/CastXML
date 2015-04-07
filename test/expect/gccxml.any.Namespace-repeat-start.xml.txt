@@ -3,7 +3,7 @@
   <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
   <Function id="_3" name="f1" returns="_5" context="_1" location="f1:2" file="f1" line="2"/>
   <Function id="_4" name="f2" returns="_5" context="_1" location="f1:5" file="f1" line="5"/>
-  <FundamentalType id="_5" name="void"/>
+  <FundamentalType id="_5" name="void" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Namespace-repeat-start.cxx"/>
 </GCC_XML>$

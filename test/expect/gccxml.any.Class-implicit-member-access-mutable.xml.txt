@@ -1,11 +1,11 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:10" file="f1" line="10" members="_3 _4" bases="_5">
+  <Class id="_1" name="start" context="_2" location="f1:10" file="f1" line="10" members="_3 _4" bases="_5" size="[0-9]+" align="[0-9]+">
     <Base type="_5" access="public" virtual="0"/>
   </Class>
   <Destructor id="_3" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1"( throws="")?/>
-  <Class id="_5" name="base" context="_2" location="f1:1" file="f1" line="1" members="_6 _7 _8 _9 _10"/>
+  <Class id="_5" name="base" context="_2" location="f1:1" file="f1" line="1" members="_6 _7 _8 _9 _10" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_6" name="base" context="_5" access="protected" location="f1:3" file="f1" line="3"/>
   <Destructor id="_7" name="base" context="_5" access="protected" location="f1:4" file="f1" line="4"/>
   <Constructor id="_8" name="base" context="_5" access="private" location="f1:6" file="f1" line="6">
@@ -14,10 +14,10 @@
   <OperatorMethod id="_9" name="=" returns="_12" context="_5" access="private" location="f1:7" file="f1" line="7">
     <Argument type="_11" location="f1:7" file="f1" line="7"/>
   </OperatorMethod>
-  <Field id="_10" name="data" type="_13" context="_5" access="private" location="f1:8" file="f1" line="8" mutable="1"/>
+  <Field id="_10" name="data" type="_13" context="_5" access="private" location="f1:8" file="f1" line="8" offset="0" mutable="1"/>
   <ReferenceType id="_11" type="_5c"/>
   <ReferenceType id="_12" type="_5"/>
-  <FundamentalType id="_13" name="int"/>
+  <FundamentalType id="_13" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <CvQualifiedType id="_5c" type="_5" const="1"/>
   <File id="f1" name=".*/test/input/Class-implicit-member-access-mutable.cxx"/>

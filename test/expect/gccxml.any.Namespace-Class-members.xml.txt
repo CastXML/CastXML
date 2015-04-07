@@ -1,7 +1,7 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3"/>
-  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" members="_4 _5 _6 _7 _8"/>
+  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" members="_4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
   <Variable id="_4" name="data" type="_9" context="_3" access="private" location="f1:3" file="f1" line="3" static="1"/>
   <Constructor id="_5" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_6" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throws="")?>
@@ -11,7 +11,7 @@
     <Argument type="_10" location="f1:2" file="f1" line="2"/>
   </OperatorMethod>
   <Destructor id="_8" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throws="")?/>
-  <FundamentalType id="_9" name="int"/>
+  <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_10" type="_3c"/>
   <ReferenceType id="_11" type="_3"/>
   <Namespace id="_2" name="::"/>

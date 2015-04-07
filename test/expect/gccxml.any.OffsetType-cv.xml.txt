@@ -5,7 +5,7 @@
   <OffsetType id="_3" basetype="_5" type="_7cv"/>
   <Class id="_5" name="A" context="_4" location="f1:1" file="f1" line="1" incomplete="1"/>
   <CvQualifiedType id="_7cv" type="_7" const="1" volatile="1"/>
-  <FundamentalType id="_7" name="int"/>
+  <FundamentalType id="_7" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_4" name="::"/>
   <File id="f1" name=".*/test/input/OffsetType-cv.cxx"/>
 </GCC_XML>$

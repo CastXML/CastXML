@@ -1,14 +1,14 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6"/>
-  <Field id="_3" name="data" type="_8c" context="_1" access="private" location="f1:2" file="f1" line="2"/>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6" size="[0-9]+" align="[0-9]+"/>
+  <Field id="_3" name="data" type="_8c" context="_1" access="private" location="f1:2" file="f1" line="2" offset="0"/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:4" file="f1" line="4"/>
   <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </Constructor>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
-  <FundamentalType id="_8" name="int"/>
+  <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_9" type="_1c"/>
   <Namespace id="_2" name="::"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>

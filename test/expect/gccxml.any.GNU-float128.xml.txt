@@ -17,7 +17,7 @@
   <ArrayType id="_10" min="0" max="15" type="_13"/>
   <ReferenceType id="_11" type="_4c"/>
   <ReferenceType id="_12" type="_4"/>
-  <FundamentalType id="_13" name="char"/>
+  <FundamentalType id="_13" name="char" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <CvQualifiedType id="_4c" type="_4" const="1"/>
   <File id="f0" name="&lt;builtin&gt;"/>

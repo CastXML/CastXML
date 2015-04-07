@@ -4,11 +4,11 @@
     <Argument type="_4" location="f1:1" file="f1" line="1" default="123"/>
     <Argument type="_5" location="f1:1" file="f1" line="1" default="&quot;abc&quot;"/>
   </Function>
-  <FundamentalType id="_2" name="void"/>
-  <FundamentalType id="_4" name="int"/>
+  <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_5" type="_7c"/>
   <Namespace id="_3" name="::"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
-  <FundamentalType id="_7" name="char"/>
+  <FundamentalType id="_7" name="char" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/Function-Argument-default.cxx"/>
 </GCC_XML>$
