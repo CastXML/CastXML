@@ -44,8 +44,10 @@ To build CastXML from source, first obtain the prerequisites:
 * `CMake`_ cross-platform build system generator.
 
 * `LLVM/Clang`_ compiler SDK install tree built using the C++ compiler.
-  This version of CastXML has been tested with LLVM/Clang SVN revision
-  ``232962``.
+  This version of CastXML has been tested with LLVM/Clang
+
+  - Release ``3.6.0``
+  - SVN revision ``234175``
 
 * Optionally, the `Sphinx`_ documentation generator to build documentation.
 
