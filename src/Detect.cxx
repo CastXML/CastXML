@@ -18,6 +18,9 @@
 #include "Options.h"
 #include "Utils.h"
 
+#include "llvm/ADT/Triple.h"
+#include "llvm/Support/Host.h"
+
 #include <cxsys/SystemTools.hxx>
 
 #include <iostream>
@@ -89,30 +92,25 @@ static void fixPredefines(Options& opts)
 static void setTriple(Options& opts)
 {
   std::string const& pd = opts.Predefines;
-  std::string arch;
-  std::string os;
+  llvm::Triple triple(llvm::sys::getDefaultTargetTriple());
   if(pd.find("#define __x86_64__ 1") != pd.npos ||
      pd.find("#define _M_X64 ") != pd.npos) {
-    arch = "x86_64";
+    triple.setArchName("x86_64");
   } else if(pd.find("#define __amd64__ 1") != pd.npos ||
             pd.find("#define _M_AMD64 ") != pd.npos) {
-    arch = "amd64";
+    triple.setArchName("amd64");
   } else if(pd.find("#define __i386__ 1") != pd.npos ||
             pd.find("#define _M_IX86 ") != pd.npos) {
-    arch = "i386";
+    triple.setArchName("i386");
+  }
+  if(pd.find("#define _WIN32 1") != pd.npos) {
+    triple.setVendorName("pc");
+    triple.setOSName("windows");
   }
   if(pd.find("#define __MINGW32__ 1") != pd.npos) {
-    if(arch.find("64") != arch.npos) {
-      os = "w64-mingw32";
-    } else {
-      os = "pc-mingw32";
-    }
-  } else if(pd.find("#define _WIN32 1") != pd.npos) {
-    os = "pc-win32";
+    triple.setEnvironmentName("gnu");
   }
-  if(!arch.empty() && !os.empty()) {
-    opts.Triple = arch + "-" + os;
-  }
+  opts.Triple = triple.getTriple();
 }
 
 //----------------------------------------------------------------------------
