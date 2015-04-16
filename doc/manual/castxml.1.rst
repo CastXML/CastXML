@@ -40,6 +40,10 @@ Remaining options are given to the internal Clang compiler.
   * ``gnu``: GNU Compiler Collection (gcc)
   * ``msvc``: Microsoft Visual C++ (cl)
 
+  ``<cc>`` names a compiler (e.g. ``/usr/bin/gcc`` or ``cl``) and
+  ``<cc-opt>...`` specifies options that may affect its target
+  (e.g. ``-m32``).
+
 ``--castxml-gccxml``
   Generate XML output in a format close to that of `gccxml`_.
   Write output to ``<src>.xml`` or file named by ``-o``.
