@@ -51,11 +51,17 @@ protected:
 
   // Represent cv qualifier state of one dump node.
   struct DumpQual {
-    bool IsConst = false;
-    bool IsVolatile = false;
-    bool IsRestrict = false;
-    explicit operator bool() const {
-      return this->IsConst || this->IsVolatile || this->IsRestrict;
+  private:
+    typedef void (DumpQual::*bool_type)() const;
+    void bool_true() const {}
+  public:
+    bool IsConst;
+    bool IsVolatile;
+    bool IsRestrict;
+    DumpQual(): IsConst(false), IsVolatile(false), IsRestrict(false) {}
+    operator bool_type() const {
+      return (this->IsConst || this->IsVolatile || this->IsRestrict)?
+        &DumpQual::bool_true : nullptr;
     }
     friend bool operator < (DumpQual const& l, DumpQual const& r) {
       if (!l.IsConst && r.IsConst) {
@@ -84,12 +90,16 @@ protected:
 
   // Represent id of one dump node.
   struct DumpId {
-    unsigned int Id = 0;
+  private:
+    typedef void (DumpId::*bool_type)() const;
+    void bool_true() const {}
+  public:
+    unsigned int Id;
     DumpQual Qual;
-    DumpId() {}
+    DumpId(): Id(0), Qual() {}
     DumpId(unsigned int id, DumpQual dq): Id(id), Qual(dq) {}
-    explicit operator bool() const {
-      return this->Id != 0;
+    operator bool_type() const {
+      return this->Id != 0? &DumpId::bool_true : nullptr;
     }
     friend bool operator < (DumpId const& l, DumpId const& r) {
       if (l.Id < r.Id) {
