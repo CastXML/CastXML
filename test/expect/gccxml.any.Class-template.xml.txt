@@ -20,11 +20,11 @@
   </OperatorMethod>
   <Destructor id="_12" name="start" context="_3" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_13" type="_2c"/>
+  <CvQualifiedType id="_2c" type="_2" const="1"/>
   <ReferenceType id="_14" type="_2"/>
   <ReferenceType id="_15" type="_3c"/>
+  <CvQualifiedType id="_3c" type="_3" const="1"/>
   <ReferenceType id="_16" type="_3"/>
   <Namespace id="_4" name="::"/>
-  <CvQualifiedType id="_2c" type="_2" const="1"/>
-  <CvQualifiedType id="_3c" type="_3" const="1"/>
   <File id="f1" name=".*/test/input/Class-template.cxx"/>
 </GCC_XML>$

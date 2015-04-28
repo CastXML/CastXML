@@ -18,6 +18,7 @@
   <Class id="_9" name="base_protected" context="_2" location="f1:3" file="f1" line="3" members="_20 _21 _22 _23" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_10" type="_1"/>
   <ReferenceType id="_11" type="_1c"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <Constructor id="_12" name="base_public" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws=""/>
   <Constructor id="_13" name="base_public" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
     <Argument type="_25" location="f1:1" file="f1" line="1"/>
@@ -43,15 +44,14 @@
   </OperatorMethod>
   <Destructor id="_23" name="base_protected" context="_9" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_25" type="_7c"/>
+  <CvQualifiedType id="_7c" type="_7" const="1"/>
   <ReferenceType id="_26" type="_7"/>
   <ReferenceType id="_27" type="_8c"/>
+  <CvQualifiedType id="_8c" type="_8" const="1"/>
   <ReferenceType id="_28" type="_8"/>
   <ReferenceType id="_29" type="_9c"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
   <ReferenceType id="_30" type="_9"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <CvQualifiedType id="_7c" type="_7" const="1"/>
-  <CvQualifiedType id="_8c" type="_8" const="1"/>
-  <CvQualifiedType id="_9c" type="_9" const="1"/>
   <File id="f1" name=".*/test/input/Class-bases.cxx"/>
 </GCC_XML>$

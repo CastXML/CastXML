@@ -10,8 +10,8 @@
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:7" file="f1" line="7"/>
   <ReferenceType id="_7" type="_1c"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_8" type="_1"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <File id="f1" name=".*/test/input/Class-forward.cxx"/>
 </GCC_XML>$

@@ -14,8 +14,8 @@
   <Destructor id="_7" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throws="")?/>
   <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_9" type="_1c"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_10" type="_1"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <File id="f1" name=".*/test/input/Class-template-Method-Argument-default.cxx"/>
 </GCC_XML>$

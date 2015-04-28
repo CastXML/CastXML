@@ -159,8 +159,11 @@ castxml_test_gccxml(Class-incomplete-twice)
 castxml_test_gccxml(Class-member-template)
 castxml_test_gccxml(Class-partial-template-member-Typedef)
 castxml_test_gccxml(Class-template)
+castxml_test_gccxml(Class-template-Method-Argument-const)
 castxml_test_gccxml(Class-template-Method-Argument-default)
+castxml_test_gccxml(Class-template-Method-return-const)
 castxml_test_gccxml(Class-template-bases)
+castxml_test_gccxml(Class-template-constructor-template)
 castxml_test_gccxml(Class-template-friends)
 castxml_test_gccxml(Class-template-member-Typedef)
 castxml_test_gccxml(Class-template-member-Typedef-const)
@@ -231,7 +234,6 @@ castxml_test_gccxml_c(Typedef-called-class)
 
 castxml_test_gccxml_c(invalid)
 
-castxml_test_gccxml_broken(Class-template-constructor-template)
 castxml_test_gccxml_broken(ReferenceType-to-Class-template)
 
 #-----------------------------------------------------------------------------

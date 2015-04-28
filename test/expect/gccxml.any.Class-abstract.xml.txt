@@ -16,7 +16,7 @@
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_10" type="_1"/>
   <ReferenceType id="_11" type="_1c"/>
-  <Namespace id="_2" name="::"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-abstract.cxx"/>
 </GCC_XML>$

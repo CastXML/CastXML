@@ -12,10 +12,9 @@
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_7" type="_1c"/>
-  <ReferenceType id="_8" type="_1c"/>(broken: duplicate ReferenceType)?
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <ReferenceType id="_8" type="_1c"/>
   <ReferenceType id="_9" type="_1"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <File id="f1" name=".*/test/input/Class-template-constructor-template.cxx"/>
 </GCC_XML>$

@@ -15,8 +15,8 @@
     <Argument type="_10" location="f1:7" file="f1" line="7"/>
   </OperatorMethod>
   <ReferenceType id="_10" type="_5c"/>
+  <CvQualifiedType id="_5c" type="_5" const="1"/>
   <ReferenceType id="_11" type="_5"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_5c" type="_5" const="1"/>
   <File id="f1" name=".*/test/input/Class-implicit-member-access.cxx"/>
 </GCC_XML>$

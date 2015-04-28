@@ -21,6 +21,7 @@
   <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="char" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_12" type="_1c"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_13" type="_1"/>
   <Constructor id="_14" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_15" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
@@ -31,9 +32,8 @@
   </OperatorMethod>
   <Destructor id="_17" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <ReferenceType id="_19" type="_9c"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
   <ReferenceType id="_20" type="_9"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <CvQualifiedType id="_9c" type="_9" const="1"/>
   <File id="f1" name=".*/test/input/using-declaration-class.cxx"/>
 </GCC_XML>$

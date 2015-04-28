@@ -15,8 +15,8 @@
   <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="unsigned int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_12" type="_1c"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_13" type="_1"/>
   <Namespace id="_2" name="::"/>
-  <CvQualifiedType id="_1c" type="_1" const="1"/>
   <File id="f1" name=".*/test/input/Field.cxx"/>
 </GCC_XML>$

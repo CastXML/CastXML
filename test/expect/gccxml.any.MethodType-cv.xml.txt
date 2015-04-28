@@ -1,8 +1,8 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Typedef id="_1" name="start" type="_3cv" context="_4" location="f1:2" file="f1" line="2"/>
-  <CvQualifiedType id="_3cv" type="_3" const="1" volatile="1"/>
-  <PointerType id="_3" type="_5"/>
+  <Typedef id="_1" name="start" type="_2cv" context="_4" location="f1:2" file="f1" line="2"/>
+  <PointerType id="_2" type="_5"/>
+  <CvQualifiedType id="_2cv" type="_2" const="1" volatile="1"/>
   <Namespace id="_4" name="::"/>
   <MethodType id="_5" basetype="_6" returns="_7" const="1" volatile="1">
     <Argument type="_7"/>

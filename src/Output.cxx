@@ -49,12 +49,69 @@ protected:
                  clang::ASTContext const& ctx,
                  llvm::raw_ostream& os): CI(ci), CTX(ctx), OS(os) {}
 
+  // Represent cv qualifier state of one dump node.
+  struct DumpQual {
+    bool IsConst = false;
+    bool IsVolatile = false;
+    bool IsRestrict = false;
+    explicit operator bool() const {
+      return this->IsConst || this->IsVolatile || this->IsRestrict;
+    }
+    friend bool operator < (DumpQual const& l, DumpQual const& r) {
+      if (!l.IsConst && r.IsConst) {
+        return true;
+      } else if (l.IsConst && !r.IsConst) {
+        return false;
+      } else if (!l.IsVolatile && r.IsVolatile) {
+        return true;
+      } else if (l.IsVolatile && !r.IsVolatile) {
+        return false;
+      } else if (!l.IsRestrict && r.IsRestrict) {
+        return true;
+      } else if (l.IsRestrict && !r.IsRestrict) {
+        return false;
+      } else {
+        return false;
+      }
+    }
+    friend llvm::raw_ostream& operator << (llvm::raw_ostream& os,
+                                           DumpQual const& dq) {
+      return os << (dq.IsConst? "c":"")
+                << (dq.IsVolatile? "v":"")
+                << (dq.IsRestrict? "r":"");
+    }
+  };
+
+  // Represent id of one dump node.
+  struct DumpId {
+    unsigned int Id = 0;
+    DumpQual Qual;
+    DumpId() {}
+    DumpId(unsigned int id, DumpQual dq): Id(id), Qual(dq) {}
+    explicit operator bool() const {
+      return this->Id != 0;
+    }
+    friend bool operator < (DumpId const& l, DumpId const& r) {
+      if (l.Id < r.Id) {
+        return true;
+      } else if (l.Id > r.Id) {
+        return false;
+      } else {
+        return l.Qual < r.Qual;
+      }
+    }
+    friend llvm::raw_ostream& operator << (llvm::raw_ostream& os,
+                                           DumpId const& id) {
+      return os << id.Id << id.Qual;
+    }
+  };
+
   // Record status of one AST node to be dumped.
   struct DumpNode {
-    DumpNode(): Index(0), Complete(false) {}
+    DumpNode(): Index(), Complete(false) {}
 
     // Index in nodes ordered by first encounter.
-    unsigned int Index;
+    DumpId Index;
 
     // Whether the node is to be traversed completely.
     bool Complete;
@@ -119,14 +176,17 @@ class ASTVisitor: public ASTVisitorBase
   struct QueueEntry {
     // Available node kinds.
     enum Kinds {
+      KindQual,
       KindDecl,
       KindType
     };
 
+    QueueEntry(DumpNode const* dn):
+      Kind(KindQual), Decl(nullptr), Type(), DN(dn) {}
     QueueEntry(clang::Decl const* d, DumpNode const* dn):
-      Kind(KindDecl), Decl(d), DN(dn) {}
+      Kind(KindDecl), Decl(d), Type(), DN(dn) {}
     QueueEntry(DumpType t, DumpNode const* dn):
-      Kind(KindType), Decl(0), Type(t), DN(dn) {}
+      Kind(KindType), Decl(nullptr), Type(t), DN(dn) {}
 
     // Kind of node at this entry.
     Kinds Kind;
@@ -155,30 +215,39 @@ class ASTVisitor: public ASTVisitorBase
     return &this->TypeNodes[t];
   }
 
+  /** Get the dump status node for a qualified DumpId.  */
+  DumpNode* GetDumpNode(DumpId id) {
+    assert(id.Qual);
+    return &this->QualNodes[id];
+  }
+
   /** Allocate a dump node for a Clang declaration.  */
-  unsigned int AddDeclDumpNode(clang::Decl const* d, bool complete);
+  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete);
+  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete, DumpQual dq);
 
   /** Allocate a dump node for a Clang type.  */
-  unsigned int AddTypeDumpNode(DumpType dt, bool complete,
-                               clang::QualType* pt = 0);
+  DumpId AddTypeDumpNode(DumpType dt, bool complete, DumpQual dq = DumpQual());
+
+  /** Allocate a dump node for a qualified DumpId.  */
+  DumpId AddQualDumpNode(DumpId id);
 
   /** Helper common to AddDeclDumpNode and AddTypeDumpNode.  */
-  template <typename K> unsigned int AddDumpNodeImpl(K k, bool complete);
+  template <typename K> DumpId AddDumpNodeImpl(K k, bool complete);
 
   /** Allocate a dump node for a source file entry.  */
   unsigned int AddDumpFile(clang::FileEntry const* f);
 
   /** Add class template specializations and instantiations for output.  */
   void AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
-                            std::set<unsigned int>* emitted = 0);
+                            std::set<DumpId>* emitted = 0);
 
   /** Add function template specializations and instantiations for output.  */
   void AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
-                               std::set<unsigned int>* emitted = 0);
+                               std::set<DumpId>* emitted = 0);
 
   /** Add declaration context members for output.  */
   void AddDeclContextMembers(clang::DeclContext const* dc,
-                             std::set<unsigned int>& emitted);
+                             std::set<DumpId>& emitted);
 
   /** Add a starting declaration for output.  */
   void AddStartDecl(clang::Decl const* d);
@@ -196,24 +265,16 @@ class ASTVisitor: public ASTVisitorBase
   /** Dispatch output of a qualified or unqualified type.  */
   void OutputType(DumpType dt, DumpNode const* dn);
 
-  /** Output a qualified type and queue its unqualified type.  */
-  void OutputCvQualifiedType(clang::QualType t, DumpNode const* dn);
+  /** Output a qualified type.  */
+  void OutputCvQualifiedType(DumpNode const* dn);
 
   /** Get the XML IDREF for the element defining the given
       declaration context (namespace, class, etc.).  */
-  unsigned int GetContextIdRef(clang::DeclContext const* dc);
+  DumpId GetContextIdRef(clang::DeclContext const* dc);
 
   /** Return the unqualified name of the declaration context
       (class, struct, union) of the given method.  */
   std::string GetContextName(clang::CXXMethodDecl const* d);
-
-  /** Get the XML IDREF for the element defining the given
-      (possibly cv-qualified) type.  The qc,qv,qr booleans are
-      set to whether the IDREF should include the const,
-      volatile, or restrict qualifier, respectively.  Also
-      queues the given type for later output.  */
-  unsigned int GetTypeIdRef(clang::QualType t, bool complete,
-                            bool& qc, bool& qv, bool& qr);
 
   /** Print the XML IDREF value referencing the given type.
       If the type has top-level cv-qualifiers, they are
@@ -259,7 +320,7 @@ class ASTVisitor: public ASTVisitorBase
       members of the given declaration context.  Also queues the
       context members for later output.  */
   void PrintMembersAttribute(clang::DeclContext const* dc);
-  void PrintMembersAttribute(std::set<unsigned int> const& emitted);
+  void PrintMembersAttribute(std::set<DumpId> const& emitted);
 
   /** Print a bases="..." attribute listing the XML IDREFs for
       bases of the given class type.  Also queues the base classes
@@ -387,6 +448,10 @@ private:
   typedef std::map<DumpType, DumpNode> TypeNodesMap;
   TypeNodesMap TypeNodes;
 
+  // Map from qualified DumpId to our dump status node.
+  typedef std::map<DumpId, DumpNode> QualNodesMap;
+  QualNodesMap QualNodes;
+
   // Map from clang file entry to our source file index.
   typedef std::map<clang::FileEntry const*, unsigned int> FileNodesMap;
   FileNodesMap FileNodes;
@@ -414,8 +479,8 @@ public:
 };
 
 //----------------------------------------------------------------------------
-unsigned int ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
-                                         bool complete) {
+ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
+                                               bool complete) {
   // Select the definition or canonical declaration.
   d = d->getCanonicalDecl();
   if(clang::RecordDecl const* rd = clang::dyn_cast<clang::RecordDecl>(d)) {
@@ -442,7 +507,7 @@ unsigned int ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
 
   // Skip invalid declarations.
   if(d->isInvalidDecl()) {
-    return 0;
+    return DumpId();
   }
 
   // Skip C++11 declarations gccxml does not support.
@@ -450,19 +515,19 @@ unsigned int ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
     if (clang::FunctionDecl const* fd =
         clang::dyn_cast<clang::FunctionDecl>(d)) {
       if (fd->isDeleted()) {
-        return 0;
+        return DumpId();
       }
 
       if (clang::FunctionProtoType const* fpt =
           fd->getType()->getAs<clang::FunctionProtoType>()) {
         if (fpt->getReturnType()->isRValueReferenceType()) {
-          return 0;
+          return DumpId();
         }
         for (clang::FunctionProtoType::param_type_iterator
                i = fpt->param_type_begin(), e = fpt->param_type_end();
              i != e; ++i) {
           if((*i)->isRValueReferenceType()) {
-            return 0;
+            return DumpId();
           }
         }
       }
@@ -473,89 +538,129 @@ unsigned int ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
 }
 
 //----------------------------------------------------------------------------
-unsigned int ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
-                                         clang::QualType* pt) {
+ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
+                                               bool complete, DumpQual dq) {
+  // Get the id for the canonical decl.
+  DumpId id = this->AddDeclDumpNode(d, complete);
+
+  // If any qualifiers were collected through layers of desugaring
+  // then get the id of the qualified type referencing this decl.
+  if (id && dq) {
+    id = this->AddQualDumpNode(DumpId(id.Id, dq));
+  }
+
+  return id;
+}
+
+//----------------------------------------------------------------------------
+ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
+                                               DumpQual dq) {
   clang::QualType t = dt.Type;
   clang::Type const* c = dt.Class;
 
+  // Extract local qualifiers and recurse with locally unqualified type.
+  if(t.hasLocalQualifiers()) {
+    dq.IsConst = dq.IsConst || t.isLocalConstQualified();
+    dq.IsVolatile = dq.IsVolatile || t.isLocalVolatileQualified();
+    dq.IsRestrict = dq.IsRestrict || t.isLocalRestrictQualified();
+    return this->AddTypeDumpNode(DumpType(t.getLocalUnqualifiedType(), c),
+                                 complete, dq);
+  }
+
   // Replace some types with their decls.
-  if(!t.hasLocalQualifiers()) {
-    switch (t->getTypeClass()) {
-    case clang::Type::Adjusted:
-      return this->AddTypeDumpNode(DumpType(
-        t->getAs<clang::AdjustedType>()->getAdjustedType(), c),
-        complete, pt);
-    case clang::Type::Attributed:
-      return this->AddTypeDumpNode(DumpType(
-        t->getAs<clang::AttributedType>()->getEquivalentType(), c),
-        complete, pt);
-    case clang::Type::Decayed:
-      return this->AddTypeDumpNode(DumpType(
-        t->getAs<clang::DecayedType>()->getDecayedType(), c),
-        complete, pt);
-    case clang::Type::Elaborated:
-      return this->AddTypeDumpNode(DumpType(
-        t->getAs<clang::ElaboratedType>()->getNamedType(), c),
-        complete, pt);
-    case clang::Type::Enum:
-      return this->AddDeclDumpNode(t->getAs<clang::EnumType>()->getDecl(),
-                                   complete);
-    case clang::Type::Paren:
-      return this->AddTypeDumpNode(DumpType(
-        t->getAs<clang::ParenType>()->getInnerType(), c),
-        complete, pt);
-    case clang::Type::Record:
-      return this->AddDeclDumpNode(t->getAs<clang::RecordType>()->getDecl(),
-                                   complete);
-    case clang::Type::SubstTemplateTypeParm:
-      return this->AddTypeDumpNode(DumpType(
-        t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(), c),
-        complete, pt);
-    case clang::Type::TemplateSpecialization: {
-      clang::TemplateSpecializationType const* tst =
-        t->getAs<clang::TemplateSpecializationType>();
-      if(tst->isSugared()) {
-        return this->AddTypeDumpNode(DumpType(tst->desugar(), c),
-                                     complete, pt);
-      }
-    } break;
-    case clang::Type::Typedef: {
-      clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
-      if(!tdt->isInstantiationDependentType() && tdt->isSugared()) {
-        if(clang::DeclContext const* tdc = tdt->getDecl()->getDeclContext()) {
-          if(clang::CXXRecordDecl const* tdx =
-             clang::dyn_cast<clang::CXXRecordDecl>(tdc)) {
-            if(tdx->getDescribedClassTemplate() ||
-               clang::isa<clang::ClassTemplatePartialSpecializationDecl>(tdx)
-               ) {
-              // This TypedefType refers to a non-dependent
-              // TypedefDecl member of a class template.  Since gccxml
-              // format does not include uninstantiated templates we
-              // must use the desugared type so that we do not end up
-              // referencing a class template as context.
-              return this->AddTypeDumpNode(tdt->desugar(), complete, pt);
-            }
+  switch (t->getTypeClass()) {
+  case clang::Type::Adjusted:
+    return this->AddTypeDumpNode(DumpType(
+      t->getAs<clang::AdjustedType>()->getAdjustedType(), c),
+      complete, dq);
+  case clang::Type::Attributed:
+    return this->AddTypeDumpNode(DumpType(
+      t->getAs<clang::AttributedType>()->getEquivalentType(), c),
+      complete, dq);
+  case clang::Type::Decayed:
+    return this->AddTypeDumpNode(DumpType(
+      t->getAs<clang::DecayedType>()->getDecayedType(), c),
+      complete, dq);
+  case clang::Type::Elaborated:
+    return this->AddTypeDumpNode(DumpType(
+      t->getAs<clang::ElaboratedType>()->getNamedType(), c),
+      complete, dq);
+  case clang::Type::Enum:
+    return this->AddDeclDumpNode(t->getAs<clang::EnumType>()->getDecl(),
+                                 complete, dq);
+  case clang::Type::Paren:
+    return this->AddTypeDumpNode(DumpType(
+      t->getAs<clang::ParenType>()->getInnerType(), c),
+      complete, dq);
+  case clang::Type::Record:
+    return this->AddDeclDumpNode(t->getAs<clang::RecordType>()->getDecl(),
+                                 complete, dq);
+  case clang::Type::SubstTemplateTypeParm:
+    return this->AddTypeDumpNode(DumpType(
+      t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(), c),
+      complete, dq);
+  case clang::Type::TemplateSpecialization: {
+    clang::TemplateSpecializationType const* tst =
+      t->getAs<clang::TemplateSpecializationType>();
+    if(tst->isSugared()) {
+      return this->AddTypeDumpNode(DumpType(tst->desugar(), c),
+                                   complete, dq);
+    }
+  } break;
+  case clang::Type::Typedef: {
+    clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+    if(!tdt->isInstantiationDependentType() && tdt->isSugared()) {
+      if(clang::DeclContext const* tdc = tdt->getDecl()->getDeclContext()) {
+        if(clang::CXXRecordDecl const* tdx =
+           clang::dyn_cast<clang::CXXRecordDecl>(tdc)) {
+          if(tdx->getDescribedClassTemplate() ||
+             clang::isa<clang::ClassTemplatePartialSpecializationDecl>(tdx)
+             ) {
+            // This TypedefType refers to a non-dependent
+            // TypedefDecl member of a class template.  Since gccxml
+            // format does not include uninstantiated templates we
+            // must use the desugared type so that we do not end up
+            // referencing a class template as context.
+            return this->AddTypeDumpNode(tdt->desugar(), complete, dq);
           }
         }
       }
-      return this->AddDeclDumpNode(tdt->getDecl(), complete);
-    } break;
-    default:
-      break;
     }
+    return this->AddDeclDumpNode(tdt->getDecl(), complete, dq);
+  } break;
+  default:
+    break;
   }
 
-  // Report to caller the type we actually will dump.
-  if (pt) {
-    *pt = t;
+  // Get the id for the fully desugared, unqualified type.
+  DumpId id = this->AddDumpNodeImpl(dt, complete);
+
+  // If any qualifiers were collected through layers of desugaring
+  // then get the id of the qualified type.
+  if (id && dq) {
+    id = this->AddQualDumpNode(DumpId(id.Id, dq));
   }
 
-  return this->AddDumpNodeImpl(dt, complete);
+  return id;
+}
+
+//----------------------------------------------------------------------------
+ASTVisitor::DumpId ASTVisitor::AddQualDumpNode(DumpId id) {
+  DumpNode* dn = this->GetDumpNode(id);
+  if (!dn->Index) {
+    // Consume a node index for temporary compatibility.
+    ++this->NodeCount;
+    dn->Index = id;
+    // Always treat CvQualifiedType nodes as complete.
+    dn->Complete = true;
+    this->Queue.insert(QueueEntry(dn));
+  }
+  return dn->Index;
 }
 
 //----------------------------------------------------------------------------
 template <typename K>
-unsigned int ASTVisitor::AddDumpNodeImpl(K k, bool complete)
+ASTVisitor::DumpId ASTVisitor::AddDumpNodeImpl(K k, bool complete)
 {
   // Update an existing node or add one.
   DumpNode* dn = this->GetDumpNode(k);
@@ -568,7 +673,7 @@ unsigned int ASTVisitor::AddDumpNodeImpl(K k, bool complete)
     }
   } else {
     // This is a new node.  Assign it an index.
-    dn->Index = ++this->NodeCount;
+    dn->Index.Id = ++this->NodeCount;
     dn->Complete = complete;
     if(complete || !this->RequireComplete) {
       // Node is complete.  Queue it.
@@ -592,13 +697,13 @@ unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
 
 //----------------------------------------------------------------------------
 void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
-                                      std::set<unsigned int>* emitted)
+                                      std::set<DumpId>* emitted)
 {
   // Queue all the instantiations of this class template.
   for(clang::ClassTemplateDecl::spec_iterator i = d->spec_begin(),
         e = d->spec_end(); i != e; ++i) {
     clang::CXXRecordDecl const* rd = *i;
-    unsigned int id = this->AddDeclDumpNode(rd, true);
+    DumpId id = this->AddDeclDumpNode(rd, true);
     if(id && emitted) {
       emitted->insert(id);
     }
@@ -607,13 +712,13 @@ void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
 
 //----------------------------------------------------------------------------
 void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
-                                         std::set<unsigned int>* emitted)
+                                         std::set<DumpId>* emitted)
 {
   // Queue all the instantiations of this function template.
   for(clang::FunctionTemplateDecl::spec_iterator i = d->spec_begin(),
         e = d->spec_end(); i != e; ++i) {
     clang::FunctionDecl const* fd = *i;
-    unsigned int id = this->AddDeclDumpNode(fd, true);
+    DumpId id = this->AddDeclDumpNode(fd, true);
     if(id && emitted) {
       emitted->insert(id);
     }
@@ -622,7 +727,7 @@ void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
 
 //----------------------------------------------------------------------------
 void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
-                                       std::set<unsigned int>& emitted)
+                                       std::set<DumpId>& emitted)
 {
   for(clang::DeclContext::decl_iterator i = dc->decls_begin(),
         e = dc->decls_end(); i != e; ++i) {
@@ -678,7 +783,7 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
     }
 
     // Queue this decl and print its id.
-    if(unsigned int id = this->AddDeclDumpNode(d, true)) {
+    if(DumpId id = this->AddDeclDumpNode(d, true)) {
       emitted.insert(id);
     }
   }
@@ -737,6 +842,9 @@ void ASTVisitor::ProcessQueue()
     QueueEntry qe = *this->Queue.begin();
     this->Queue.erase(this->Queue.begin());
     switch(qe.Kind) {
+    case QueueEntry::KindQual:
+      this->OutputCvQualifiedType(qe.DN);
+      break;
     case QueueEntry::KindDecl:
       this->OutputDecl(qe.Decl, qe.DN);
       break;
@@ -791,10 +899,6 @@ void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
   if(c) {
     // Output the method type.
     this->OutputMethodType(t->getAs<clang::FunctionProtoType>(), c, dn);
-  } else if(t.hasLocalQualifiers()) {
-    // Output the qualified type.  This will queue
-    // the unqualified type if necessary.
-    this->OutputCvQualifiedType(t, dn);
   } else {
     // Dispatch output of the unqualified type.
     switch (t->getTypeClass()) {
@@ -810,41 +914,37 @@ void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::OutputCvQualifiedType(clang::QualType t, DumpNode const* dn)
+void ASTVisitor::OutputCvQualifiedType(DumpNode const* dn)
 {
-  bool qc, qv, qr;
-  unsigned int id = this->GetTypeIdRef(t, dn->Complete, qc, qv, qr);
-  const char* c = qc? "c" : "";
-  const char* v = qv? "v" : "";
-  const char* r = qr? "r" : "";
+  DumpId id = dn->Index;
 
   // Create a special CvQualifiedType element to hold top-level
   // cv-qualifiers for a real type node.
-  this->OS << "  <CvQualifiedType id=\"_" << id << c << v << r << "\"";
+  this->OS << "  <CvQualifiedType id=\"_" << id << "\"";
 
   // Refer to the unqualified type.
-  this->OS << " type=\"_" << id << "\"";
+  this->OS << " type=\"_" << id.Id << "\"";
 
   // Add the cv-qualification attributes.
-  if (qc) {
+  if (id.Qual.IsConst) {
     this->OS << " const=\"1\"";
   }
-  if (qv) {
+  if (id.Qual.IsVolatile) {
     this->OS << " volatile=\"1\"";
   }
-  if (qr) {
+  if (id.Qual.IsRestrict) {
     this->OS << " restrict=\"1\"";
   }
   this->OS << "/>\n";
 }
 
 //----------------------------------------------------------------------------
-unsigned int ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
+ASTVisitor::DumpId ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
 {
   if(clang::Decl const* d = clang::dyn_cast<clang::Decl>(dc)) {
     return this->AddDeclDumpNode(d, false);
   } else {
-    return 0;
+    return DumpId();
   }
 }
 
@@ -859,40 +959,13 @@ std::string ASTVisitor::GetContextName(clang::CXXMethodDecl const* d)
 }
 
 //----------------------------------------------------------------------------
-unsigned int ASTVisitor::GetTypeIdRef(clang::QualType t, bool complete,
-                                      bool& qc, bool& qv, bool& qr)
-{
-  // Add the type node.
-  unsigned int id = this->AddTypeDumpNode(t, complete, &t);
-
-  // Check for qualifiers.
-  qc = t.isLocalConstQualified();
-  qv = t.isLocalVolatileQualified();
-  qr = t.isLocalRestrictQualified();
-
-  // If the type has qualifiers, add the unqualified type and use its id.
-  if(t.hasLocalQualifiers()) {
-    id = this->AddTypeDumpNode(t.getLocalUnqualifiedType(), complete);
-  }
-
-  // Return the dump node id of the unqualified type.
-  return id;
-}
-
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintTypeIdRef(clang::QualType t, bool complete)
 {
   // Add the type node.
-  bool qc, qv, qr;
-  unsigned int id = this->GetTypeIdRef(t, complete, qc, qv, qr);
-
-  // Check cv-qualificiation.
-  const char* c = qc? "c" : "";
-  const char* v = qv? "v" : "";
-  const char* r = qr? "r" : "";
+  DumpId id = this->AddTypeDumpNode(t, complete);
 
   // Print the reference.
-  this->OS << "_" << id << c << v << r;
+  this->OS << "_" << id;
 }
 
 //----------------------------------------------------------------------------
@@ -1003,7 +1076,7 @@ void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
 void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
 {
   clang::DeclContext const* dc = d->getDeclContext();
-  if(unsigned int id = this->GetContextIdRef(dc)) {
+  if(DumpId id = this->GetContextIdRef(dc)) {
     this->OS << " context=\"_" << id << "\"";
     if (dc->isRecord()) {
       this->PrintAccessAttribute(d->getAccess());
@@ -1014,18 +1087,18 @@ void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
 //----------------------------------------------------------------------------
 void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
 {
-  std::set<unsigned int> emitted;
+  std::set<DumpId> emitted;
   this->AddDeclContextMembers(dc, emitted);
   this->PrintMembersAttribute(emitted);
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::PrintMembersAttribute(std::set<unsigned int> const& emitted)
+void ASTVisitor::PrintMembersAttribute(std::set<DumpId> const& emitted)
 {
   if(!emitted.empty()) {
     this->OS << " members=\"";
     const char* sep = "";
-    for(std::set<unsigned int>::const_iterator i = emitted.begin(),
+    for(std::set<DumpId>::const_iterator i = emitted.begin(),
           e = emitted.end(); i != e; ++i) {
       this->OS << sep << "_" << *i;
       sep = " ";
@@ -1106,7 +1179,7 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
           continue;
         }
 
-        if(unsigned int id = this->AddDeclDumpNode(nd, false)) {
+        if(DumpId id = this->AddDeclDumpNode(nd, false)) {
           this->OS << sep << "_" << id;
           sep = " ";
         }
@@ -1275,7 +1348,7 @@ void ASTVisitor::OutputNamespaceDecl(
   this->PrintNameAttribute(d->getName().str());
   this->PrintContextAttribute(d);
   if(dn->Complete) {
-    std::set<unsigned int> emitted;
+    std::set<DumpId> emitted;
     for (clang::NamespaceDecl const* r: d->redecls()) {
       this->AddDeclContextMembers(r, emitted);
     }
@@ -1638,7 +1711,7 @@ void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
   } else {
     this->OS << "  <PointerType";
     this->PrintIdAttribute(dn);
-    unsigned int id = this->AddTypeDumpNode(
+    DumpId id = this->AddTypeDumpNode(
       DumpType(t->getPointeeType(), t->getClass()), false);
     this->OS << " type=\"_" << id << "\"";
     this->OS << "/>\n";
