@@ -17,15 +17,15 @@
   <ReferenceType id="_9" type="_1"/>
   <Constructor id="_10" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_11" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
-    <Argument type="_15" location="f1:1" file="f1" line="1"/>
+    <Argument type="_14" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_12" name="=" returns="_16" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
-    <Argument type="_15" location="f1:1" file="f1" line="1"/>
+  <OperatorMethod id="_12" name="=" returns="_15" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
+    <Argument type="_14" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_13" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
-  <ReferenceType id="_15" type="_7c"/>
+  <ReferenceType id="_14" type="_7c"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
-  <ReferenceType id="_16" type="_7"/>
+  <ReferenceType id="_15" type="_7"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-base-typedef.cxx"/>
 </GCC_XML>$

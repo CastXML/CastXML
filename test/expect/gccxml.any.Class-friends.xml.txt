@@ -13,8 +13,8 @@
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_10" type="_1"/>
   <Namespace id="_2" name="::"/>
-  <Function id="_7" name="f" returns="_12" context="_2" location="f1:2" file="f1" line="2"/>
+  <Function id="_7" name="f" returns="_11" context="_2" location="f1:2" file="f1" line="2"/>
   <Class id="_8" name="A" context="_2" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>
-  <FundamentalType id="_12" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_11" name="void" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/Class-friends.cxx"/>
 </GCC_XML>$

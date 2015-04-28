@@ -19,26 +19,26 @@
   <ReferenceType id="_10" type="_1"/>
   <Constructor id="_11" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_12" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
-    <Argument type="_20" location="f1:1" file="f1" line="1"/>
+    <Argument type="_19" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_13" name="=" returns="_21" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
-    <Argument type="_20" location="f1:1" file="f1" line="1"/>
+  <OperatorMethod id="_13" name="=" returns="_20" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throws="">
+    <Argument type="_19" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_14" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_15" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_16" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws="">
-    <Argument type="_22" location="f1:2" file="f1" line="2"/>
+    <Argument type="_21" location="f1:2" file="f1" line="2"/>
   </Constructor>
-  <OperatorMethod id="_17" name="=" returns="_23" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws="">
-    <Argument type="_22" location="f1:2" file="f1" line="2"/>
+  <OperatorMethod id="_17" name="=" returns="_22" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throws="">
+    <Argument type="_21" location="f1:2" file="f1" line="2"/>
   </OperatorMethod>
   <Destructor id="_18" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throws="")?/>
-  <ReferenceType id="_20" type="_7c"/>
+  <ReferenceType id="_19" type="_7c"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
-  <ReferenceType id="_21" type="_7"/>
-  <ReferenceType id="_22" type="_8c"/>
+  <ReferenceType id="_20" type="_7"/>
+  <ReferenceType id="_21" type="_8c"/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
-  <ReferenceType id="_23" type="_8"/>
+  <ReferenceType id="_22" type="_8"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-template-bases.cxx"/>
 </GCC_XML>$

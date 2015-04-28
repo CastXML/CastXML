@@ -1,13 +1,13 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Typedef id="_1" name="start" type="_2cv" context="_4" location="f1:2" file="f1" line="2"/>
-  <PointerType id="_2" type="_5"/>
+  <Typedef id="_1" name="start" type="_2cv" context="_3" location="f1:2" file="f1" line="2"/>
+  <PointerType id="_2" type="_4"/>
   <CvQualifiedType id="_2cv" type="_2" const="1" volatile="1"/>
-  <Namespace id="_4" name="::"/>
-  <MethodType id="_5" basetype="_6" returns="_7" const="1" volatile="1">
-    <Argument type="_7"/>
+  <Namespace id="_3" name="::"/>
+  <MethodType id="_4" basetype="_5" returns="_6" const="1" volatile="1">
+    <Argument type="_6"/>
   </MethodType>
-  <Class id="_6" name="A" context="_4" location="f1:1" file="f1" line="1" incomplete="1"/>
-  <FundamentalType id="_7" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_5" name="A" context="_3" location="f1:1" file="f1" line="1" incomplete="1"/>
+  <FundamentalType id="_6" name="int" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/MethodType-cv.cxx"/>
 </GCC_XML>$

@@ -648,8 +648,6 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
 ASTVisitor::DumpId ASTVisitor::AddQualDumpNode(DumpId id) {
   DumpNode* dn = this->GetDumpNode(id);
   if (!dn->Index) {
-    // Consume a node index for temporary compatibility.
-    ++this->NodeCount;
     dn->Index = id;
     // Always treat CvQualifiedType nodes as complete.
     dn->Complete = true;
