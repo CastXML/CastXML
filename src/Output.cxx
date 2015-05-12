@@ -299,7 +299,6 @@ class ASTVisitor: public ASTVisitorBase
 
   /** Print a name="..." attribute.  */
   void PrintNameAttribute(std::string const& name);
-  void PrintNameAttribute(clang::NamedDecl const* d);
 
   /** Print an offset="..." attribute. */
   void PrintOffsetAttribute(unsigned int const& offset);
@@ -989,15 +988,6 @@ void ASTVisitor::PrintNameAttribute(std::string const& name)
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::PrintNameAttribute(clang::NamedDecl const* d)
-{
-  std::string s;
-  llvm::raw_string_ostream rso(s);
-  d->getNameForDiagnostic(rso, this->CTX.getPrintingPolicy(), false);
-  this->PrintNameAttribute(rso.str());
-}
-
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
 {
   this->OS << " offset=\"" << offset << "\"";
@@ -1383,7 +1373,10 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
   if(!d->isAnonymousStructOrUnion()) {
-    this->PrintNameAttribute(d);
+    std::string s;
+    llvm::raw_string_ostream rso(s);
+    d->getNameForDiagnostic(rso, this->CTX.getPrintingPolicy(), false);
+    this->PrintNameAttribute(rso.str());
   }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
