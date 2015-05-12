@@ -31,7 +31,7 @@ struct Options;
 
 /// outputXML - Print a gccxml-compatible AST dump.
 void outputXML(clang::CompilerInstance& ci,
-               clang::ASTContext const& ctx,
+               clang::ASTContext& ctx,
                llvm::raw_ostream& os,
                Options const& opts);
 
