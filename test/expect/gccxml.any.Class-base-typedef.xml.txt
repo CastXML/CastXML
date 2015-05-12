@@ -7,7 +7,7 @@
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?>
     <Argument type="_8" location="f1:3" file="f1" line="3"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_9" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?>
+  <OperatorMethod id="_5" name="=" returns="_9" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")? mangled="[^"]+">
     <Argument type="_8" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?/>
@@ -19,7 +19,7 @@
   <Constructor id="_11" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_14" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_12" name="=" returns="_15" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
+  <OperatorMethod id="_12" name="=" returns="_15" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")? mangled="[^"]+">
     <Argument type="_14" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_13" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>

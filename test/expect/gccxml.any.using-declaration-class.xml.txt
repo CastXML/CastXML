@@ -3,17 +3,17 @@
   <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8" bases="_9" size="[0-9]+" align="[0-9]+">
     <Base type="_9" access="public" virtual="0"/>
   </Class>
-  <Method id="_3" name="f" returns="_10" context="_9" access="protected" location="f1:3" file="f1" line="3">
+  <Method id="_3" name="f" returns="_10" context="_9" access="protected" location="f1:3" file="f1" line="3" mangled="[^"]+">
     <Argument type="_10" location="f1:3" file="f1" line="3"/>
   </Method>
-  <Method id="_4" name="f" returns="_10" context="_1" access="private" location="f1:7" file="f1" line="7">
+  <Method id="_4" name="f" returns="_10" context="_1" access="private" location="f1:7" file="f1" line="7" mangled="[^"]+">
     <Argument type="_11" location="f1:7" file="f1" line="7"/>
   </Method>
   <Constructor id="_5" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")?/>
   <Constructor id="_6" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")?>
     <Argument type="_12" location="f1:5" file="f1" line="5"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_13" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")?>
+  <OperatorMethod id="_7" name="=" returns="_13" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")? mangled="[^"]+">
     <Argument type="_12" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
   <Destructor id="_8" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throws="")?/>
@@ -27,7 +27,7 @@
   <Constructor id="_15" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_16" name="=" returns="_19" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
+  <OperatorMethod id="_16" name="=" returns="_19" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")? mangled="[^"]+">
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_17" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>

@@ -1,14 +1,14 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Function id="_1" name="start" returns="_4" context="_5" location="f1:2" file="f1" line="2">
+  <Function id="_1" name="start" returns="_4" context="_5" location="f1:2" file="f1" line="2" mangled="[^"]+">
     <Argument type="_6" location="f1:2" file="f1" line="2"/>
     <Argument type="_7" location="f1:2" file="f1" line="2"/>
   </Function>
-  <Function id="_2" name="start" returns="_4" context="_5" location="f1:3" file="f1" line="3">
+  <Function id="_2" name="start" returns="_4" context="_5" location="f1:3" file="f1" line="3" mangled="[^"]+">
     <Argument type="_8" location="f1:3" file="f1" line="3"/>
     <Argument type="_9" location="f1:3" file="f1" line="3"/>
   </Function>
-  <Function id="_3" name="start" returns="_4" context="_5" location="f1:4" file="f1" line="4">
+  <Function id="_3" name="start" returns="_4" context="_5" location="f1:4" file="f1" line="4" mangled="[^"]+">
     <Argument type="_10" location="f1:4" file="f1" line="4"/>
     <Argument type="_11" location="f1:4" file="f1" line="4"/>
   </Function>

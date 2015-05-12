@@ -25,6 +25,7 @@
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
+#include "clang/AST/Mangle.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
@@ -300,6 +301,9 @@ class ASTVisitor: public ASTVisitorBase
   /** Print a name="..." attribute.  */
   void PrintNameAttribute(std::string const& name);
 
+  /** Print a mangled="..." attribute.  */
+  void PrintMangledAttribute(clang::NamedDecl const* d);
+
   /** Print an offset="..." attribute. */
   void PrintOffsetAttribute(unsigned int const& offset);
 
@@ -449,6 +453,9 @@ private:
   // Whether we are in the complete or incomplete output step.
   bool RequireComplete;
 
+  // Mangling context for target ABI.
+  std::unique_ptr<clang::MangleContext> MangleContext;
+
   // Map from clang AST declaration node to our dump status node.
   typedef std::map<clang::Decl const*, DumpNode> DeclNodesMap;
   DeclNodesMap DeclNodes;
@@ -480,7 +487,8 @@ public:
     Opts(opts),
     NodeCount(0), FileCount(0),
     FileBuiltin(false),
-    RequireComplete(true) {}
+    RequireComplete(true),
+    MangleContext(ctx.createMangleContext()) {}
 
   /** Visit declarations in the given translation unit.
       This is the main entry point.  */
@@ -988,6 +996,24 @@ void ASTVisitor::PrintNameAttribute(std::string const& name)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
+{
+  // Compute the mangled name.
+  std::string s;
+  {
+    llvm::raw_string_ostream rso(s);
+    this->MangleContext->mangleName(d, rso);
+  }
+
+  // Strip a leading 1 byte in MS mangling.
+  if (!s.empty() && s[0] == '\1') {
+    s = s.substr(1);
+  }
+
+  this->OS << " mangled=\"" << encodeXML(s) << "\"";
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
 {
   this->OS << " offset=\"" << offset << "\"";
@@ -1238,6 +1264,10 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
       d->getType()->getAs<clang::FunctionProtoType>()) {
     this->PrintFunctionTypeAttributes(fpt);
     this->PrintThrowsAttribute(fpt, dn->Complete);
+    if (!clang::isa<clang::CXXConstructorDecl>(d) &&
+        !clang::isa<clang::CXXDestructorDecl>(d)) {
+      this->PrintMangledAttribute(d);
+    }
   }
 
   if(unsigned np = d->getNumParams()) {
@@ -1521,6 +1551,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   if(d->getStorageClass() == clang::SC_Extern) {
     this->OS << " extern=\"1\"";
   }
+  this->PrintMangledAttribute(d);
 
   this->OS << "/>\n";
 }

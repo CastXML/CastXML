@@ -5,7 +5,7 @@
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?>
     <Argument type="_9" location="f1:3" file="f1" line="3"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_10" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?>
+  <OperatorMethod id="_5" name="=" returns="_10" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")? mangled="[^"]+">
     <Argument type="_9" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throws="")?/>
@@ -13,7 +13,7 @@
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_10" type="_1"/>
   <Namespace id="_2" name="::"/>
-  <Function id="_7" name="f" returns="_11" context="_2" location="f1:2" file="f1" line="2"/>
+  <Function id="_7" name="f" returns="_11" context="_2" location="f1:2" file="f1" line="2" mangled="[^"]+"/>
   <Class id="_8" name="A" context="_2" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="void" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/Class-friends.cxx"/>

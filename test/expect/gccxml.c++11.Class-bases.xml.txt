@@ -5,7 +5,7 @@
     <Base type="_8" access="private" virtual="0"/>
     <Base type="_9" access="protected" virtual="1"/>
   </Class>
-  <OperatorMethod id="_3" name="=" returns="_10" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1">
+  <OperatorMethod id="_3" name="=" returns="_10" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_11" location="f1:4" file="f1" line="4"/>
   </OperatorMethod>
   <Destructor id="_4" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"/>
@@ -19,7 +19,7 @@
   <ReferenceType id="_10" type="_1"/>
   <ReferenceType id="_11" type="_1c"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <OperatorMethod id="_12" name="=" returns="_24" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+  <OperatorMethod id="_12" name="=" returns="_24" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_25" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_13" name="base_public" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
@@ -27,7 +27,7 @@
   <Constructor id="_15" name="base_public" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
     <Argument type="_25" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_16" name="=" returns="_26" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1">
+  <OperatorMethod id="_16" name="=" returns="_26" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_27" location="f1:2" file="f1" line="2"/>
   </OperatorMethod>
   <Destructor id="_17" name="base_private" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
@@ -35,7 +35,7 @@
   <Constructor id="_19" name="base_private" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1">
     <Argument type="_27" location="f1:2" file="f1" line="2"/>
   </Constructor>
-  <OperatorMethod id="_20" name="=" returns="_28" context="_9" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
+  <OperatorMethod id="_20" name="=" returns="_28" context="_9" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_29" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
   <Destructor id="_21" name="base_protected" context="_9" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
