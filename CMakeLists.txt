@@ -62,19 +62,30 @@ endif()
 set(CLANG_RESOURCE_DIR "" CACHE PATH "Clang resource directory")
 if(NOT CLANG_RESOURCE_DIR)
   set(v ${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.${LLVM_VERSION_PATCH})
+  set(tried "")
   foreach(d ${LLVM_LIBRARY_DIRS})
     if(IS_DIRECTORY "${d}/clang/${v}/include")
       set(CLANG_RESOURCE_DIR ${d}/clang/${v})
       break()
     endif()
+    set(tried "${tried}\n  ${d}/clang/${v}")
   endforeach()
+  if(NOT CLANG_RESOURCE_DIR)
+    if(tried)
+      set(tried "  Tried:${tried}")
+    endif()
+    message(FATAL_ERROR "Could not find CLANG_RESOURCE_DIR.${tried}"
+      "\n"
+      "Please set CLANG_RESOURCE_DIR to the Clang SDK directory containing "
+      "\"include/stddef.h\", typically of the form \"<prefix>/lib/clang/${v}\"."
+      )
+  endif()
+  unset(tried)
 endif()
 
-if(CLANG_RESOURCE_DIR)
-  install(DIRECTORY ${CLANG_RESOURCE_DIR}/include
-    DESTINATION "${CastXML_INSTALL_DATA_DIR}/clang"
-    )
-endif()
+install(DIRECTORY ${CLANG_RESOURCE_DIR}/include
+  DESTINATION "${CastXML_INSTALL_DATA_DIR}/clang"
+  )
 
 add_subdirectory(src)
 
