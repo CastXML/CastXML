@@ -52,6 +52,16 @@ add_subdirectory(src/kwsys)
 include_directories(${KWSYS_HEADER_ROOT})
 
 find_package(LLVM REQUIRED)
+
+if(DEFINED LLVM_BUILD_BINARY_DIR)
+  message(FATAL_ERROR
+    "LLVM_DIR refers to a LLVM/Clang build directory:\n"
+    "  ${LLVM_DIR}\n"
+    "CastXML must be built against a LLVM/Clang install tree as "
+    "specified in\n"
+    "  ${CastXML_SOURCE_DIR}/README.rst")
+endif()
+
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
