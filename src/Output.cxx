@@ -456,6 +456,9 @@ private:
   // Mangling context for target ABI.
   std::unique_ptr<clang::MangleContext> MangleContext;
 
+  // Control declaration and type printing.
+  clang::PrintingPolicy PrintingPolicy;
+
   // Map from clang AST declaration node to our dump status node.
   typedef std::map<clang::Decl const*, DumpNode> DeclNodesMap;
   DeclNodesMap DeclNodes;
@@ -488,7 +491,9 @@ public:
     NodeCount(0), FileCount(0),
     FileBuiltin(false),
     RequireComplete(true),
-    MangleContext(ctx.createMangleContext()) {}
+    MangleContext(ctx.createMangleContext()),
+    PrintingPolicy(ctx.getPrintingPolicy()) {
+  }
 
   /** Visit declarations in the given translation unit.
       This is the main entry point.  */
@@ -1347,7 +1352,7 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << " default=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    def->printPretty(rso, 0, this->CTX.getPrintingPolicy());
+    def->printPretty(rso, 0, this->PrintingPolicy);
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
@@ -1408,7 +1413,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   if(!d->isAnonymousStructOrUnion()) {
     std::string s;
     llvm::raw_string_ostream rso(s);
-    d->getNameForDiagnostic(rso, this->CTX.getPrintingPolicy(), false);
+    d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
     this->PrintNameAttribute(rso.str());
   }
   this->PrintContextAttribute(d);
@@ -1542,7 +1547,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
     this->OS << " init=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    init->printPretty(rso, 0, this->CTX.getPrintingPolicy());
+    init->printPretty(rso, 0, this->PrintingPolicy);
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
@@ -1690,7 +1695,7 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   case clang::BuiltinType::ULong: name = "long unsigned int"; break;
   case clang::BuiltinType::LongLong: name = "long long int"; break;
   case clang::BuiltinType::ULongLong: name = "long long unsigned int"; break;
-  default: name = t->getName(this->CTX.getPrintingPolicy()).str(); break;
+  default: name = t->getName(this->PrintingPolicy).str(); break;
   };
   this->PrintNameAttribute(name);
   this->PrintABIAttributes(this->CTX.getTypeInfo(t));
