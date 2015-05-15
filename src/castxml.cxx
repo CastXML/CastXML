@@ -94,6 +94,11 @@ int main(int argc_in, const char** argv_in)
     "  --castxml-start <name>\n"
     "    Start AST traversal at declaration with given (qualified) name\n"
     "\n"
+    "  --hide-inline-namespaces\n"
+    "    Do not display inline and anonymous namespaces.\n"
+    "    Example: std::__1 with libc++ will look the same as the\n"
+    "    libstdc++ namespace std."
+    "\n"
     "  -help, --help\n"
     "    Print castxml and internal Clang compiler usage information\n"
     "\n"
@@ -193,6 +198,8 @@ int main(int argc_in, const char** argv_in)
           ;
         return 1;
       }
+    } else if(strcmp(argv[i], "--hide-inline-namespaces") == 0) {
+      opts.HideInlineNameSpaces = true;
     } else if(strcmp(argv[i], "-E") == 0) {
       opts.PPOnly = true;
     } else if(strcmp(argv[i], "-o") == 0) {

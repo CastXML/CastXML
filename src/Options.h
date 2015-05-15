@@ -22,10 +22,11 @@
 
 struct Options
 {
-  Options(): PPOnly(false), GccXml(false), HaveCC(false) {}
+  Options(): PPOnly(false), GccXml(false), HaveCC(false), HideInlineNameSpaces(false) {}
   bool PPOnly;
   bool GccXml;
   bool HaveCC;
+  bool HideInlineNameSpaces;
   struct Include {
     Include(std::string const& d, bool f = false):
       Directory(d), Framework(f) {}
