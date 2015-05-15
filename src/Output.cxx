@@ -1373,7 +1373,10 @@ void ASTVisitor::OutputNamespaceDecl(
 {
   this->OS << "  <Namespace";
   this->PrintIdAttribute(dn);
-  this->PrintNameAttribute(d->getName().str());
+  std::string name = d->getName().str();
+  if (!name.empty()) {
+    this->PrintNameAttribute(name);
+  }
   this->PrintContextAttribute(d);
   if(dn->Complete) {
     std::set<DumpId> emitted;
