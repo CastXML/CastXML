@@ -493,6 +493,7 @@ public:
     RequireComplete(true),
     MangleContext(ctx.createMangleContext()),
     PrintingPolicy(ctx.getPrintingPolicy()) {
+    this->PrintingPolicy.SuppressUnwrittenScope = true;
   }
 
   /** Visit declarations in the given translation unit.
@@ -792,6 +793,14 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
         static_cast<clang::LinkageSpecDecl const*>(d), emitted);
       continue;
     } break;
+    case clang::Decl::Namespace: {
+      clang::NamespaceDecl const* nd =
+        static_cast<clang::NamespaceDecl const*>(d);
+      if (nd->isInline()) {
+        this->AddDeclContextMembers(nd, emitted);
+        continue;
+      }
+    } break;
     case clang::Decl::Using: {
       continue;
     } break;
@@ -821,6 +830,11 @@ void ASTVisitor::AddStartDecl(clang::Decl const* d)
     this->AddFunctionTemplateDecl(
       static_cast<clang::FunctionTemplateDecl const*>(d));
     break;
+  case clang::Decl::Namespace: {
+    if (!static_cast<clang::NamespaceDecl const*>(d)->isInline()) {
+      this->AddDeclDumpNode(d, true);
+    }
+  } break;
   case clang::Decl::Using: {
       clang::UsingDecl const* ud = static_cast<clang::UsingDecl const*>(d);
       for(clang::UsingDecl::shadow_iterator i = ud->shadow_begin(),
@@ -961,6 +975,10 @@ void ASTVisitor::OutputCvQualifiedType(DumpNode const* dn)
 //----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
 {
+  while (dc->isInlineNamespace()) {
+    dc = dc->getParent();
+  }
+
   if(clang::Decl const* d = clang::dyn_cast<clang::Decl>(dc)) {
     return this->AddDeclDumpNode(d, false);
   } else {
