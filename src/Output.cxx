@@ -434,6 +434,8 @@ class ASTVisitor: public ASTVisitorBase
                         DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
 
+  clang::PrintingPolicy getPrintingPolicy();
+
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
 
@@ -1347,7 +1349,7 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << " default=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    def->printPretty(rso, 0, this->CTX.getPrintingPolicy());
+    def->printPretty(rso, 0, this->getPrintingPolicy());
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
@@ -1405,7 +1407,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   if(!d->isAnonymousStructOrUnion()) {
     std::string s;
     llvm::raw_string_ostream rso(s);
-    d->getNameForDiagnostic(rso, this->CTX.getPrintingPolicy(), false);
+    d->getNameForDiagnostic(rso, this->getPrintingPolicy(), false);
     this->PrintNameAttribute(rso.str());
   }
   this->PrintContextAttribute(d);
@@ -1539,7 +1541,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
     this->OS << " init=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    init->printPretty(rso, 0, this->CTX.getPrintingPolicy());
+    init->printPretty(rso, 0, this->getPrintingPolicy());
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
@@ -1687,7 +1689,7 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   case clang::BuiltinType::ULong: name = "long unsigned int"; break;
   case clang::BuiltinType::LongLong: name = "long long int"; break;
   case clang::BuiltinType::ULongLong: name = "long long unsigned int"; break;
-  default: name = t->getName(this->CTX.getPrintingPolicy()).str(); break;
+  default: name = t->getName(this->getPrintingPolicy()).str(); break;
   };
   this->PrintNameAttribute(name);
   this->PrintABIAttributes(this->CTX.getTypeInfo(t));
@@ -1776,6 +1778,15 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
   this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+clang::PrintingPolicy ASTVisitor::getPrintingPolicy() {
+  clang::PrintingPolicy printing_policy = this->CTX.getPrintingPolicy();
+  // Suppress printing parts of scope specifiers that don't need to be written,
+  // e.g., for inline or anonymous namespaces
+  printing_policy.SuppressUnwrittenScope = this->Opts.HideInlineNameSpaces;
+  return printing_policy;
 }
 
 //----------------------------------------------------------------------------
