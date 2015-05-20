@@ -344,7 +344,7 @@ class ASTVisitor: public ASTVisitorBase
       of the given function type.  */
   void PrintFunctionTypeAttributes(clang::FunctionProtoType const* t);
 
-  /** Print a throws="..." attribute listing the XML IDREFs for
+  /** Print a throw="..." attribute listing the XML IDREFs for
       the types that the given function prototype declares in
       the throw() specification.  */
   void PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
@@ -1200,7 +1200,7 @@ void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
   if(fpt && fpt->hasDynamicExceptionSpec()) {
     clang::FunctionProtoType::exception_iterator i = fpt->exception_begin();
     clang::FunctionProtoType::exception_iterator e = fpt->exception_end();
-    this->OS << " throws=\"";
+    this->OS << " throw=\"";
     const char* sep = "";
     for(;i != e; ++i) {
       this->OS << sep;

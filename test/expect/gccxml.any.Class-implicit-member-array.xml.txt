@@ -2,14 +2,14 @@
 <GCC_XML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
   <Field id="_3" name="data" type="_8" context="_1" access="private" location="f1:2" file="f1" line="2" offset="0"/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_6" name="=" returns="_10" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")? mangled="[^"]+">
+  <OperatorMethod id="_6" name="=" returns="_10" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
+  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <ArrayType id="_8" min="0" max="1" type="_11"/>
   <ReferenceType id="_9" type="_1c"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
