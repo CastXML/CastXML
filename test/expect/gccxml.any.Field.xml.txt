@@ -4,14 +4,14 @@
   <Field id="_3" name="field" type="_10" context="_1" access="private" location="f1:2" file="f1" line="2" offset="0"/>
   <Field id="_4" name="bit_field" type="_11" bits="2" context="_1" access="private" location="f1:3" file="f1" line="3" offset="32"/>
   <Field id="_5" name="mutable_field" type="_10" context="_1" access="private" location="f1:4" file="f1" line="4" offset="64" mutable="1"/>
-  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_12" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_13" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")? mangled="[^"]+">
+  <OperatorMethod id="_7" name="=" returns="_13" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
     <Argument type="_12" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Constructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
-  <Destructor id="_9" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throws="")?/>
+  <Constructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_9" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="unsigned int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_12" type="_1c"/>
