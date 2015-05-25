@@ -240,6 +240,15 @@ castxml_test_gccxml(Variable)
 castxml_test_gccxml(Variable-in-Class)
 castxml_test_gccxml(Variable-init)
 
+# Test multiple start declarations.
+set(castxml_test_gccxml_custom_input Namespace-nested)
+set(castxml_test_gccxml_custom_start --castxml-start start::ns1,start::ns3)
+castxml_test_gccxml(Namespace-nested-1)
+set(castxml_test_gccxml_custom_start --castxml-start start::ns1 --castxml-start start::ns3)
+castxml_test_gccxml(Namespace-nested-2)
+unset(castxml_test_gccxml_custom_start)
+unset(castxml_test_gccxml_custom_input)
+
 castxml_test_gccxml(qualified-type-name)
 castxml_test_gccxml(using-declaration-class)
 castxml_test_gccxml(using-declaration-ns)

@@ -27,6 +27,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <iostream>
+#include <sstream>
 #include <set>
 #include <system_error>
 #include <vector>
@@ -91,8 +92,10 @@ int main(int argc_in, const char** argv_in)
     "  --castxml-gccxml\n"
     "    Write gccxml-format output to <src>.xml or file named by '-o'\n"
     "\n"
-    "  --castxml-start <name>\n"
-    "    Start AST traversal at declaration with given (qualified) name\n"
+    "  --castxml-start <name>[,<name>]...\n"
+    "    Start AST traversal at declaration(s) with the given (qualified)\n"
+    "    name(s).  Multiple names may be specified as a comma-separated\n"
+    "    list or by repeating the option.\n"
     "\n"
     "  -help, --help\n"
     "    Print castxml and internal Clang compiler usage information\n"
@@ -124,7 +127,11 @@ int main(int argc_in, const char** argv_in)
       }
     } else if(strcmp(argv[i], "--castxml-start") == 0) {
       if((i+1) < argc) {
-        opts.StartNames.push_back(argv[++i]);
+        std::string item;
+        std::stringstream stream(argv[++i]);
+        while (std::getline(stream, item, ',')) {
+          opts.StartNames.push_back(item);
+        }
       } else {
         std::cerr <<
           "error: argument to '--castxml-start' is missing "

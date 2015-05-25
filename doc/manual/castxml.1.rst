@@ -55,9 +55,10 @@ Remaining options are given to the internal Clang compiler.
   move constructors or move assignment operators, and may contain
   ``<Unimplemented/>`` elements on non-c++98 constructs.
 
-``--castxml-start <name>``
-  Start AST traversal at the declaration(s) with the given
-  qualified name.
+``--castxml-start <name>[,<name>]...``
+  Start AST traversal at declaration(s) with the given qualified name(s).
+  Multiple names may be specified as a comma-separated list or by repeating
+  the option.
 
 ``-help``, ``--help``
   Print ``castxml`` and internal Clang compiler usage information.
