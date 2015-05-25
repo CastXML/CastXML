@@ -56,8 +56,10 @@ Remaining options are given to the internal Clang compiler.
   ``<Unimplemented/>`` elements on non-c++98 constructs.
 
 ``--castxml-start <name>``
-  Start AST traversal at the declaration(s) with the given
-  qualified name.
+  Start AST traversal at the declaration(s) with the given qualified name.
+  A list of comma-separated declarations can be used for multiple
+  starting declarations, or the --castxml-start flag can be used multiple
+  times.
 
 ``-help``, ``--help``
   Print ``castxml`` and internal Clang compiler usage information.

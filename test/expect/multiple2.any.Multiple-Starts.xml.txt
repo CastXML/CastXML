@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="ns1" context="_3" members="_4"/>
+  <Namespace id="_2" name="ns3" context="_3" members="_5"/>
+  <Function id="_4" name="f1" returns="_6" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+"/>
+  <Function id="_5" name="f3" returns="_6" context="_2" location="f1:9" file="f1" line="9" mangled="[^"]+"/>
+  <FundamentalType id="_6" name="void" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="start" context="_7"/>
+  <Namespace id="_7" name="::"/>
+  <File id="f1" name=".*/test/input/Multiple-Starts.cxx"/>
+</GCC_XML>$

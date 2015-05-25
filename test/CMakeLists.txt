@@ -33,9 +33,9 @@ macro(castxml_test_cmd test)
     )
 endmacro()
 
-macro(castxml_test_gccxml_common prefix ext std test)
+macro(castxml_test_gccxml_common prefix ext std test start)
   set(command $<TARGET_FILE:castxml>
-    --castxml-gccxml --castxml-start start
+    --castxml-gccxml ${start}
     -std=${std}
     ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
     -o ${prefix}.${std}.${test}.xml
@@ -53,23 +53,28 @@ macro(castxml_test_gccxml_common prefix ext std test)
 endmacro()
 
 macro(castxml_test_gccxml_c89 test)
-  castxml_test_gccxml_common(gccxml c c89 ${test})
+  set(start --castxml-start start)
+  castxml_test_gccxml_common(gccxml c c89 ${test} "${start}")
 endmacro()
 
 macro(castxml_test_gccxml_cxx98 test)
-  castxml_test_gccxml_common(gccxml cxx c++98 ${test})
+  set(start --castxml-start start)
+  castxml_test_gccxml_common(gccxml cxx c++98 ${test} "${start}")
 endmacro()
 
 macro(castxml_test_gccxml_cxx11 test)
-  castxml_test_gccxml_common(gccxml cxx c++11 ${test})
+  set(start --castxml-start start)
+  castxml_test_gccxml_common(gccxml cxx c++11 ${test} "${start}")
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx98 test)
-  castxml_test_gccxml_common(gccxml.broken cxx c++98 ${test})
+  set(start --castxml-start start)
+  castxml_test_gccxml_common(gccxml.broken cxx c++98 ${test} "${start}")
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx11 test)
-  castxml_test_gccxml_common(gccxml.broken cxx c++11 ${test})
+  set(start --castxml-start start)
+  castxml_test_gccxml_common(gccxml.broken cxx c++11 ${test} "${start}")
 endmacro()
 
 macro(castxml_test_gccxml_c test)
@@ -79,6 +84,13 @@ endmacro()
 macro(castxml_test_gccxml test)
   castxml_test_gccxml_cxx98(${test})
   castxml_test_gccxml_cxx11(${test})
+endmacro()
+
+macro(castxml_test_gccxml_multiple)
+  set(start "--castxml-start;start::ns1,start::ns3")
+  castxml_test_gccxml_common(multiple1 cxx c++11 Multiple-Starts "${start}")
+  set(start "--castxml-start;start::ns1;--castxml-start;start::ns3")
+  castxml_test_gccxml_common(multiple2 cxx c++11 Multiple-Starts "${start}")
 endmacro()
 
 macro(castxml_test_gccxml_broken test)
@@ -91,6 +103,8 @@ set(empty_c ${input}/empty.c)
 set(empty_cxx ${input}/empty.cxx)
 set(empty_m ${input}/empty.m)
 set(empty_mm ${input}/empty.mm)
+
+castxml_test_gccxml_multiple()
 
 castxml_test_cmd(help1 -help)
 castxml_test_cmd(help2 --help)
