@@ -1285,12 +1285,12 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 
   if (clang::FunctionProtoType const* fpt =
       d->getType()->getAs<clang::FunctionProtoType>()) {
-    this->PrintFunctionTypeAttributes(fpt);
     this->PrintThrowsAttribute(fpt, dn->Complete);
     if (!clang::isa<clang::CXXConstructorDecl>(d) &&
         !clang::isa<clang::CXXDestructorDecl>(d)) {
       this->PrintMangledAttribute(d);
     }
+    this->PrintFunctionTypeAttributes(fpt);
   }
 
   if(unsigned np = d->getNumParams()) {
