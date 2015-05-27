@@ -31,7 +31,7 @@ release = '@conf_release@' # full version string
 exclude_patterns = []
 
 extensions = []
-templates_path = []
+templates_path = ['@conf_path@/templates']
 
 castxml_manuals = sorted(glob.glob(r'@conf_docs@/manual/*.rst'))
 castxml_manual_description = re.compile('^\.\. castxml-manual-description:(.*)$')

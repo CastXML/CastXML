@@ -1,0 +1,9 @@
+{% extends "!layout.html" %}
+{% block rootrellink %}
+  <li>
+    <a href="https://github.com/CastXML/CastXML#readme">CastXML</a>{{ reldelim1 }}
+  </li>
+  <li>
+    <a href="{{ pathto(master_doc) }}">{{ shorttitle|e }}</a>{{ reldelim1 }}
+  </li>
+{% endblock %}
