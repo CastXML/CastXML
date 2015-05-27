@@ -34,6 +34,8 @@ if(xml)
   set(maybe_xml xml)
   if(EXISTS "${xml}")
     file(READ "${xml}" actual_xml)
+    # Filter out arch-specific attributes.
+    string(REGEX REPLACE "(<(Constructor|Destructor|Method|OperatorMethod|Converter)[^/>]*) attributes=\"__thiscall__\"(/?>)" "\\1\\3" actual_xml "${actual_xml}")
   else()
     set(actual_xml "(missing)")
   endif()
