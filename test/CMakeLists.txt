@@ -129,6 +129,11 @@ castxml_test_cmd(cc-gnu-c-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} -E
 castxml_test_cmd(cc-gnu-c-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-cxx-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} -E -dM)
 castxml_test_cmd(cc-gnu-cxx-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-tgt-amd64 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__amd64__ ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-tgt-i386 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__i386__ ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-tgt-mingw --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=_WIN32 --cc-define=__MINGW32__ ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-tgt-win --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=_WIN32 ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-tgt-x86_64 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")" ${empty_cxx} "-###")
 
 # Test --castxml-cc-msvc detection.
 add_executable(cc-msvc cc-msvc.c)
@@ -137,6 +142,10 @@ castxml_test_cmd(cc-msvc-c-E --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_c}
 castxml_test_cmd(cc-msvc-c-cmd --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_c} "-###")
 castxml_test_cmd(cc-msvc-cxx-E --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_cxx} -E -dM)
 castxml_test_cmd(cc-msvc-cxx-cmd --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_cxx} "-###")
+castxml_test_cmd(cc-msvc-tgt-amd64 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_M_AMD64 ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-msvc-tgt-i386 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_M_IX86 ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-msvc-tgt-win --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_WIN32 ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-msvc-tgt-x86_64 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_M_X64 ")" ${empty_cxx} "-###")
 unset(castxml_test_cmd_extra_arguments)
 
 castxml_test_gccxml(ArrayType)
