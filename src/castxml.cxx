@@ -229,6 +229,12 @@ int main(int argc_in, const char** argv_in)
       clang_args.push_back(argv[i]);
     } else {
       clang_args.push_back(argv[i]);
+      if (strcmp(argv[i], "-target") == 0 ||
+          strcmp(argv[i], "--target") == 0 ||
+          strncmp(argv[i], "-target=", 8) == 0 ||
+          strncmp(argv[i], "--target=", 9) == 0) {
+        opts.HaveTarget = true;
+      }
     }
   }
 

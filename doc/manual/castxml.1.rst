@@ -43,6 +43,8 @@ Remaining options are given to the internal Clang compiler.
   ``<cc>`` names a compiler (e.g. ``/usr/bin/gcc`` or ``cl``) and
   ``<cc-opt>...`` specifies options that may affect its target
   (e.g. ``-m32``).
+  The target platform detected from the given compiler may be
+  overridden by a separate Clang ``-target`` option.
 
 ``--castxml-gccxml``
   Generate XML output in a format close to that of `gccxml`_.

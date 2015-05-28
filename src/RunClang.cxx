@@ -363,7 +363,7 @@ int runClang(const char* const* argBeg,
 
   if(opts.HaveCC) {
     // Configure target to match that of given compiler.
-    if(!opts.Triple.empty()) {
+    if(!opts.HaveTarget && !opts.Triple.empty()) {
       args.push_back("-target");
       args.push_back(opts.Triple.c_str());
     }
