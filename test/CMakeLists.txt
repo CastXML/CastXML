@@ -34,10 +34,21 @@ macro(castxml_test_cmd test)
 endmacro()
 
 macro(castxml_test_gccxml_common prefix ext std test)
+  if(castxml_test_gccxml_custom_start)
+    set(_castxml_start ${castxml_test_gccxml_custom_start})
+  else()
+    set(_castxml_start --castxml-start start)
+  endif()
+  if(castxml_test_gccxml_custom_input)
+    set(_castxml_input ${castxml_test_gccxml_custom_input})
+  else()
+    set(_castxml_input ${test})
+  endif()
   set(command $<TARGET_FILE:castxml>
-    --castxml-gccxml --castxml-start start
+    --castxml-gccxml
+    ${_castxml_start}
     -std=${std}
-    ${CMAKE_CURRENT_LIST_DIR}/input/${test}.${ext}
+    ${CMAKE_CURRENT_LIST_DIR}/input/${_castxml_input}.${ext}
     -o ${prefix}.${std}.${test}.xml
     ${castxml_test_gccxml_extra_arguments}
     )
