@@ -1,0 +1,13 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5"/>
+  <Namespace id="_3" name="ns1" context="_1" members="_6"/>
+  <Namespace id="_4" name="ns2" context="_1" members="_7"/>
+  <Namespace id="_5" name="ns3" context="_1" members="_8"/>
+  <Function id="_6" name="f1" returns="_9" context="_3" location="f1:3" file="f1" line="3" mangled="[^"]+"/>
+  <Function id="_7" name="f2" returns="_9" context="_4" location="f1:6" file="f1" line="6" mangled="[^"]+"/>
+  <Function id="_8" name="f3" returns="_9" context="_5" location="f1:9" file="f1" line="9" mangled="[^"]+"/>
+  <FundamentalType id="_9" name="void" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Namespace-nested.cxx"/>
+</GCC_XML>$
