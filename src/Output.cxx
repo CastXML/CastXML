@@ -762,7 +762,9 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
     // Ignore certain members.
     switch (d->getKind()) {
     case clang::Decl::CXXRecord: {
-      if(static_cast<clang::CXXRecordDecl const*>(d)->isInjectedClassName()) {
+      clang::CXXRecordDecl const* rd =
+        static_cast<clang::CXXRecordDecl const*>(d);
+      if (rd->isInjectedClassName()) {
         continue;
       }
     } break;
