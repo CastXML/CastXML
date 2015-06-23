@@ -1492,6 +1492,22 @@ void ASTVisitor::OutputClassTemplateSpecializationDecl(
 void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
                                    DumpNode const* dn)
 {
+  // As a special case, replace our compatibility Typedef for __float128
+  // with a FundamentalType so we generate the same thing gccxml did.
+  if (d->getName() == "__float128" &&
+      clang::isa<clang::TranslationUnitDecl>(d->getDeclContext())) {
+    clang::SourceLocation sl = d->getLocation();
+    if (sl.isValid()) {
+      clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
+      if (!this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
+        this->OS << "  <FundamentalType";
+        this->PrintIdAttribute(dn);
+        this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
+        return;
+      }
+    }
+  }
+
   this->OS << "  <Typedef";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
