@@ -81,7 +81,7 @@ static void fixPredefines(Options& opts)
        pd.find("#define __x86_64__ ") != pd.npos ||
        pd.find("#define __ia64__ ") != pd.npos)) {
     pd += "\n"
-      "typedef struct { "
+      "typedef struct __castxml_float128 { "
       "  char x[16] __attribute__((aligned(16))); "
       "} __float128;\n"
       ;

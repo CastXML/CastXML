@@ -750,6 +750,8 @@ void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
 void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
                                        std::set<DumpId>& emitted)
 {
+  bool const isTranslationUnit = clang::isa<clang::TranslationUnitDecl>(dc);
+
   for(clang::DeclContext::decl_iterator i = dc->decls_begin(),
         e = dc->decls_end(); i != e; ++i) {
     clang::Decl const* d = *i;
@@ -765,6 +767,9 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       clang::CXXRecordDecl const* rd =
         static_cast<clang::CXXRecordDecl const*>(d);
       if (rd->isInjectedClassName()) {
+        continue;
+      }
+      if (isTranslationUnit && rd->getName() == "__castxml_float128") {
         continue;
       }
     } break;
@@ -800,6 +805,12 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
         static_cast<clang::NamespaceDecl const*>(d);
       if (nd->isInline()) {
         this->AddDeclContextMembers(nd, emitted);
+        continue;
+      }
+    } break;
+    case clang::Decl::Record: {
+      clang::RecordDecl const* rd = static_cast<clang::RecordDecl const*>(d);
+      if (isTranslationUnit && rd->getName() == "__castxml_float128") {
         continue;
       }
     } break;
@@ -1028,6 +1039,12 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
   {
     llvm::raw_string_ostream rso(s);
     this->MangleContext->mangleName(d, rso);
+  }
+
+  // We cannot mangle __float128 correctly because Clang does not have
+  // it as an internal type, so skip mangled attributes involving it.
+  if (s.find("18__castxml_float128") != s.npos) {
+    s = "";
   }
 
   // Strip a leading 1 byte in MS mangling.

@@ -75,6 +75,10 @@ foreach(o result stdout stderr ${maybe_xml})
   endif()
 endforeach()
 
+if(maybe_xml AND actual_xml MATCHES "__castxml")
+  set(msg "xml contains disallowed text '__castxml'\n")
+endif()
+
 if(msg)
   if("$ENV{TEST_UPDATE}" AND expect_xml_file AND EXISTS "${xml}")
     set(update_xml "${actual_xml}")
