@@ -34,7 +34,7 @@ macro(castxml_test_cmd test)
 endmacro()
 
 macro(castxml_test_gccxml_common prefix ext std test)
-  if(castxml_test_gccxml_custom_start)
+  if(DEFINED castxml_test_gccxml_custom_start)
     set(_castxml_start ${castxml_test_gccxml_custom_start})
   else()
     set(_castxml_start --castxml-start start)
