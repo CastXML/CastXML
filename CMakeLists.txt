@@ -40,7 +40,13 @@ if(NOT CastXML_INSTALL_MAN_DIR)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti -std=c++11")
+  if(CYGWIN OR MINGW)
+    # Use GNU extensions on Windows as LLVM upstream does.
+    set(std_cxx11 "-std=gnu++11")
+  else()
+    set(std_cxx11 "-std=c++11")
+  endif()
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-rtti ${std_cxx11}")
 endif()
 
 set(KWSYS_NAMESPACE cxsys)
