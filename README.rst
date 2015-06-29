@@ -47,7 +47,7 @@ To build CastXML from source, first obtain the prerequisites:
   This version of CastXML has been tested with LLVM/Clang
 
   - Release ``3.6.0``
-  - SVN revision ``234175``
+  - SVN revision ``240941``
 
 * Optionally, the `Sphinx`_ documentation generator to build documentation.
 

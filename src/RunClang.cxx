@@ -21,6 +21,8 @@
 
 #include <cxsys/SystemTools.hxx>
 
+#include "llvm/Config/llvm-config.h"
+
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
@@ -267,9 +269,17 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
   std::unique_ptr<llvm::opt::OptTable>
     opts(clang::driver::createDriverOptTable());
   unsigned missingArgIndex, missingArgCount;
+#if LLVM_VERSION_MAJOR > 3 \
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
+  llvm::opt::InputArgList
+    args(opts->ParseArgs(llvm::makeArrayRef(argBeg, argEnd),
+                         missingArgIndex, missingArgCount));
+  clang::ParseDiagnosticArgs(*diagOpts, args);
+#else
   std::unique_ptr<llvm::opt::InputArgList>
     args(opts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, *args);
+#endif
   clang::TextDiagnosticPrinter* diagClient =
     new clang::TextDiagnosticPrinter(llvm::errs(), &*diagOpts);
   llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine>

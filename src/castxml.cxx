@@ -19,6 +19,8 @@
 #include "RunClang.h"
 #include "Utils.h"
 
+#include "llvm/Config/llvm-config.h"
+
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Support/Allocator.h"
 #include "llvm/Support/CommandLine.h"
@@ -33,6 +35,10 @@
 #include <vector>
 #include <string.h>
 
+#if LLVM_VERSION_MAJOR > 3 \
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
+# include "llvm/Support/StringSaver.h"
+#else
 class StringSaver: public llvm::cl::StringSaver {
   std::set<std::string> Strings;
 public:
@@ -40,6 +46,7 @@ public:
     return this->Strings.insert(s).first->c_str();
   }
 };
+#endif
 
 //----------------------------------------------------------------------------
 int main(int argc_in, const char** argv_in)
@@ -63,7 +70,13 @@ int main(int argc_in, const char** argv_in)
     return 1;
   }
 
+#if LLVM_VERSION_MAJOR > 3 \
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
+  llvm::BumpPtrAllocator argSaverAlloc;
+  llvm::BumpPtrStringSaver argSaver(argSaverAlloc);
+#else
   StringSaver argSaver;
+#endif
   llvm::cl::ExpandResponseFiles(
     argSaver, llvm::cl::TokenizeGNUCommandLine, argv);
 
