@@ -300,22 +300,44 @@ endforeach()
 
 if(TEST_GNU_C)
   set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_C})
-  castxml_test_gccxml_c(GNU-float128)
-  set(castxml_test_gccxml_custom_input GNU-float128)
-  set(castxml_test_gccxml_custom_start "")
-  castxml_test_gccxml_c(GNU-float128-nostart)
-  unset(castxml_test_gccxml_custom_start)
-  unset(castxml_test_gccxml_custom_input)
+
+  # Check if the GNU compiler supports __float128 to enable test.
+  execute_process(
+    COMMAND ${TEST_GNU_C} -c ${CMAKE_CURRENT_SOURCE_DIR}/input/GNU-float128.c
+    OUTPUT_VARIABLE out
+    ERROR_VARIABLE out
+    RESULT_VARIABLE failed_float128_c
+    )
+  if(NOT failed_float128_c)
+    castxml_test_gccxml_c(GNU-float128)
+    set(castxml_test_gccxml_custom_input GNU-float128)
+    set(castxml_test_gccxml_custom_start "")
+    castxml_test_gccxml_c(GNU-float128-nostart)
+    unset(castxml_test_gccxml_custom_start)
+    unset(castxml_test_gccxml_custom_input)
+  endif()
+
   unset(castxml_test_gccxml_extra_arguments)
 endif()
 
 if(TEST_GNU_CXX)
   set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_CXX})
-  castxml_test_gccxml(GNU-float128)
-  set(castxml_test_gccxml_custom_input GNU-float128)
-  set(castxml_test_gccxml_custom_start "")
-  castxml_test_gccxml(GNU-float128-nostart)
-  unset(castxml_test_gccxml_custom_start)
-  unset(castxml_test_gccxml_custom_input)
+
+  # Check if the GNU compiler supports __float128 to enable test.
+  execute_process(
+    COMMAND ${TEST_GNU_CXX} -c ${CMAKE_CURRENT_SOURCE_DIR}/input/GNU-float128.cxx
+    OUTPUT_VARIABLE out
+    ERROR_VARIABLE out
+    RESULT_VARIABLE failed_float128_cxx
+    )
+  if(NOT failed_float128_cxx)
+    castxml_test_gccxml(GNU-float128)
+    set(castxml_test_gccxml_custom_input GNU-float128)
+    set(castxml_test_gccxml_custom_start "")
+    castxml_test_gccxml(GNU-float128-nostart)
+    unset(castxml_test_gccxml_custom_start)
+    unset(castxml_test_gccxml_custom_input)
+  endif()
+
   unset(castxml_test_gccxml_extra_arguments)
 endif()
