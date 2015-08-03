@@ -334,7 +334,7 @@ static int runClangImpl(const char* const* argBeg,
   // Run Clang for each compilation computed by the driver.
   // This should be once per input source file.
   bool result = true;
-  for(clang::driver::Job const& job : c->getJobs()) {
+  for(auto const& job : c->getJobs()) {
     clang::driver::Command const* cmd =
       llvm::dyn_cast<clang::driver::Command>(&job);
     if(cmd && strcmp(cmd->getCreator().getName(), "clang") == 0) {
