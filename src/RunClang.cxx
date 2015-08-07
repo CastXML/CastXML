@@ -318,6 +318,9 @@ static int runClangImpl(const char* const* argBeg,
 
   // Ask the driver to build the compiler commands for us.
   std::unique_ptr<clang::driver::Compilation> c(d.BuildCompilation(cArgs));
+  if (diags->hasErrorOccurred()) {
+    return 1;
+  }
 
   // For '-###' just print the jobs and exit early.
   if(c->getArgs().hasArg(clang::driver::options::OPT__HASH_HASH_HASH)) {
