@@ -16,6 +16,14 @@
 #  define _XOPEN_SOURCE_EXTENDED
 #endif
 
+#if defined(_WIN32) && (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__) || defined(__MINGW32__))
+#  define KWSYS_WINDOWS_DIRS
+#else
+#  if defined(__SUNPRO_CC)
+#    include <fcntl.h>
+#  endif
+#endif
+
 #include "kwsysPrivate.h"
 #include KWSYS_HEADER(RegularExpression.hxx)
 #include KWSYS_HEADER(SystemTools.hxx)
@@ -205,8 +213,7 @@ static time_t windows_filetime_to_posix_time(const FILETIME& ft)
 }
 #endif
 
-#if defined(_WIN32) && (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__) || defined(__MINGW32__))
-
+#ifdef KWSYS_WINDOWS_DIRS
 #include <wctype.h>
 
 inline int Mkdir(const kwsys_stl::string& dir)
@@ -243,16 +250,45 @@ inline int Chdir(const kwsys_stl::string& dir)
   return _wchdir(KWSYS_NAMESPACE::Encoding::ToWide(dir).c_str());
   #endif
 }
-inline void Realpath(const kwsys_stl::string& path, kwsys_stl::string & resolved_path)
+inline void Realpath(const kwsys_stl::string& path,
+                     kwsys_stl::string& resolved_path,
+                     kwsys_stl::string* errorMessage = 0)
 {
   kwsys_stl::wstring tmp = KWSYS_NAMESPACE::Encoding::ToWide(path);
   wchar_t *ptemp;
   wchar_t fullpath[MAX_PATH];
-  if( GetFullPathNameW(tmp.c_str(), sizeof(fullpath)/sizeof(fullpath[0]),
-                       fullpath, &ptemp) )
+  DWORD bufferLen = GetFullPathNameW(tmp.c_str(),
+      sizeof(fullpath) / sizeof(fullpath[0]),
+      fullpath, &ptemp);
+  if( bufferLen < sizeof(fullpath)/sizeof(fullpath[0]) )
     {
     resolved_path = KWSYS_NAMESPACE::Encoding::ToNarrow(fullpath);
     KWSYS_NAMESPACE::SystemTools::ConvertToUnixSlashes(resolved_path);
+    }
+  else if(errorMessage)
+    {
+    if(bufferLen)
+      {
+      *errorMessage = "Destination path buffer size too small.";
+      }
+    else if(unsigned int errorId = GetLastError())
+      {
+      LPSTR message = NULL;
+      DWORD size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER
+                                   | FORMAT_MESSAGE_FROM_SYSTEM
+                                   | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                   NULL, errorId,
+                                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+                                   (LPSTR)&message, 0, NULL);
+      *errorMessage = std::string(message, size);
+      LocalFree(message);
+      }
+    else
+      {
+      *errorMessage = "Unknown error.";
+      }
+
+    resolved_path = "";
     }
   else
     {
@@ -280,14 +316,30 @@ inline int Chdir(const kwsys_stl::string& dir)
 {
   return chdir(dir.c_str());
 }
-inline void Realpath(const kwsys_stl::string& path, kwsys_stl::string & resolved_path)
+inline void Realpath(const kwsys_stl::string& path,
+                     kwsys_stl::string& resolved_path,
+                     kwsys_stl::string* errorMessage = 0)
 {
   char resolved_name[KWSYS_SYSTEMTOOLS_MAXPATH];
 
+  errno = 0;
   char *ret = realpath(path.c_str(), resolved_name);
   if(ret)
     {
     resolved_path = ret;
+    }
+  else if(errorMessage)
+    {
+    if(errno)
+      {
+      *errorMessage = strerror(errno);
+      }
+    else
+      {
+      *errorMessage = "Unknown error.";
+      }
+
+    resolved_path = "";
     }
   else
     {
@@ -332,6 +384,26 @@ class SystemToolsTranslationMap :
     public kwsys_stl::map<kwsys_stl::string,kwsys_stl::string>
 {
 };
+
+#ifdef _WIN32
+struct SystemToolsPathCaseCmp
+{
+  bool operator()(kwsys_stl::string const& l, kwsys_stl::string const& r) const
+    {
+# ifdef _MSC_VER
+    return _stricmp(l.c_str(), r.c_str()) < 0;
+# elif defined(__GNUC__)
+    return strcasecmp(l.c_str(), r.c_str()) < 0;
+# else
+    return SystemTools::Strucmp(l.c_str(), r.c_str()) < 0;
+# endif
+    }
+};
+
+class SystemToolsPathCaseMap:
+  public kwsys_stl::map<kwsys_stl::string, kwsys_stl::string,
+                        SystemToolsPathCaseCmp> {};
+#endif
 
 // adds the elements of the env variable path to the arg passed in
 void SystemTools::GetPath(kwsys_stl::vector<kwsys_stl::string>& path, const char* env)
@@ -1208,15 +1280,22 @@ bool SystemTools::PathCygwinToWin32(const char *path, char *win32_path)
 
 bool SystemTools::Touch(const kwsys_stl::string& filename, bool create)
 {
-  if(create && !SystemTools::FileExists(filename))
+  if (!SystemTools::FileExists(filename))
     {
-    FILE* file = Fopen(filename, "a+b");
-    if(file)
+    if(create)
       {
-      fclose(file);
+      FILE* file = Fopen(filename, "a+b");
+      if(file)
+        {
+        fclose(file);
+        return true;
+        }
+      return false;
+      }
+    else
+      {
       return true;
       }
-    return false;
     }
 #if defined(_WIN32) && !defined(__CYGWIN__)
   HANDLE h = CreateFileW(
@@ -2323,6 +2402,10 @@ bool SystemTools::CopyFileAlways(const kwsys_stl::string& source, const kwsys_st
       {
       fout.write(buffer, fin.gcount());
       }
+    else
+      {
+      break;
+      }
     }
 
   // Make sure the operating system has finished writing the file
@@ -2611,27 +2694,43 @@ kwsys_stl::string SystemTools::GetLastSystemError()
 bool SystemTools::RemoveFile(const kwsys_stl::string& source)
 {
 #ifdef _WIN32
-  mode_t mode;
-  if ( !SystemTools::GetPermissions(source, mode) )
+  kwsys_stl::wstring const& ws =
+    SystemTools::ConvertToWindowsExtendedPath(source);
+  if (DeleteFileW(ws.c_str()))
+    {
+    return true;
+    }
+  DWORD err = GetLastError();
+  if (err == ERROR_FILE_NOT_FOUND ||
+      err == ERROR_PATH_NOT_FOUND)
+    {
+    return true;
+    }
+  if (err != ERROR_ACCESS_DENIED)
     {
     return false;
     }
-  /* Win32 unlink is stupid --- it fails if the file is read-only  */
-  SystemTools::SetPermissions(source, S_IWRITE);
-#endif
-#ifdef _WIN32
-  bool res =
-    _wunlink(SystemTools::ConvertToWindowsExtendedPath(source).c_str()) == 0;
-#else
-  bool res = unlink(source.c_str()) != 0 ? false : true;
-#endif
-#ifdef _WIN32
-  if ( !res )
+  /* The file may be read-only.  Try adding write permission.  */
+  mode_t mode;
+  if (!SystemTools::GetPermissions(source, mode) ||
+      !SystemTools::SetPermissions(source, S_IWRITE))
     {
-    SystemTools::SetPermissions(source, mode);
+    SetLastError(err);
+    return false;
     }
+  if (DeleteFileW(ws.c_str()) ||
+      GetLastError() == ERROR_FILE_NOT_FOUND ||
+      GetLastError() == ERROR_PATH_NOT_FOUND)
+    {
+    return true;
+    }
+  /* Try to restore the original permissions.  */
+  SystemTools::SetPermissions(source, mode);
+  SetLastError(err);
+  return false;
+#else
+  return unlink(source.c_str()) == 0 || errno == ENOENT;
 #endif
-  return res;
 }
 
 bool SystemTools::RemoveADirectory(const kwsys_stl::string& source)
@@ -3039,10 +3138,11 @@ kwsys_stl::string SystemTools
   return "";
 }
 
-kwsys_stl::string SystemTools::GetRealPath(const kwsys_stl::string& path)
+kwsys_stl::string SystemTools::GetRealPath(const kwsys_stl::string& path,
+                                           kwsys_stl::string* errorMessage)
 {
   kwsys_stl::string ret;
-  Realpath(path, ret);
+  Realpath(path, ret, errorMessage);
   return ret;
 }
 
@@ -3098,8 +3198,16 @@ bool SystemTools::FileIsDirectory(const kwsys_stl::string& inName)
 bool SystemTools::FileIsSymlink(const kwsys_stl::string& name)
 {
 #if defined( _WIN32 )
-  (void)name;
-  return false;
+  DWORD attr = GetFileAttributesW(
+    SystemTools::ConvertToWindowsExtendedPath(name).c_str());
+  if (attr != INVALID_FILE_ATTRIBUTES)
+    {
+    return (attr & FILE_ATTRIBUTE_REPARSE_POINT) != 0;
+    }
+  else
+    {
+    return false;
+    }
 #else
   struct stat fs;
   if(lstat(name.c_str(), &fs) == 0)
@@ -3610,6 +3718,11 @@ static int GetCasePathName(const kwsys_stl::string & pathIn,
   // Start with root component.
   kwsys_stl::vector<kwsys_stl::string>::size_type idx = 0;
   casePath = path_components[idx++];
+  // make sure drive letter is always upper case
+  if(casePath.size() > 1 && casePath[1] == ':')
+    {
+    casePath[0] = toupper(casePath[0]);
+    }
   const char* sep = "";
 
   // If network path, fill casePath with server/share so FindFirstFile
@@ -3665,27 +3778,21 @@ kwsys_stl::string SystemTools::GetActualCaseForPath(const kwsys_stl::string& p)
 #ifndef _WIN32
   return p;
 #else
-  kwsys_stl::string casePath = p;
-  // make sure drive letter is always upper case
-  if(casePath.size() > 1 && casePath[1] == ':')
-    {
-    casePath[0] = toupper(casePath[0]);
-    }
-
   // Check to see if actual case has already been called
-  // for this path, and the result is stored in the LongPathMap
-  SystemToolsTranslationMap::iterator i =
-    SystemTools::LongPathMap->find(casePath);
-  if(i != SystemTools::LongPathMap->end())
+  // for this path, and the result is stored in the PathCaseMap
+  SystemToolsPathCaseMap::iterator i =
+    SystemTools::PathCaseMap->find(p);
+  if(i != SystemTools::PathCaseMap->end())
     {
     return i->second;
     }
+  kwsys_stl::string casePath;
   int len = GetCasePathName(p, casePath);
   if(len == 0 || len > MAX_PATH+1)
     {
     return p;
     }
-  (*SystemTools::LongPathMap)[p] = casePath;
+  (*SystemTools::PathCaseMap)[p] = casePath;
   return casePath;
 #endif
 }
@@ -4131,6 +4238,11 @@ SystemTools::DetectFileType(const char *filename,
     return SystemTools::FileTypeUnknown;
     }
 
+  if (SystemTools::FileIsDirectory(filename))
+    {
+    return SystemTools::FileTypeUnknown;
+    }
+
   FILE *fp = Fopen(filename, "rb");
   if (!fp)
     {
@@ -4144,6 +4256,7 @@ SystemTools::DetectFileType(const char *filename,
   fclose(fp);
   if (read_length == 0)
     {
+    delete [] buffer;
     return SystemTools::FileTypeUnknown;
     }
 
@@ -4328,7 +4441,7 @@ bool SystemTools::FileIsFullPath(const char* in_name, size_t len)
 
 bool SystemTools::GetShortPath(const kwsys_stl::string& path, kwsys_stl::string& shortPath)
 {
-#if defined(WIN32) && !defined(__CYGWIN__)
+#if defined(_WIN32) && !defined(__CYGWIN__)
   const int size = int(path.size()) +1; // size of return
   char *tempPath = new char[size];  // create a buffer
   DWORD ret;
@@ -4725,7 +4838,11 @@ kwsys_stl::string SystemTools::GetOperatingSystemNameAndVersion()
 
 #ifdef KWSYS_WINDOWS_DEPRECATED_GetVersionEx
 # pragma warning (push)
-# pragma warning (disable:4996)
+# ifdef __INTEL_COMPILER
+#  pragma warning (disable:1478)
+# else
+#  pragma warning (disable:4996)
+# endif
 #endif
   bOsVersionInfoEx = GetVersionEx((OSVERSIONINFO *)&osvi);
   if (!bOsVersionInfoEx)
@@ -5055,7 +5172,9 @@ bool SystemTools::ParseURL( const kwsys_stl::string& URL,
 // necessary.
 static unsigned int SystemToolsManagerCount;
 SystemToolsTranslationMap *SystemTools::TranslationMap;
-SystemToolsTranslationMap *SystemTools::LongPathMap;
+#ifdef _WIN32
+SystemToolsPathCaseMap *SystemTools::PathCaseMap;
+#endif
 #ifdef __CYGWIN__
 SystemToolsTranslationMap *SystemTools::Cyg2Win32Map;
 #endif
@@ -5103,7 +5222,9 @@ void SystemTools::ClassInitialize()
 #endif
   // Allocate the translation map first.
   SystemTools::TranslationMap = new SystemToolsTranslationMap;
-  SystemTools::LongPathMap = new SystemToolsTranslationMap;
+#ifdef _WIN32
+  SystemTools::PathCaseMap = new SystemToolsPathCaseMap;
+#endif
 #ifdef __CYGWIN__
   SystemTools::Cyg2Win32Map = new SystemToolsTranslationMap;
 #endif
@@ -5160,7 +5281,9 @@ void SystemTools::ClassInitialize()
 void SystemTools::ClassFinalize()
 {
   delete SystemTools::TranslationMap;
-  delete SystemTools::LongPathMap;
+#ifdef _WIN32
+  delete SystemTools::PathCaseMap;
+#endif
 #ifdef __CYGWIN__
   delete SystemTools::Cyg2Win32Map;
 #endif
