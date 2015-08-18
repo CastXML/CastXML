@@ -347,6 +347,10 @@ class ASTVisitor: public ASTVisitorBase
   void GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
                                  std::vector<std::string>& attrs);
 
+  /** Get the attributes of the given declaration.  */
+  void GetDeclAttributes(clang::Decl const* d,
+                         std::vector<std::string>& attrs);
+
   /** Print a throw="..." attribute listing the XML IDREFs for
       the types that the given function prototype declares in
       the throw() specification.  */
@@ -1233,6 +1237,15 @@ void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
+                                   std::vector<std::string>& attrs)
+{
+  for (auto const* a: d->specific_attrs<clang::AnnotateAttr>()) {
+    attrs.push_back("annotate(" + a->getAnnotation().str() + ")");
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
                                       bool complete)
 {
@@ -1334,6 +1347,7 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
     this->GetFunctionTypeAttributes(fpt, attributes);
   }
 
+  this->GetDeclAttributes(d, attributes);
   this->PrintAttributesAttribute(attributes);
 
   if(unsigned np = d->getNumParams()) {
