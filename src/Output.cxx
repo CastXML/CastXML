@@ -340,9 +340,12 @@ class ASTVisitor: public ASTVisitorBase
       for later output.  */
   void PrintBasesAttribute(clang::CXXRecordDecl const* dx);
 
-  /** Print an attributes="..." attribute listing the attributes
-      of the given function type.  */
-  void PrintFunctionTypeAttributes(clang::FunctionProtoType const* t);
+  /** Print an attributes="..." attribute listing the given attributes.  */
+  void PrintAttributesAttribute(std::vector<std::string> const& attrs);
+
+  /** Get the attributes of the given function type.  */
+  void GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
+                                 std::vector<std::string>& attrs);
 
   /** Print a throw="..." attribute listing the XML IDREFs for
       the types that the given function prototype declares in
@@ -1193,19 +1196,36 @@ void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::PrintFunctionTypeAttributes(clang::FunctionProtoType const* t)
+void ASTVisitor::PrintAttributesAttribute(
+  std::vector<std::string> const& attrs)
+{
+  if (attrs.empty()) {
+    return;
+  }
+  this->OS << " attributes=\"";
+  const char* sep = "";
+  for (std::string const& a: attrs) {
+    this->OS << sep << encodeXML(a);
+    sep = " ";
+  }
+  this->OS << "\"";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
+                                           std::vector<std::string>& attrs)
 {
   switch (t->getExtInfo().getCC()) {
   case clang::CallingConv::CC_C:
     break;
   case clang::CallingConv::CC_X86StdCall:
-    this->OS << " attributes=\"__stdcall__\"";
+    attrs.push_back("__stdcall__");
     break;
   case clang::CallingConv::CC_X86FastCall:
-    this->OS << " attributes=\"__fastcall__\"";
+    attrs.push_back("__fastcall__");
     break;
   case clang::CallingConv::CC_X86ThisCall:
-    this->OS << " attributes=\"__thiscall__\"";
+    attrs.push_back("__thiscall__");
     break;
   default:
     break;
@@ -1302,6 +1322,8 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
     this->OS << " artificial=\"1\"";
   }
 
+  std::vector<std::string> attributes;
+
   if (clang::FunctionProtoType const* fpt =
       d->getType()->getAs<clang::FunctionProtoType>()) {
     this->PrintThrowsAttribute(fpt, dn->Complete);
@@ -1309,8 +1331,10 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
         !clang::isa<clang::CXXDestructorDecl>(d)) {
       this->PrintMangledAttribute(d);
     }
-    this->PrintFunctionTypeAttributes(fpt);
+    this->GetFunctionTypeAttributes(fpt, attributes);
   }
+
+  this->PrintAttributesAttribute(attributes);
 
   if(unsigned np = d->getNumParams()) {
     this->OS << ">\n";
@@ -1356,7 +1380,9 @@ void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
   if(t->isRestrict()) {
     this->OS << " restrict=\"1\"";
   }
-  this->PrintFunctionTypeAttributes(t);
+  std::vector<std::string> attributes;
+  this->GetFunctionTypeAttributes(t, attributes);
+  this->PrintAttributesAttribute(attributes);
   if(t->param_type_begin() != t->param_type_end()) {
     this->OS << ">\n";
     for (clang::FunctionProtoType::param_type_iterator
