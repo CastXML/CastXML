@@ -1433,6 +1433,9 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
+  std::vector<std::string> attributes;
+  this->GetDeclAttributes(a, attributes);
+  this->PrintAttributesAttribute(attributes);
   this->OS << "/>\n";
 }
 
