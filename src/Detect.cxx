@@ -21,9 +21,8 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
-
-#include <cxsys/SystemTools.hxx>
 
 #include <algorithm>
 #include <cstdlib>
@@ -160,7 +159,7 @@ static bool detectCC_GNU(const char* const* argBeg,
                      fwImplicitSuffix));
             }
             // Replace the compiler builtin include directory with ours.
-            if(!fw && cxsys::SystemTools::FileExists((inc+"/emmintrin.h"))) {
+            if (!fw && llvm::sys::fs::exists(inc+"/emmintrin.h")) {
               inc = getClangBuiltinIncludeDir();
             }
             opts.Includes.push_back(Options::Include(inc, fw));
