@@ -19,8 +19,6 @@
 #include "Output.h"
 #include "Utils.h"
 
-#include <cxsys/SystemTools.hxx>
-
 #include "llvm/Config/llvm-config.h"
 
 #include "clang/AST/ASTConsumer.h"
@@ -41,7 +39,9 @@
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Option/ArgList.h"
+#include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Host.h"
+#include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <iostream>
@@ -301,8 +301,8 @@ static int runClangImpl(const char* const* argBeg,
   // get system compiler setting arguments from the Driver.
   clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(),
                           *diags);
-  if(!cxsys::SystemTools::FileIsFullPath(d.ResourceDir.c_str()) ||
-     !cxsys::SystemTools::FileIsDirectory(d.ResourceDir.c_str())) {
+  if (!llvm::sys::path::is_absolute(d.ResourceDir) ||
+      !llvm::sys::fs::is_directory(d.ResourceDir)) {
     d.ResourceDir = getClangResourceDir();
   }
   llvm::SmallVector<const char *, 16> cArgs;
