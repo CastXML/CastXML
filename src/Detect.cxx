@@ -23,6 +23,7 @@
 
 #include <cxsys/SystemTools.hxx>
 
+#include <algorithm>
 #include <iostream>
 #include <string.h>
 
@@ -144,7 +145,7 @@ static bool detectCC_GNU(const char* const* argBeg,
               --e;
             }
             std::string inc(s, e-s);
-            cxsys::SystemTools::ConvertToUnixSlashes(inc);
+            std::replace(inc.begin(), inc.end(), '\\', '/');
             bool fw = ((inc.size() > fwExplicitSuffix.size()) &&
                        (inc.substr(inc.size()-fwExplicitSuffix.size()) ==
                         fwExplicitSuffix));
@@ -198,7 +199,7 @@ static bool detectCC_MSVC(const char* const* argBeg,
             e = includes.end(); i != e; ++i) {
         if(!i->empty()) {
           std::string inc = *i;
-          cxsys::SystemTools::ConvertToUnixSlashes(inc);
+          std::replace(inc.begin(), inc.end(), '\\', '/');
           opts.Includes.push_back(inc);
         }
       }
