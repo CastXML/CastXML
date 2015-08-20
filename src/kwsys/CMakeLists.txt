@@ -338,6 +338,7 @@ ENDIF()
 # capabilities and parent project's request.  Enforce 0/1 as only
 # possible values for configuration into Configure.hxx.
 
+IF(0) # Not used by CastXML
 KWSYS_PLATFORM_CXX_TEST(KWSYS_STL_HAVE_STD
   "Checking whether STL classes are in std namespace" DIRECT)
 
@@ -474,6 +475,7 @@ IF(KWSYS_CXX_HAS___INT64)
     ENDIF()
   ENDIF()
 ENDIF()
+ENDIF()
 
 IF(KWSYS_USE_FundamentalType)
   # Look for type size helper macros.
@@ -537,10 +539,12 @@ IF(KWSYS_USE_FundamentalType)
     "Checking whether char is signed" DIRECT)
 ENDIF()
 
+IF(0) # Not used by CastXML
 IF(KWSYS_USE_Encoding)
   # Look for type size helper macros.
   KWSYS_PLATFORM_CXX_TEST(KWSYS_STL_HAS_WSTRING
     "Checking whether wstring is available" DIRECT)
+ENDIF()
 ENDIF()
 
 IF(KWSYS_USE_IOStream)
@@ -812,6 +816,7 @@ ENDIF()
 #-----------------------------------------------------------------------------
 # Create STL header wrappers to block warnings in the STL headers and
 # give standard names by which they may be included.
+IF(0) # Not used by CastXML
 SET(KWSYS_STL_HEADER_EXTRA_string 1)
 FOREACH(header
   algorithm
@@ -886,11 +891,14 @@ FOREACH(header iostream fstream sstream iosfwd)
       ${KWSYS_INSTALL_INCLUDE_OPTIONS})
   ENDIF()
 ENDFOREACH()
+ENDIF()
 
 #-----------------------------------------------------------------------------
 # Build a list of classes and headers we need to implement the
 # selected components.  Initialize with required components.
 SET(KWSYS_CLASSES)
+SET(KWSYS_H_FILES Configure) # CastXML needs only this.
+IF(0) # Not used by CastXML
 SET(KWSYS_H_FILES Configure SharedForward)
 SET(KWSYS_HXX_FILES Configure String
   hashtable hash_fun hash_map hash_set
@@ -913,6 +921,7 @@ FOREACH(cpp ${cppclasses})
     ENDIF()
   ENDIF()
 ENDFOREACH()
+ENDIF()
 
 # Add selected C components.
 FOREACH(c
