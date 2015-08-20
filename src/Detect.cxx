@@ -18,6 +18,8 @@
 #include "Options.h"
 #include "Utils.h"
 
+#include "llvm/ADT/SmallVector.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
 #include "llvm/Support/Host.h"
 
@@ -194,12 +196,12 @@ static bool detectCC_MSVC(const char* const* argBeg,
       opts.Predefines = predefs+1;
     }
     if(const char* includes_str = std::getenv("INCLUDE")) {
-      std::vector<std::string> includes;
-      cxsys::SystemTools::Split(includes_str, includes, ';');
-      for(std::vector<std::string>::iterator i = includes.begin(),
-            e = includes.end(); i != e; ++i) {
-        if(!i->empty()) {
-          std::string inc = *i;
+      llvm::SmallVector<llvm::StringRef, 8> includes;
+      llvm::StringRef includes_ref(includes_str);
+      includes_ref.split(includes, ";", -1, false);
+      for (llvm::StringRef i: includes) {
+        if (!i.empty()) {
+          std::string inc = i;
           std::replace(inc.begin(), inc.end(), '\\', '/');
           opts.Includes.push_back(inc);
         }
