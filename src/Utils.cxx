@@ -45,10 +45,10 @@ static bool tryBuildDir(std::string const& dir)
   std::ifstream cl_fin(cl_dir_txt.c_str());
   std::string src_dir;
   std::string cl_dir;
-  if(src_fin && cxsys::SystemTools::GetLineFromStream(src_fin, src_dir) &&
-     cxsys::SystemTools::FileIsDirectory(src_dir.c_str()) &&
-     cl_fin && cxsys::SystemTools::GetLineFromStream(cl_fin, cl_dir) &&
-     cxsys::SystemTools::FileIsDirectory(cl_dir.c_str())) {
+  if (std::getline(src_fin, src_dir) &&
+      cxsys::SystemTools::FileIsDirectory(src_dir.c_str()) &&
+      std::getline(cl_fin, cl_dir) &&
+      cxsys::SystemTools::FileIsDirectory(cl_dir.c_str())) {
     castxmlResourceDir = src_dir + "/share/castxml";
     castxmlClangResourceDir = cl_dir;
     return true;
