@@ -18,8 +18,9 @@
 #include "Version.h"
 
 #include <cxsys/Process.h>
-#include <cxsys/SystemTools.hxx>
+#include <llvm/ADT/SmallString.h>
 #include <llvm/Support/FileSystem.h>
+#include <llvm/Support/Path.h>
 #include <fstream>
 #include <vector>
 
@@ -46,9 +47,9 @@ static bool tryBuildDir(std::string const& dir)
   std::string src_dir;
   std::string cl_dir;
   if (std::getline(src_fin, src_dir) &&
-      cxsys::SystemTools::FileIsDirectory(src_dir.c_str()) &&
+      llvm::sys::fs::is_directory(src_dir) &&
       std::getline(cl_fin, cl_dir) &&
-      cxsys::SystemTools::FileIsDirectory(cl_dir.c_str())) {
+      llvm::sys::fs::is_directory(cl_dir)) {
     castxmlResourceDir = src_dir + "/share/castxml";
     castxmlClangResourceDir = cl_dir;
     return true;
@@ -60,25 +61,28 @@ static bool tryBuildDir(std::string const& dir)
 bool findResourceDir(const char* argv0, std::ostream& error)
 {
   std::string exe = GetMainExecutable(argv0);
-  if(!cxsys::SystemTools::FileIsFullPath(exe.c_str())) {
+  if (!llvm::sys::path::is_absolute(exe)) {
     error << "error: unable to locate " << argv0 << "\n";
     return false;
   }
-  std::string exe_dir = cxsys::SystemTools::GetFilenamePath(exe);
 
   // Install tree has
   //   <prefix>/bin/castxml
   //   <prefix>/<CASTXML_INSTALL_DATA_DIR>
   //   <prefix>/<CASTXML_INSTALL_DATA_DIR>/clang
-  std::string dir = cxsys::SystemTools::GetFilenamePath(exe_dir);
-  castxmlResourceDir = dir + "/" + CASTXML_INSTALL_DATA_DIR;
+  llvm::SmallString<16> dir(exe);
+  llvm::sys::path::remove_filename(dir);
+  llvm::sys::path::remove_filename(dir);
+  castxmlResourceDir = std::string(dir.str()) + "/" + CASTXML_INSTALL_DATA_DIR;
   castxmlClangResourceDir = castxmlResourceDir + "/clang";
-  if(!cxsys::SystemTools::FileIsDirectory(castxmlResourceDir.c_str()) ||
-     !cxsys::SystemTools::FileIsDirectory(castxmlClangResourceDir.c_str())) {
+  if (!llvm::sys::fs::is_directory(castxmlResourceDir) ||
+      !llvm::sys::fs::is_directory(castxmlClangResourceDir)) {
+    llvm::SmallString<16> dir2(dir);
+    llvm::sys::path::remove_filename(dir2);
     // Build tree has
     //   <build>/bin[/<config>]/castxml
-    if(!tryBuildDir(dir) &&
-       !tryBuildDir(cxsys::SystemTools::GetFilenamePath(dir))) {
+    if (!tryBuildDir(dir.str()) &&
+        !tryBuildDir(dir2.str())) {
       error << "Unable to locate resources for " << exe << "\n";
       return false;
     }
