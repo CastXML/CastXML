@@ -24,6 +24,7 @@
 #include <cxsys/SystemTools.hxx>
 
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <string.h>
 
@@ -192,7 +193,7 @@ static bool detectCC_MSVC(const char* const* argBeg,
     if(const char* predefs = strstr(out.c_str(), "\n#define")) {
       opts.Predefines = predefs+1;
     }
-    if(const char* includes_str = cxsys::SystemTools::GetEnv("INCLUDE")) {
+    if(const char* includes_str = std::getenv("INCLUDE")) {
       std::vector<std::string> includes;
       cxsys::SystemTools::Split(includes_str, includes, ';');
       for(std::vector<std::string>::iterator i = includes.begin(),
