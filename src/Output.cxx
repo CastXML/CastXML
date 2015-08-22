@@ -343,6 +343,10 @@ class ASTVisitor: public ASTVisitorBase
   /** Print an attributes="..." attribute listing the given attributes.  */
   void PrintAttributesAttribute(std::vector<std::string> const& attrs);
 
+  /** Print an attributes="..." attribute listing the given
+      declaration's attributes.  */
+  void PrintAttributesAttribute(clang::Decl const* d);
+  
   /** Get the attributes of the given function type.  */
   void GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
                                  std::vector<std::string>& attrs);
@@ -1216,6 +1220,14 @@ void ASTVisitor::PrintAttributesAttribute(
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintAttributesAttribute(clang::Decl const* d)
+{
+  std::vector<std::string> attributes;
+  this->GetDeclAttributes(d, attributes);
+  this->PrintAttributesAttribute(attributes);
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
                                            std::vector<std::string>& attrs)
 {
@@ -1433,9 +1445,7 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
-  std::vector<std::string> attributes;
-  this->GetDeclAttributes(a, attributes);
-  this->PrintAttributesAttribute(attributes);
+  this->PrintAttributesAttribute(a);
   this->OS << "/>\n";
 }
 
@@ -1514,6 +1524,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     this->OS << " incomplete=\"1\"";
   }
   this->PrintABIAttributes(d);
+  this->PrintAttributesAttribute(d);
   if(doBases) {
     this->OS << ">\n";
     for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
@@ -1576,6 +1587,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintTypeAttribute(d->getUnderlyingType(), dn->Complete);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->PrintAttributesAttribute(d);
   this->OS << "/>\n";
 }
 
@@ -1593,6 +1605,7 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
   this->PrintNameAttribute(name);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->PrintAttributesAttribute(d);
   clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
   clang::EnumDecl::enumerator_iterator enum_end = d->enumerator_end();
   if(enum_begin != enum_end) {
@@ -1603,6 +1616,7 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
       this->OS << "    <EnumValue";
       this->PrintNameAttribute(ecd->getName());
       this->OS << " init=\"" << ecd->getInitVal() << "\"";
+      this->PrintAttributesAttribute(ecd);
       this->OS << "/>\n";
     }
     this->OS << "  </Enumeration>\n";
@@ -1628,7 +1642,8 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
   if(d->isMutable()) {
     this->OS << " mutable=\"1\"";
   }
-
+  this->PrintAttributesAttribute(d);
+  
   this->OS << "/>\n";
 }
 
@@ -1656,7 +1671,8 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
     this->OS << " extern=\"1\"";
   }
   this->PrintMangledAttribute(d);
-
+  this->PrintAttributesAttribute(d);
+  
   this->OS << "/>\n";
 }
 

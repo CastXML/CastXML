@@ -36,6 +36,7 @@ if(xml)
     file(READ "${xml}" actual_xml)
     # Filter out arch-specific attributes.
     string(REGEX REPLACE "(<(Constructor|Destructor|Method|OperatorMethod|Converter)[^/>]*) attributes=\"__thiscall__\"(/?>)" "\\1\\3" actual_xml "${actual_xml}")
+    string(REGEX REPLACE "(<(Constructor|Destructor|Method|OperatorMethod|Converter)[^/>]*) attributes=\"__thiscall__ ([^/>]+)\"(/?>)" "\\1 attributes=\"\\3\"\\4" actual_xml "${actual_xml}")
   else()
     set(actual_xml "(missing)")
   endif()
