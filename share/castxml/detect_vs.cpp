@@ -20,6 +20,12 @@
 #define TO_DEFINE(x) "#define " #x " " TO_STRING(x)
 
 #pragma message("")
+#ifdef __AVX__
+# pragma message(TO_DEFINE(__AVX__))
+#endif
+#ifdef __AVX2__
+# pragma message(TO_DEFINE(__AVX2__))
+#endif
 #ifdef _ATL_VER
 # pragma message(TO_DEFINE(_ATL_VER))
 #endif
@@ -67,6 +73,9 @@
 #endif
 #ifdef _M_AMD64
 # pragma message(TO_DEFINE(_M_AMD64))
+#endif
+#ifdef _M_ARM
+# pragma message(TO_DEFINE(_M_ARM))
 #endif
 #ifdef _M_ARM_FP
 # pragma message(TO_DEFINE(_M_ARM_FP))
@@ -133,5 +142,8 @@
 #endif
 #ifdef __cplusplus_cli
 # pragma message(TO_DEFINE(__cplusplus_cli))
+#endif
+#ifdef __cplusplus_winrt
+# pragma message(TO_DEFINE(__cplusplus_winrt))
 #endif
 #pragma message("class type_info;")
