@@ -1347,6 +1347,17 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
     this->OS << " artificial=\"1\"";
   }
 
+  if (clang::CXXMethodDecl const* md = clang::dyn_cast<clang::CXXMethodDecl>(d)) {
+    if(md->size_overridden_methods() > 0) {
+      this->OS << " overrides=\"";
+      for (clang::CXXMethodDecl::method_iterator
+           i = md->begin_overridden_methods(), e = md->end_overridden_methods(); i != e; ++i) {
+        this->OS << "_" << this->AddDeclDumpNode(*i, false) << " ";
+      }
+      this->OS << "\"";
+    }
+  }
+  
   std::vector<std::string> attributes;
 
   if (clang::FunctionProtoType const* fpt =
