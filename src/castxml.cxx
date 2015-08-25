@@ -71,7 +71,10 @@ int main(int argc_in, const char** argv_in)
   }
 
 #if LLVM_VERSION_MAJOR > 3 \
- || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 8
+  llvm::BumpPtrAllocator argSaverAlloc;
+  llvm::StringSaver argSaver(argSaverAlloc);
+#elif LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR == 7
   llvm::BumpPtrAllocator argSaverAlloc;
   llvm::BumpPtrStringSaver argSaver(argSaverAlloc);
 #else
