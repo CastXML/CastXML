@@ -51,9 +51,9 @@ Remaining options are given to the internal Clang compiler.
   Write output to ``<src>.xml`` or file named by ``-o``.
   The gccxml format does not support Clang language modes other than
   ``-std=c++98`` or ``-std=c89``.  This output format may be used with
-  language mode ``-std=c++11`` but the output will not contain implicit
-  move constructors or move assignment operators, and may contain
-  ``<Unimplemented/>`` elements on non-c++98 constructs.
+  language modes ``-std=c++11`` and ``-std=c++14`` but the output will
+  not contain implicit move constructors or move assignment operators,
+  and may contain ``<Unimplemented/>`` elements on non-c++98 constructs.
 
 ``--castxml-start <name>[,<name>]...``
   Start AST traversal at declaration(s) with the given qualified name(s).

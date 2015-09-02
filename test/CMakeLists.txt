@@ -75,12 +75,20 @@ macro(castxml_test_gccxml_cxx11 test)
   castxml_test_gccxml_common(gccxml cxx c++11 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_cxx14 test)
+  castxml_test_gccxml_common(gccxml cxx c++14 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_broken_cxx98 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++98 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx11 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++11 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_broken_cxx14 test)
+  castxml_test_gccxml_common(gccxml.broken cxx c++14 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_c test)
@@ -90,11 +98,13 @@ endmacro()
 macro(castxml_test_gccxml test)
   castxml_test_gccxml_cxx98(${test})
   castxml_test_gccxml_cxx11(${test})
+  castxml_test_gccxml_cxx14(${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken test)
   castxml_test_gccxml_broken_cxx98(${test})
   castxml_test_gccxml_broken_cxx11(${test})
+  castxml_test_gccxml_broken_cxx14(${test})
 endmacro()
 
 set(input ${CMAKE_CURRENT_LIST_DIR}/input)
