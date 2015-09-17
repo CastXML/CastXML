@@ -47,6 +47,8 @@ Remaining options are given to the internal Clang compiler.
   (e.g. ``-m32``).
   The target platform detected from the given compiler may be
   overridden by a separate Clang ``-target`` option.
+  The language standard level detected from the given compiler
+  may be overridden by a separate Clang ``-std=`` option.
 
 ``--castxml-gccxml``
   Generate XML output in a format close to that of `gccxml`_.

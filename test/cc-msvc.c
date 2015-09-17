@@ -4,10 +4,13 @@
 int main(int argc, const char* argv[])
 {
   int cpp = 0;
+  const char* msc_ver = "1600";
   int i;
   for (i = 1; i < argc; ++i) {
     if (strncmp(argv[i], "--cc-define=", 12) == 0) {
       fprintf(stdout, "\n#define %s 1", argv[i]+12);
+    } else if (strncmp(argv[i], "-msc=", 5) == 0) {
+      msc_ver = argv[i]+5;
     } else if (strstr(argv[i], ".cpp")) {
       cpp = 1;
     }
@@ -21,7 +24,9 @@ int main(int argc, const char* argv[])
       );
   }
   fprintf(stdout,
-    "#define _MSC_VER 1600\n"
+    "#define _MSC_VER %s\n", msc_ver
+    );
+  fprintf(stdout,
     "#define __has_include(x) x\n"
     "#define __has_include_next(x) x\n"
     "#define _WIN32 1\n"

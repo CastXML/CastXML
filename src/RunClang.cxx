@@ -44,6 +44,7 @@
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -372,6 +373,7 @@ int runClang(const char* const* argBeg,
 {
   llvm::SmallVector<const char*, 32> args(argBeg, argEnd);
   std::string fmsc_version = "-fmsc-version=";
+  std::string std_flag = "-std=";
 
   if(opts.HaveCC) {
     // Configure target to match that of given compiler.
@@ -412,8 +414,95 @@ int runClang(const char* const* argBeg,
         if(*(e - 1) == '\r') {
           --e;
         }
-        fmsc_version.append(d, e-d);
+        std::string const msc_ver_str(d, e-d);
+        fmsc_version += msc_ver_str;
         args.push_back(fmsc_version.c_str());
+
+        if (!opts.HaveStd) {
+          if (strstr(pd, "#define __cplusplus ")) {
+            // Extract the C++ level from _MSC_VER to give to -std=.
+            // Note that Clang also does this but old versions of Clang
+            // do not know about new versions of MSVC.
+            errno = 0;
+            long msc_ver = std::strtol(msc_ver_str.c_str(), nullptr, 10);
+            if (errno != 0) {
+              msc_ver = 1600;
+            }
+            if (msc_ver >= 1900) {
+              args.push_back("-std=c++14");
+            } else if (msc_ver >= 1600) {
+              args.push_back("-std=c++11");
+            } else {
+              args.push_back("-std=c++98");
+            }
+          } else {
+            args.push_back("-std=c89");
+          }
+        }
+      }
+    } else if (!opts.HaveStd) {
+      // Check for GNU extensions.
+      if (strstr(pd, "#define __GNUC__ ") &&
+          !strstr(pd, "#define __STRICT_ANSI__ ")) {
+        std_flag += "gnu";
+      } else {
+        std_flag += "c";
+      }
+
+      if (const char* d = strstr(pd, "#define __cplusplus ")) {
+        // Extract the C++ level to give to -std=.  We do this above for
+        // MSVC because it does not set __cplusplus to standard values.
+        d += 20;
+        if (const char* e = strchr(d, '\n')) {
+          if (*(e - 1) == '\r') {
+            --e;
+          }
+
+          // Add the standard year.
+          std::string const std_date_str(d, e-d);
+          errno = 0;
+          long std_date = std::strtol(std_date_str.c_str(), nullptr, 10);
+          if (errno != 0) {
+            std_date = 0;
+          }
+          std_flag += "++";
+          if (std_date >= 201406L) {
+            std_flag += "1z";
+          } else if (std_date >= 201402L) {
+            std_flag += "14";
+          } else if (std_date >= 201103L) {
+            std_flag += "11";
+          } else {
+            std_flag += "98";
+          }
+          args.push_back(std_flag.c_str());
+        }
+      } else if (const char* d = strstr(pd, "#define __STDC_VERSION__ ")) {
+        // Extract the C standard level.
+        d += 25;
+        if (const char* e = strchr(d, '\n')) {
+          if (*(e - 1) == '\r') {
+            --e;
+          }
+          std::string const std_date_str(d, e-d);
+          errno = 0;
+          long std_date = std::strtol(std_date_str.c_str(), nullptr, 10);
+          if (errno != 0) {
+            std_date = 0;
+          }
+          if (std_date >= 201112L) {
+            std_flag += "11";
+          } else if (std_date >= 199901L) {
+            std_flag += "99";
+          } else {
+            std_flag += "89";
+          }
+          args.push_back(std_flag.c_str());
+        }
+      } else {
+        // Assume C 89.
+        std_flag += "89";
+        args.push_back(std_flag.c_str());
       }
     }
   }

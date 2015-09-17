@@ -257,6 +257,8 @@ int main(int argc_in, const char** argv_in)
           strncmp(argv[i], "-target=", 8) == 0 ||
           strncmp(argv[i], "--target=", 9) == 0) {
         opts.HaveTarget = true;
+      } else if (strncmp(argv[i], "-std=", 5) == 0) {
+        opts.HaveStd = true;
       }
     }
   }
