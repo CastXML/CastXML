@@ -147,6 +147,7 @@ castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
 add_executable(cc-gnu cc-gnu.c)
 set_property(SOURCE cc-gnu.c APPEND PROPERTY COMPILE_DEFINITIONS
   "TEST_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
+castxml_test_cmd(cc-gnu-bad-cmd --castxml-cc-gnu cc-gnu-bad-cmd ${empty_cxx})
 castxml_test_cmd(cc-gnu-src-c-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} -E -dM)
 castxml_test_cmd(cc-gnu-src-c-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-src-cxx-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} -E -dM)
@@ -161,6 +162,7 @@ castxml_test_cmd(cc-gnu-tgt-x86_64 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --
 # Test --castxml-cc-msvc detection.
 add_executable(cc-msvc cc-msvc.c)
 set(castxml_test_cmd_extra_arguments "-Dprologue=${CMAKE_CURRENT_SOURCE_DIR}/cc-msvc.cmake")
+castxml_test_cmd(cc-msvc-bad-cmd --castxml-cc-msvc cc-msvc-bad-cmd ${empty_cxx})
 castxml_test_cmd(cc-msvc-src-c-E --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_c} -E -dM)
 castxml_test_cmd(cc-msvc-src-c-cmd --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_c} "-###")
 castxml_test_cmd(cc-msvc-src-cxx-E --castxml-cc-msvc $<TARGET_FILE:cc-msvc> ${empty_cxx} -E -dM)
