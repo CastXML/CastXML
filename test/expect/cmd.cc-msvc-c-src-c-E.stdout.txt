@@ -1,0 +1,2 @@
+^#define _MSC_VER 1600
+#define _WIN32 1$

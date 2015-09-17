@@ -119,12 +119,14 @@ static void setTriple(Options& opts)
 //----------------------------------------------------------------------------
 static bool detectCC_GNU(const char* const* argBeg,
                          const char* const* argEnd,
-                         Options& opts)
+                         Options& opts,
+                         const char* id,
+                         const char* ext)
 {
   std::string const fwExplicitSuffix = " (framework directory)";
   std::string const fwImplicitSuffix = "/Frameworks";
   std::vector<const char*> cc_args(argBeg, argEnd);
-  std::string empty_cpp = getResourceDir() + "/empty.cpp";
+  std::string empty_cpp = getResourceDir() + "/empty." + ext;
   int ret;
   std::string out;
   std::string err;
@@ -171,17 +173,19 @@ static bool detectCC_GNU(const char* const* argBeg,
     setTriple(opts);
     return true;
   } else {
-    return failedCC("gnu", cc_args, out, err, msg);
+    return failedCC(id, cc_args, out, err, msg);
   }
 }
 
 //----------------------------------------------------------------------------
 static bool detectCC_MSVC(const char* const* argBeg,
                           const char* const* argEnd,
-                          Options& opts)
+                          Options& opts,
+                          const char* id,
+                          const char* ext)
 {
   std::vector<const char*> cc_args(argBeg, argEnd);
-  std::string detect_vs_cpp = getResourceDir() + "/detect_vs.cpp";
+  std::string detect_vs_cpp = getResourceDir() + "/detect_vs." + ext;
   int ret;
   std::string out;
   std::string err;
@@ -210,7 +214,7 @@ static bool detectCC_MSVC(const char* const* argBeg,
     setTriple(opts);
     return true;
   } else {
-    return failedCC("msvc", cc_args, out, err, msg);
+    return failedCC(id, cc_args, out, err, msg);
   }
 }
 
@@ -220,10 +224,14 @@ bool detectCC(const char* id,
               const char* const* argEnd,
               Options& opts)
 {
-  if(strcmp(id, "gnu") == 0) {
-    return detectCC_GNU(argBeg, argEnd, opts);
-  } else if(strcmp(id, "msvc") == 0) {
-    return detectCC_MSVC(argBeg, argEnd, opts);
+  if (strcmp(id, "gnu") == 0) {
+    return detectCC_GNU(argBeg, argEnd, opts, id, "cpp");
+  } else if (strcmp(id, "gnu-c") == 0) {
+    return detectCC_GNU(argBeg, argEnd, opts, id, "c");
+  } else if (strcmp(id, "msvc") == 0) {
+    return detectCC_MSVC(argBeg, argEnd, opts, id, "cpp");
+  } else if (strcmp(id, "msvc-c") == 0) {
+    return detectCC_MSVC(argBeg, argEnd, opts, id, "c");
   } else {
     std::cerr << "error: '--castxml-cc-" << id << "' not known!\n";
     return false;

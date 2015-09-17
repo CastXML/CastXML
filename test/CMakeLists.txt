@@ -160,6 +160,9 @@ castxml_test_cmd(cc-gnu-tgt-i386 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc
 castxml_test_cmd(cc-gnu-tgt-mingw --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=_WIN32 --cc-define=__MINGW32__ ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-gnu-tgt-win --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=_WIN32 ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-gnu-tgt-x86_64 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-c-bad-cmd --castxml-cc-gnu-c "(" cc-gnu-c-bad-cmd ")" ${empty_c})
+castxml_test_cmd(cc-gnu-c-src-c-E --castxml-cc-gnu-c $<TARGET_FILE:cc-gnu> ${empty_c} -E -dM)
+castxml_test_cmd(cc-gnu-c-src-c-cmd --castxml-cc-gnu-c $<TARGET_FILE:cc-gnu> ${empty_c} "-###")
 
 # Test --castxml-cc-msvc detection.
 add_executable(cc-msvc cc-msvc.c)
@@ -174,6 +177,9 @@ castxml_test_cmd(cc-msvc-tgt-explicit --castxml-cc-msvc "(" $<TARGET_FILE:cc-msv
 castxml_test_cmd(cc-msvc-tgt-i386 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_M_IX86 ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-msvc-tgt-win --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_WIN32 ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-msvc-tgt-x86_64 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> --cc-define=_M_X64 ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-msvc-c-bad-cmd --castxml-cc-msvc-c "(" cc-msvc-c-bad-cmd ")" ${empty_c})
+castxml_test_cmd(cc-msvc-c-src-c-E --castxml-cc-msvc-c $<TARGET_FILE:cc-msvc> ${empty_c} -E -dM)
+castxml_test_cmd(cc-msvc-c-src-c-cmd --castxml-cc-msvc-c $<TARGET_FILE:cc-msvc> ${empty_c} "-###")
 unset(castxml_test_cmd_extra_arguments)
 
 castxml_test_gccxml(ArrayType)

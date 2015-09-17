@@ -37,8 +37,10 @@ Remaining options are given to the internal Clang compiler.
   a reference compiler with which the given command is compatible.
   It must be one of:
 
-  * ``gnu``: GNU Compiler Collection (gcc)
+  * ``gnu``: GNU Compiler Collection C++ (g++)
+  * ``gnu-c``: GNU Compiler Collection C (gcc)
   * ``msvc``: Microsoft Visual C++ (cl)
+  * ``msvc-c``: Microsoft Visual C (cl)
 
   ``<cc>`` names a compiler (e.g. ``/usr/bin/gcc`` or ``cl``) and
   ``<cc-opt>...`` specifies options that may affect its target

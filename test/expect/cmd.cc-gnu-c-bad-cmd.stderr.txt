@@ -1,0 +1,3 @@
+^error: '--castxml-cc-gnu-c' compiler command failed:
+
+ 'cc-gnu-c-bad-cmd' '-E' '-dM' '-v' '.*/share/castxml/empty.c'

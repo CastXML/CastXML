@@ -1,0 +1,3 @@
+^error: '--castxml-cc-msvc-c' compiler command failed:
+
+ 'cc-msvc-c-bad-cmd' '-c' '-FoNUL' '.*/share/castxml/detect_vs.c
