@@ -1,2 +1,3 @@
-^#define __cc_msvc__ 1
-#define __cc_msvc_minor__ 1$
+^#define _MSC_VER 1600
+#define _WIN32 1
+#define __cplusplus 199711L$

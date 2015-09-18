@@ -10,10 +10,11 @@ int main(int argc, const char* argv[])
     }
   }
   fprintf(stdout,
-    "#define __cc_gnu__ 1\n"
+    "#define __cplusplus 199711L\n"
+    "#define __GNUC__ 1\n"
     "#define __has_include(x) x\n"
     "#define __has_include_next(x) x\n"
-    "#define __cc_gnu_minor__ 1\n"
+    "#define __GNUC_MINOR__ 1\n"
     "#define __has_last(x) x"
     );
   fprintf(stderr,
