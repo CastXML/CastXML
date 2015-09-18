@@ -344,6 +344,9 @@ static int runClangImpl(const char* const* argBeg,
       const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
       if (clang::CompilerInvocation::CreateFromArgs
           (CI->getInvocation(), cmdArgBeg, cmdArgEnd, *diags)) {
+        if (diags->hasErrorOccurred()) {
+          return 1;
+        }
         result = runClangCI(CI.get(), opts) && result;
       } else {
         result = false;
