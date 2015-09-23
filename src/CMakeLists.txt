@@ -47,6 +47,7 @@ llvm_map_components_to_libnames(llvm_libs
   native
   option
   bitreader
+  support
   ${LLVM_TARGETS_TO_BUILD}
   )
 
