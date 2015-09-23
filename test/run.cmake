@@ -49,6 +49,7 @@ set(default_stdout "^$")
 set(default_stderr "^$")
 
 foreach(o result stdout stderr ${maybe_xml})
+  string(REPLACE "warning: unknown platform, assuming -mfloat-abi=soft\n" "" actual_${o} "${actual_${o}}")
   string(REGEX REPLACE "\n+$" "" actual_${o} "${actual_${o}}")
   string(REGEX REPLACE "\n" "\n actual-${o}> " actual-${o} " actual-${o}> ${actual_${o}}")
   set(actual-${o} "Actual ${o}:\n${actual-${o}}\n")
