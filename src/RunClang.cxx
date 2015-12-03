@@ -24,6 +24,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
+#include "clang/Basic/Version.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
@@ -150,6 +151,28 @@ protected:
     }
 
     std::string builtins;
+
+    // Add a builtin to identify CastXML itself.
+    char castxml_version[64];
+    sprintf(castxml_version, "#define __castxml__ %u\n", getVersionValue());
+    builtins += castxml_version;
+
+    // Add builtins to identify the internal Clang compiler.
+    builtins +=
+#define STR(x) STR_(x)
+#define STR_(x) #x
+      "#define __castxml_clang_major__ " STR(CLANG_VERSION_MAJOR) "\n"
+      "#define __castxml_clang_minor__ " STR(CLANG_VERSION_MINOR) "\n"
+      "#define __castxml_clang_patchlevel__ "
+#ifdef CLANG_VERSION_PATCHLEVEL
+      STR(CLANG_VERSION_PATCHLEVEL)
+#else
+      "0"
+#endif
+      "\n"
+#undef STR
+#undef STR_
+      ;
 
     // If we detected predefines from another compiler, substitute them.
     if (this->Opts.HaveCC) {

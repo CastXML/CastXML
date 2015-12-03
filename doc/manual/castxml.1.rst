@@ -73,3 +73,28 @@ Remaining options are given to the internal Clang compiler.
 
 ``--version``
   Print ``castxml`` and internal Clang compiler version information.
+
+Preprocessing
+=============
+
+CastXML preprocesses source files using an internal Clang compiler
+using its own predefined macros for the target platform by default.
+The ``--castxml-cc-<id>`` option switches the predefined macros
+to match those detected from the given compiler command.  In either
+case, CastXML always adds the following predefined macros:
+
+``__castxml__``
+  Defined to an integer encoding the CastXML version number as
+  ``printf("%d%03d%03d",major,minor,patch)``.
+
+``__castxml_clang_major__``
+  Defined to the value of  ``__clang_major__`` from the internal Clang.
+
+``__castxml_clang_minor__``
+  Defined to the value of  ``__clang_minor__`` from the internal Clang.
+
+``__castxml_clang_patchlevel__``
+  Defined to the value of  ``__clang_patchlevel__`` from the internal Clang.
+
+Source files may use these to identify the tool that is actually doing the
+preprocessing even when ``--castxml-cc-<id>`` changes the predefined macros.

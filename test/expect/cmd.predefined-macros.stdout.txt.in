@@ -1,0 +1,9 @@
+#define __castxml__ @__castxml__@
+#define __castxml_clang_major__ [0-9]+
+#define __castxml_clang_minor__ [0-9]+
+#define __castxml_clang_patchlevel__ [0-9]+
+#define __clang__ 1
+#define __clang_major__ [0-9]+
+#define __clang_minor__ [0-9]+
+#define __clang_patchlevel__ [0-9]+
+#define __clang_version__
