@@ -135,29 +135,35 @@ protected:
 
   CastXMLPredefines(Options const& opts): Opts(opts) {}
   std::string UpdatePredefines(std::string const& predefines) {
-    // Clang's InitializeStandardPredefinedMacros forces some
-    // predefines even when -undef is given.  Filter them out.
-    // Also substitute our chosen predefines prior to those that came
-    // from the command line.
+    // Identify the portion of the predefines string corresponding to
+    // built-in predefined macros.
     char const predef_start[] = "# 1 \"<built-in>\" 3\n";
     char const predef_end[] = "# 1 \"<command line>\" 1\n";
     std::string::size_type start = predefines.find(predef_start);
-    std::string::size_type end = predefines.find(predef_end);
-    if(start != std::string::npos && end != std::string::npos) {
-      return (predefines.substr(0, start+sizeof(predef_start)-1) +
-              this->Opts.Predefines +
-              predefines.substr(end));
-    } else {
-      return predefines + this->Opts.Predefines;
+    std::string::size_type end = std::string::npos;
+    if (start != std::string::npos) {
+      start += sizeof(predef_start)-1;
+      end = predefines.find(predef_end, start);
+      if (end == std::string::npos) {
+        end = predefines.size();
+      }
     }
+
+    std::string builtins;
+
+    // If we detected predefines from another compiler, substitute them.
+    if (this->Opts.HaveCC) {
+      builtins += this->Opts.Predefines;
+    } else {
+      builtins += predefines.substr(start, end-start);
+    }
+    return predefines.substr(0, start) + builtins + predefines.substr(end);
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,
                              llvm::StringRef /*Filename*/) {
-    if(this->Opts.HaveCC) {
-      CI.getPreprocessor().setPredefines(
+    CI.getPreprocessor().setPredefines(
       this->UpdatePredefines(CI.getPreprocessor().getPredefines()));
-    }
 
     // Tell Clang not to tear down the parser at EOF.
     CI.getPreprocessor().enableIncrementalProcessing();
