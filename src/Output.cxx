@@ -26,6 +26,7 @@
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Mangle.h"
+#include "clang/AST/RecordLayout.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
@@ -1545,12 +1546,20 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   this->PrintAttributesAttribute(d);
   if(doBases) {
     this->OS << ">\n";
+    clang::ASTRecordLayout const& layout = this->CTX.getASTRecordLayout(dx);
     for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
           e = dx->bases_end(); i != e; ++i) {
+      clang::QualType bt = i->getType().getCanonicalType();
+      clang::CXXRecordDecl const* bd = clang::dyn_cast<clang::CXXRecordDecl>(
+        bt->getAs<clang::RecordType>()->getDecl());
       this->OS << "    <Base";
-      this->PrintTypeAttribute(i->getType().getCanonicalType(), true);
+      this->PrintTypeAttribute(bt, true);
       this->PrintAccessAttribute(i->getAccessSpecifier());
       this->OS << " virtual=\"" << (i->isVirtual()? 1 : 0) << "\"";
+      if (bd && !i->isVirtual()) {
+        this->OS << " offset=\"" <<
+          layout.getBaseClassOffset(bd).getQuantity() << "\"";
+      }
       this->OS << "/>\n";
     }
     this->OS << "  </" << tag << ">\n";

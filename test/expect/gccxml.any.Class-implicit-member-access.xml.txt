@@ -1,7 +1,7 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:9" file="f1" line="9" members="_3 _4" bases="_5" size="[0-9]+" align="[0-9]+">
-    <Base type="_5" access="public" virtual="0"/>
+    <Base type="_5" access="public" virtual="0" offset="0"/>
   </Class>
   <Destructor id="_3" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
