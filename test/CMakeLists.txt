@@ -23,11 +23,12 @@ find_package(LibXml2 QUIET)
 
 macro(castxml_test_cmd test)
   set(command $<TARGET_FILE:castxml> ${ARGN})
+  set(_castxml_expect ${castxml_test_cmd_expect} cmd.${test})
   add_test(
     NAME cmd.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dexpect=cmd.${test}"
+    "-Dexpect=${_castxml_expect}"
     ${castxml_test_cmd_extra_arguments}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
