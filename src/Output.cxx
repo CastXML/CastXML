@@ -567,6 +567,13 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
         }
       }
     }
+
+    if (clang::TypedefDecl const* td =
+        clang::dyn_cast<clang::TypedefDecl>(d)) {
+      if (td->getUnderlyingType()->isRValueReferenceType()) {
+        return DumpId();
+      }
+    }
   }
 
   return this->AddDumpNodeImpl(d, complete);
