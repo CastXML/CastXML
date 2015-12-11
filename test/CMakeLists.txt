@@ -315,6 +315,7 @@ castxml_test_gccxml(Namespace-nested-2)
 unset(castxml_test_gccxml_custom_start)
 unset(castxml_test_gccxml_custom_input)
 
+castxml_test_gccxml(invalid-decl-for-type)
 castxml_test_gccxml(qualified-type-name)
 castxml_test_gccxml(using-declaration-class)
 castxml_test_gccxml(using-declaration-ns)

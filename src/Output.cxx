@@ -234,7 +234,8 @@ class ASTVisitor: public ASTVisitorBase
   }
 
   /** Allocate a dump node for a Clang declaration.  */
-  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete);
+  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete,
+                         bool forType = false);
   DumpId AddDeclDumpNodeForType(clang::Decl const* d, bool complete,
                                 DumpQual dq);
 
@@ -516,7 +517,7 @@ public:
 
 //----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
-                                               bool complete) {
+                                               bool complete, bool forType) {
   // Select the definition or canonical declaration.
   d = d->getCanonicalDecl();
   if(clang::RecordDecl const* rd = clang::dyn_cast<clang::RecordDecl>(d)) {
@@ -530,19 +531,19 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
   case clang::Decl::UsingShadow:
     return this->AddDeclDumpNode(
       static_cast<clang::UsingShadowDecl const*>(d)->getTargetDecl(),
-      complete);
+      complete, forType);
   case clang::Decl::LinkageSpec: {
     clang::DeclContext const* dc =
       static_cast<clang::LinkageSpecDecl const*>(d)->getDeclContext();
     return this->AddDeclDumpNode(clang::Decl::castFromDeclContext(dc),
-                                 complete);
+                                 complete, forType);
   } break;
   default:
     break;
   }
 
-  // Skip invalid declarations.
-  if(d->isInvalidDecl()) {
+  // Skip invalid declarations that are not needed for a type element.
+  if (d->isInvalidDecl() && !forType) {
     return DumpId();
   }
 
@@ -593,7 +594,7 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
                                                       bool complete,
                                                       DumpQual dq) {
   // Get the id for the canonical decl.
-  DumpId id = this->AddDeclDumpNode(d, complete);
+  DumpId id = this->AddDeclDumpNode(d, complete, true);
 
   // If any qualifiers were collected through layers of desugaring
   // then get the id of the qualified type referencing this decl.
@@ -1548,7 +1549,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     if(dx && dx->isAbstract()) {
       this->OS << " abstract=\"1\"";
     }
-    if(dn->Complete) {
+    if (dn->Complete && !d->isInvalidDecl()) {
       this->PrintMembersAttribute(d);
       doBases = dx && dx->getNumBases();
       if(doBases) {
