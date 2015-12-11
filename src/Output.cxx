@@ -235,7 +235,8 @@ class ASTVisitor: public ASTVisitorBase
 
   /** Allocate a dump node for a Clang declaration.  */
   DumpId AddDeclDumpNode(clang::Decl const* d, bool complete);
-  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete, DumpQual dq);
+  DumpId AddDeclDumpNodeForType(clang::Decl const* d, bool complete,
+                                DumpQual dq);
 
   /** Allocate a dump node for a Clang type.  */
   DumpId AddTypeDumpNode(DumpType dt, bool complete, DumpQual dq = DumpQual());
@@ -588,8 +589,9 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
 }
 
 //----------------------------------------------------------------------------
-ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
-                                               bool complete, DumpQual dq) {
+ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
+                                                      bool complete,
+                                                      DumpQual dq) {
   // Get the id for the canonical decl.
   DumpId id = this->AddDeclDumpNode(d, complete);
 
@@ -636,15 +638,15 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       t->getAs<clang::ElaboratedType>()->getNamedType(), c),
       complete, dq);
   case clang::Type::Enum:
-    return this->AddDeclDumpNode(t->getAs<clang::EnumType>()->getDecl(),
-                                 complete, dq);
+    return this->AddDeclDumpNodeForType(
+      t->getAs<clang::EnumType>()->getDecl(), complete, dq);
   case clang::Type::Paren:
     return this->AddTypeDumpNode(DumpType(
       t->getAs<clang::ParenType>()->getInnerType(), c),
       complete, dq);
   case clang::Type::Record:
-    return this->AddDeclDumpNode(t->getAs<clang::RecordType>()->getDecl(),
-                                 complete, dq);
+    return this->AddDeclDumpNodeForType(
+      t->getAs<clang::RecordType>()->getDecl(), complete, dq);
   case clang::Type::SubstTemplateTypeParm:
     return this->AddTypeDumpNode(DumpType(
       t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(), c),
@@ -676,7 +678,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
         }
       }
     }
-    return this->AddDeclDumpNode(tdt->getDecl(), complete, dq);
+    return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
   } break;
   default:
     break;
