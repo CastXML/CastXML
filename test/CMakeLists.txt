@@ -45,6 +45,11 @@ macro(castxml_test_gccxml_common prefix ext std test)
   else()
     set(_castxml_input ${test})
   endif()
+  set(_castxml_expect ${prefix}.${std}.${test})
+  if("${std}" MATCHES "^gnu(.*)$")
+    list(APPEND _castxml_expect ${prefix}.c${CMAKE_MATCH_1}.${test})
+  endif()
+  list(APPEND _castxml_expect ${prefix}.any.${test})
   set(command $<TARGET_FILE:castxml>
     --castxml-gccxml
     ${_castxml_start}
@@ -57,7 +62,7 @@ macro(castxml_test_gccxml_common prefix ext std test)
     NAME ${prefix}.${std}.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dexpect=${prefix}.${std}.${test};${prefix}.any.${test}"
+    "-Dexpect=${_castxml_expect}"
     "-Dxml=${prefix}.${std}.${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
@@ -68,44 +73,79 @@ macro(castxml_test_gccxml_c89 test)
   castxml_test_gccxml_common(gccxml c c89 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_gnu89 test)
+  castxml_test_gccxml_common(gccxml c gnu89 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_cxx98 test)
   castxml_test_gccxml_common(gccxml cxx c++98 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_gnuxx98 test)
+  castxml_test_gccxml_common(gccxml cxx gnu++98 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_cxx11 test)
   castxml_test_gccxml_common(gccxml cxx c++11 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_gnuxx11 test)
+  castxml_test_gccxml_common(gccxml cxx gnu++11 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_cxx14 test)
   castxml_test_gccxml_common(gccxml cxx c++14 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_gnuxx14 test)
+  castxml_test_gccxml_common(gccxml cxx gnu++14 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx98 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++98 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_broken_gnuxx98 test)
+  castxml_test_gccxml_common(gccxml.broken cxx gnu++98 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_broken_cxx11 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++11 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_broken_gnuxx11 test)
+  castxml_test_gccxml_common(gccxml.broken cxx gnu++11 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx14 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++14 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_broken_gnuxx14 test)
+  castxml_test_gccxml_common(gccxml.broken cxx gnu++14 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_c test)
   castxml_test_gccxml_c89(${test})
+  castxml_test_gccxml_gnu89(${test})
 endmacro()
 
 macro(castxml_test_gccxml test)
   castxml_test_gccxml_cxx98(${test})
+  castxml_test_gccxml_gnuxx98(${test})
   castxml_test_gccxml_cxx11(${test})
+  castxml_test_gccxml_gnuxx11(${test})
   castxml_test_gccxml_cxx14(${test})
+  castxml_test_gccxml_gnuxx14(${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken test)
   castxml_test_gccxml_broken_cxx98(${test})
+  castxml_test_gccxml_broken_gnuxx98(${test})
   castxml_test_gccxml_broken_cxx11(${test})
+  castxml_test_gccxml_broken_gnuxx11(${test})
   castxml_test_gccxml_broken_cxx14(${test})
+  castxml_test_gccxml_broken_gnuxx14(${test})
 endmacro()
 
 set(input ${CMAKE_CURRENT_LIST_DIR}/input)
