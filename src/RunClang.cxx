@@ -135,7 +135,9 @@ protected:
   Options const& Opts;
 
   CastXMLPredefines(Options const& opts): Opts(opts) {}
-  std::string UpdatePredefines(std::string const& predefines) {
+  std::string UpdatePredefines(clang::CompilerInstance const& CI) {
+    std::string const& predefines = CI.getPreprocessor().getPredefines();
+
     // Identify the portion of the predefines string corresponding to
     // built-in predefined macros.
     char const predef_start[] = "# 1 \"<built-in>\" 3\n";
@@ -206,8 +208,7 @@ protected:
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,
                              llvm::StringRef /*Filename*/) {
-    CI.getPreprocessor().setPredefines(
-      this->UpdatePredefines(CI.getPreprocessor().getPredefines()));
+    CI.getPreprocessor().setPredefines(this->UpdatePredefines(CI));
 
     // Tell Clang not to tear down the parser at EOF.
     CI.getPreprocessor().enableIncrementalProcessing();
