@@ -431,11 +431,11 @@ int runClang(const char* const* argBeg,
     args.push_back("-undef");
 
     // Configure language options to match given compiler.
-    const char* pd = opts.Predefines.c_str();
-    if(strstr(pd, "#define _MSC_EXTENSIONS ")) {
+    std::string const& pd = opts.Predefines;
+    if(pd.find("#define _MSC_EXTENSIONS ") != pd.npos) {
       args.push_back("-fms-extensions");
     }
-    if(const char* d = strstr(pd, "#define _MSC_VER ")) {
+    if(const char* d = strstr(pd.c_str(), "#define _MSC_VER ")) {
       args.push_back("-fms-compatibility");
       // Extract the _MSC_VER value to give to -fmsc-version=.
       d += 17;
@@ -448,7 +448,7 @@ int runClang(const char* const* argBeg,
         args.push_back(fmsc_version.c_str());
 
         if (!opts.HaveStd) {
-          if (strstr(pd, "#define __cplusplus ")) {
+          if (pd.find("#define __cplusplus ") != pd.npos) {
             // Extract the C++ level from _MSC_VER to give to -std=.
             // Note that Clang also does this but old versions of Clang
             // do not know about new versions of MSVC.
@@ -471,14 +471,14 @@ int runClang(const char* const* argBeg,
       }
     } else if (!opts.HaveStd) {
       // Check for GNU extensions.
-      if (strstr(pd, "#define __GNUC__ ") &&
-          !strstr(pd, "#define __STRICT_ANSI__ ")) {
+      if (pd.find("#define __GNUC__ ") != pd.npos &&
+          pd.find("#define __STRICT_ANSI__ ") == pd.npos) {
         std_flag += "gnu";
       } else {
         std_flag += "c";
       }
 
-      if (const char* d = strstr(pd, "#define __cplusplus ")) {
+      if (const char* d = strstr(pd.c_str(), "#define __cplusplus ")) {
         // Extract the C++ level to give to -std=.  We do this above for
         // MSVC because it does not set __cplusplus to standard values.
         d += 20;
@@ -506,7 +506,8 @@ int runClang(const char* const* argBeg,
           }
           args.push_back(std_flag.c_str());
         }
-      } else if (const char* d = strstr(pd, "#define __STDC_VERSION__ ")) {
+      } else if (const char* d =
+                 strstr(pd.c_str(), "#define __STDC_VERSION__ ")) {
         // Extract the C standard level.
         d += 25;
         if (const char* e = strchr(d, '\n')) {
