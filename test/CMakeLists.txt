@@ -340,71 +340,20 @@ castxml_test_gccxml_c(invalid)
 
 castxml_test_gccxml_broken(ReferenceType-to-Class-template)
 
-#-----------------------------------------------------------------------------
-# Find a real GNU compiler to test with --castxml-cc-gnu.
+set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")")
+castxml_test_gccxml_c(GNU-float128)
+set(castxml_test_gccxml_custom_input GNU-float128)
+set(castxml_test_gccxml_custom_start "")
+castxml_test_gccxml_c(GNU-float128-nostart)
+unset(castxml_test_gccxml_custom_start)
+unset(castxml_test_gccxml_custom_input)
+unset(castxml_test_gccxml_extra_arguments)
 
-set(_gnu_C gcc)
-set(_gnu_CXX g++)
-
-foreach(lang C CXX)
-  find_program(TEST_GNU_${lang} NAMES ${_gnu_${lang}} DOC "Path to GNU ${_gnu_${lang}} compiler for testing")
-  # Exclude the Apple LLVM tool that is not really a GNU compiler.
-  if(TEST_GNU_${lang})
-    execute_process(
-      COMMAND ${TEST_GNU_${lang}} --version
-      OUTPUT_VARIABLE version
-      ERROR_VARIABLE version
-      RESULT_VARIABLE failed
-      )
-    if(failed OR version MATCHES "Apple LLVM")
-      set(TEST_GNU_${lang} TEST_GNU_${lang}-NOTFOUND)
-    endif()
-  endif()
-  if(TEST_GNU_${lang})
-    message(STATUS "Found GNU ${lang} compiler '${TEST_GNU_${lang}}' to drive tests")
-  endif()
-endforeach()
-
-if(TEST_GNU_C)
-  set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu-c ${TEST_GNU_C})
-
-  # Check if the GNU compiler supports __float128 to enable test.
-  execute_process(
-    COMMAND ${TEST_GNU_C} -c ${CMAKE_CURRENT_SOURCE_DIR}/input/GNU-float128.c
-    OUTPUT_VARIABLE out
-    ERROR_VARIABLE out
-    RESULT_VARIABLE failed_float128_c
-    )
-  if(NOT failed_float128_c)
-    castxml_test_gccxml_c(GNU-float128)
-    set(castxml_test_gccxml_custom_input GNU-float128)
-    set(castxml_test_gccxml_custom_start "")
-    castxml_test_gccxml_c(GNU-float128-nostart)
-    unset(castxml_test_gccxml_custom_start)
-    unset(castxml_test_gccxml_custom_input)
-  endif()
-
-  unset(castxml_test_gccxml_extra_arguments)
-endif()
-
-if(TEST_GNU_CXX)
-  set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_CXX})
-
-  # Check if the GNU compiler supports __float128 to enable test.
-  execute_process(
-    COMMAND ${TEST_GNU_CXX} -c ${CMAKE_CURRENT_SOURCE_DIR}/input/GNU-float128.cxx
-    OUTPUT_VARIABLE out
-    ERROR_VARIABLE out
-    RESULT_VARIABLE failed_float128_cxx
-    )
-  if(NOT failed_float128_cxx)
-    castxml_test_gccxml(GNU-float128)
-    set(castxml_test_gccxml_custom_input GNU-float128)
-    set(castxml_test_gccxml_custom_start "")
-    castxml_test_gccxml(GNU-float128-nostart)
-    unset(castxml_test_gccxml_custom_start)
-    unset(castxml_test_gccxml_custom_input)
-  endif()
-
-  unset(castxml_test_gccxml_extra_arguments)
-endif()
+set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")")
+castxml_test_gccxml(GNU-float128)
+set(castxml_test_gccxml_custom_input GNU-float128)
+set(castxml_test_gccxml_custom_start "")
+castxml_test_gccxml(GNU-float128-nostart)
+unset(castxml_test_gccxml_custom_start)
+unset(castxml_test_gccxml_custom_input)
+unset(castxml_test_gccxml_extra_arguments)
