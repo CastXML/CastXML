@@ -177,10 +177,31 @@ protected:
     // If we detected predefines from another compiler, substitute them.
     if (this->Opts.HaveCC) {
       builtins += this->Opts.Predefines;
+
+      // Provide __float128 if simulating the actual GNU compiler.
+      if (this->NeedFloat128(this->Opts.Predefines)) {
+        builtins += "\n"
+          "typedef struct __castxml_float128 { "
+          "  char x[16] __attribute__((aligned(16))); "
+          "} __float128;\n"
+          ;
+      }
+
     } else {
       builtins += predefines.substr(start, end-start);
     }
     return predefines.substr(0, start) + builtins + predefines.substr(end);
+  }
+
+  bool NeedFloat128(std::string const& pd) {
+    return (pd.find("#define __GNUC__ ") != pd.npos &&
+            pd.find("#define __clang__ ") == pd.npos &&
+            pd.find("#define __INTEL_COMPILER ") == pd.npos &&
+            pd.find("#define __CUDACC__ ") == pd.npos &&
+            pd.find("#define __PGI ") == pd.npos &&
+            (pd.find("#define __i386__ ") != pd.npos ||
+             pd.find("#define __x86_64__ ") != pd.npos ||
+             pd.find("#define __ia64__ ") != pd.npos));
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,
