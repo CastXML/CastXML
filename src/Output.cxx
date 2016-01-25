@@ -408,6 +408,8 @@ class ASTVisitor: public ASTVisitorBase
       indicate public, protected, or private membership.  */
   void PrintContextAttribute(clang::Decl const* d);
 
+  void PrintFloat128Type(DumpNode const* dn);
+
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
@@ -1324,6 +1326,14 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
+{
+  this->OS << "  <FundamentalType";
+  this->PrintIdAttribute(dn);
+  this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn,
                                       const char* tag,
@@ -1618,9 +1628,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
     if (sl.isValid()) {
       clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
       if (!this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
-        this->OS << "  <FundamentalType";
-        this->PrintIdAttribute(dn);
-        this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
+        this->PrintFloat128Type(dn);
         return;
       }
     }
