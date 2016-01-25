@@ -1534,6 +1534,14 @@ void ASTVisitor::OutputNamespaceDecl(
 void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
                                   DumpNode const* dn)
 {
+  // As a special case, replace the Clang fake builtin for __float128
+  // with a FundamentalType so we generate the same thing gccxml did.
+  if (this->CI.getLangOpts().CPlusPlus &&
+      d == this->CI.getASTContext().getFloat128StubType()) {
+    this->PrintFloat128Type(dn);
+    return;
+  }
+
   const char* tag;
   switch (d->getTagKind()) {
   case clang::TTK_Class: tag = "Class"; break;
