@@ -801,7 +801,7 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       if (rd->isInjectedClassName()) {
         continue;
       }
-      if (isTranslationUnit && rd->getName() == "__castxml_float128") {
+      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -842,7 +842,7 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
     } break;
     case clang::Decl::Record: {
       clang::RecordDecl const* rd = static_cast<clang::RecordDecl const*>(d);
-      if (isTranslationUnit && rd->getName() == "__castxml_float128") {
+      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -1075,7 +1075,7 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
 
   // We cannot mangle __float128 correctly because Clang does not have
   // it as an internal type, so skip mangled attributes involving it.
-  if (s.find("18__castxml_float128") != s.npos) {
+  if (s.find("__float128") != s.npos) {
     s = "";
   }
 

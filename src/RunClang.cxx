@@ -183,7 +183,7 @@ protected:
       // Provide __float128 if simulating the actual GNU compiler.
       if (this->NeedFloat128(this->Opts.Predefines)) {
         builtins += "\n"
-          "typedef struct __castxml_float128 { "
+          "typedef struct __castxml__float128 { "
           "  char x[16] __attribute__((aligned(16))); "
           "} __float128;\n"
           ;
