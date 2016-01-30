@@ -1,1 +1,3 @@
-typedef int&& start;
+namespace start {
+  typedef int&& type;
+}

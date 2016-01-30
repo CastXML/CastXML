@@ -24,6 +24,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
+#include "clang/Basic/Version.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
@@ -134,30 +135,85 @@ protected:
   Options const& Opts;
 
   CastXMLPredefines(Options const& opts): Opts(opts) {}
-  std::string UpdatePredefines(std::string const& predefines) {
-    // Clang's InitializeStandardPredefinedMacros forces some
-    // predefines even when -undef is given.  Filter them out.
-    // Also substitute our chosen predefines prior to those that came
-    // from the command line.
+  std::string UpdatePredefines(clang::CompilerInstance const& CI) {
+    std::string const& predefines = CI.getPreprocessor().getPredefines();
+
+    // Identify the portion of the predefines string corresponding to
+    // built-in predefined macros.
     char const predef_start[] = "# 1 \"<built-in>\" 3\n";
     char const predef_end[] = "# 1 \"<command line>\" 1\n";
     std::string::size_type start = predefines.find(predef_start);
-    std::string::size_type end = predefines.find(predef_end);
-    if(start != std::string::npos && end != std::string::npos) {
-      return (predefines.substr(0, start+sizeof(predef_start)-1) +
-              this->Opts.Predefines +
-              predefines.substr(end));
-    } else {
-      return predefines + this->Opts.Predefines;
+    std::string::size_type end = std::string::npos;
+    if (start != std::string::npos) {
+      start += sizeof(predef_start)-1;
+      end = predefines.find(predef_end, start);
+      if (end == std::string::npos) {
+        end = predefines.size();
+      }
     }
+
+    std::string builtins;
+
+    // Add a builtin to identify CastXML itself.
+    char castxml_version[64];
+    sprintf(castxml_version, "#define __castxml__ %u\n", getVersionValue());
+    builtins += castxml_version;
+
+    // Add builtins to identify the internal Clang compiler.
+    builtins +=
+#define STR(x) STR_(x)
+#define STR_(x) #x
+      "#define __castxml_clang_major__ " STR(CLANG_VERSION_MAJOR) "\n"
+      "#define __castxml_clang_minor__ " STR(CLANG_VERSION_MINOR) "\n"
+      "#define __castxml_clang_patchlevel__ "
+#ifdef CLANG_VERSION_PATCHLEVEL
+      STR(CLANG_VERSION_PATCHLEVEL)
+#else
+      "0"
+#endif
+      "\n"
+#undef STR
+#undef STR_
+      ;
+
+    // If we detected predefines from another compiler, substitute them.
+    if (this->Opts.HaveCC) {
+      builtins += this->Opts.Predefines;
+
+      // Provide __float128 if simulating the actual GNU compiler.
+      if (this->NeedFloat128(this->Opts.Predefines)) {
+        // Clang provides its own (fake) builtin in gnu++11 mode.
+        // Otherwise we need to provide our own.
+        if (!(CI.getLangOpts().CPlusPlus11 &&
+              CI.getLangOpts().GNUMode)) {
+          builtins += "\n"
+            "typedef struct __castxml__float128 { "
+            "  char x[16] __attribute__((aligned(16))); "
+            "} __float128;\n"
+            ;
+        }
+      }
+
+    } else {
+      builtins += predefines.substr(start, end-start);
+    }
+    return predefines.substr(0, start) + builtins + predefines.substr(end);
+  }
+
+  bool NeedFloat128(std::string const& pd) {
+    return (pd.find("#define __GNUC__ ") != pd.npos &&
+            pd.find("#define __clang__ ") == pd.npos &&
+            pd.find("#define __INTEL_COMPILER ") == pd.npos &&
+            pd.find("#define __CUDACC__ ") == pd.npos &&
+            pd.find("#define __PGI ") == pd.npos &&
+            (pd.find("#define __i386__ ") != pd.npos ||
+             pd.find("#define __x86_64__ ") != pd.npos ||
+             pd.find("#define __ia64__ ") != pd.npos));
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,
                              llvm::StringRef /*Filename*/) {
-    if(this->Opts.HaveCC) {
-      CI.getPreprocessor().setPredefines(
-      this->UpdatePredefines(CI.getPreprocessor().getPredefines()));
-    }
+    CI.getPreprocessor().setPredefines(this->UpdatePredefines(CI));
 
     // Tell Clang not to tear down the parser at EOF.
     CI.getPreprocessor().enableIncrementalProcessing();
@@ -402,11 +458,11 @@ int runClang(const char* const* argBeg,
     args.push_back("-undef");
 
     // Configure language options to match given compiler.
-    const char* pd = opts.Predefines.c_str();
-    if(strstr(pd, "#define _MSC_EXTENSIONS ")) {
+    std::string const& pd = opts.Predefines;
+    if(pd.find("#define _MSC_EXTENSIONS ") != pd.npos) {
       args.push_back("-fms-extensions");
     }
-    if(const char* d = strstr(pd, "#define _MSC_VER ")) {
+    if(const char* d = strstr(pd.c_str(), "#define _MSC_VER ")) {
       args.push_back("-fms-compatibility");
       // Extract the _MSC_VER value to give to -fmsc-version=.
       d += 17;
@@ -419,7 +475,7 @@ int runClang(const char* const* argBeg,
         args.push_back(fmsc_version.c_str());
 
         if (!opts.HaveStd) {
-          if (strstr(pd, "#define __cplusplus ")) {
+          if (pd.find("#define __cplusplus ") != pd.npos) {
             // Extract the C++ level from _MSC_VER to give to -std=.
             // Note that Clang also does this but old versions of Clang
             // do not know about new versions of MSVC.
@@ -442,14 +498,14 @@ int runClang(const char* const* argBeg,
       }
     } else if (!opts.HaveStd) {
       // Check for GNU extensions.
-      if (strstr(pd, "#define __GNUC__ ") &&
-          !strstr(pd, "#define __STRICT_ANSI__ ")) {
+      if (pd.find("#define __GNUC__ ") != pd.npos &&
+          pd.find("#define __STRICT_ANSI__ ") == pd.npos) {
         std_flag += "gnu";
       } else {
         std_flag += "c";
       }
 
-      if (const char* d = strstr(pd, "#define __cplusplus ")) {
+      if (const char* d = strstr(pd.c_str(), "#define __cplusplus ")) {
         // Extract the C++ level to give to -std=.  We do this above for
         // MSVC because it does not set __cplusplus to standard values.
         d += 20;
@@ -477,7 +533,8 @@ int runClang(const char* const* argBeg,
           }
           args.push_back(std_flag.c_str());
         }
-      } else if (const char* d = strstr(pd, "#define __STDC_VERSION__ ")) {
+      } else if (const char* d =
+                 strstr(pd.c_str(), "#define __STDC_VERSION__ ")) {
         // Extract the C standard level.
         d += 25;
         if (const char* e = strchr(d, '\n')) {

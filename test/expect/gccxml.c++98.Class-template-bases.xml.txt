@@ -1,8 +1,8 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
   <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:4" file="f1" line="4" members="_3 _4 _5 _6" bases="_7 _8" size="[0-9]+" align="[0-9]+">
-    <Base type="_7" access="public" virtual="0"/>
-    <Base type="_8" access="public" virtual="0"/>
+    <Base type="_7" access="public" virtual="0" offset="[0-9]+"/>
+    <Base type="_8" access="public" virtual="0" offset="[0-9]+"/>
   </Class>
   <Constructor id="_3" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throw="">

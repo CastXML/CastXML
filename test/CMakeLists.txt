@@ -23,11 +23,12 @@ find_package(LibXml2 QUIET)
 
 macro(castxml_test_cmd test)
   set(command $<TARGET_FILE:castxml> ${ARGN})
+  set(_castxml_expect ${castxml_test_cmd_expect} cmd.${test})
   add_test(
     NAME cmd.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dexpect=cmd.${test}"
+    "-Dexpect=${_castxml_expect}"
     ${castxml_test_cmd_extra_arguments}
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
@@ -44,6 +45,11 @@ macro(castxml_test_gccxml_common prefix ext std test)
   else()
     set(_castxml_input ${test})
   endif()
+  set(_castxml_expect ${prefix}.${std}.${test})
+  if("${std}" MATCHES "^gnu(.*)$")
+    list(APPEND _castxml_expect ${prefix}.c${CMAKE_MATCH_1}.${test})
+  endif()
+  list(APPEND _castxml_expect ${prefix}.any.${test})
   set(command $<TARGET_FILE:castxml>
     --castxml-gccxml
     ${_castxml_start}
@@ -56,7 +62,7 @@ macro(castxml_test_gccxml_common prefix ext std test)
     NAME ${prefix}.${std}.${test}
     COMMAND ${CMAKE_COMMAND}
     "-Dcommand:STRING=${command}"
-    "-Dexpect=${prefix}.${std}.${test};${prefix}.any.${test}"
+    "-Dexpect=${_castxml_expect}"
     "-Dxml=${prefix}.${std}.${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
@@ -67,44 +73,79 @@ macro(castxml_test_gccxml_c89 test)
   castxml_test_gccxml_common(gccxml c c89 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_gnu89 test)
+  castxml_test_gccxml_common(gccxml c gnu89 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_cxx98 test)
   castxml_test_gccxml_common(gccxml cxx c++98 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_gnuxx98 test)
+  castxml_test_gccxml_common(gccxml cxx gnu++98 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_cxx11 test)
   castxml_test_gccxml_common(gccxml cxx c++11 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_gnuxx11 test)
+  castxml_test_gccxml_common(gccxml cxx gnu++11 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_cxx14 test)
   castxml_test_gccxml_common(gccxml cxx c++14 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_gnuxx14 test)
+  castxml_test_gccxml_common(gccxml cxx gnu++14 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx98 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++98 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_broken_gnuxx98 test)
+  castxml_test_gccxml_common(gccxml.broken cxx gnu++98 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_broken_cxx11 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++11 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_broken_gnuxx11 test)
+  castxml_test_gccxml_common(gccxml.broken cxx gnu++11 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken_cxx14 test)
   castxml_test_gccxml_common(gccxml.broken cxx c++14 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_broken_gnuxx14 test)
+  castxml_test_gccxml_common(gccxml.broken cxx gnu++14 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_c test)
   castxml_test_gccxml_c89(${test})
+  castxml_test_gccxml_gnu89(${test})
 endmacro()
 
 macro(castxml_test_gccxml test)
   castxml_test_gccxml_cxx98(${test})
+  castxml_test_gccxml_gnuxx98(${test})
   castxml_test_gccxml_cxx11(${test})
+  castxml_test_gccxml_gnuxx11(${test})
   castxml_test_gccxml_cxx14(${test})
+  castxml_test_gccxml_gnuxx14(${test})
 endmacro()
 
 macro(castxml_test_gccxml_broken test)
   castxml_test_gccxml_broken_cxx98(${test})
+  castxml_test_gccxml_broken_gnuxx98(${test})
   castxml_test_gccxml_broken_cxx11(${test})
+  castxml_test_gccxml_broken_gnuxx11(${test})
   castxml_test_gccxml_broken_cxx14(${test})
+  castxml_test_gccxml_broken_gnuxx14(${test})
 endmacro()
 
 set(input ${CMAKE_CURRENT_LIST_DIR}/input)
@@ -144,6 +185,14 @@ castxml_test_cmd(start-missing --castxml-start)
 castxml_test_cmd(rsp-empty @${input}/empty.rsp)
 castxml_test_cmd(rsp-missing @${input}/does-not-exist.rsp)
 castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
+
+# Test predefined macros when not using --castxml-cc-<id>.
+math(EXPR __castxml__ "1000000*${CastXML_VERSION_MAJOR} + 1000*${CastXML_VERSION_MINOR} + ${CastXML_VERSION_PATCH}")
+configure_file(expect/cmd.predefined-macros.stdout.txt.in
+               expect/cmd.predefined-macros.stdout.txt @ONLY)
+set(castxml_test_cmd_expect ${CMAKE_CURRENT_BINARY_DIR}/expect/cmd.predefined-macros)
+castxml_test_cmd(predefined-macros --castxml-gccxml ${empty_cxx} -E -dM)
+unset(castxml_test_cmd_expect)
 
 # Test --castxml-cc-gnu detection.
 add_executable(cc-gnu cc-gnu.c)
@@ -203,6 +252,7 @@ castxml_test_gccxml(ArrayType-incomplete)
 castxml_test_gccxml(Class)
 castxml_test_gccxml(Class-abstract)
 castxml_test_gccxml(Class-annotate)
+castxml_test_gccxml(Class-base-offset)
 castxml_test_gccxml(Class-base-typedef)
 castxml_test_gccxml(Class-bases)
 castxml_test_gccxml(Class-forward)
@@ -282,6 +332,8 @@ castxml_test_gccxml(OperatorMethod-annotate)
 castxml_test_gccxml(PointerType)
 castxml_test_gccxml(ReferenceType)
 castxml_test_gccxml(RValueReferenceType)
+castxml_test_gccxml(TypeAlias)
+castxml_test_gccxml(TypeAliasTemplate)
 castxml_test_gccxml(Typedef-annotate)
 castxml_test_gccxml(Typedef-paren)
 castxml_test_gccxml(Typedef-to-Class-template)
@@ -303,6 +355,7 @@ castxml_test_gccxml(Namespace-nested-2)
 unset(castxml_test_gccxml_custom_start)
 unset(castxml_test_gccxml_custom_input)
 
+castxml_test_gccxml(invalid-decl-for-type)
 castxml_test_gccxml(qualified-type-name)
 castxml_test_gccxml(using-declaration-class)
 castxml_test_gccxml(using-declaration-ns)
@@ -327,71 +380,20 @@ castxml_test_gccxml_c(invalid)
 
 castxml_test_gccxml_broken(ReferenceType-to-Class-template)
 
-#-----------------------------------------------------------------------------
-# Find a real GNU compiler to test with --castxml-cc-gnu.
+set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")")
+castxml_test_gccxml_c(GNU-float128)
+set(castxml_test_gccxml_custom_input GNU-float128)
+set(castxml_test_gccxml_custom_start "")
+castxml_test_gccxml_c(GNU-float128-nostart)
+unset(castxml_test_gccxml_custom_start)
+unset(castxml_test_gccxml_custom_input)
+unset(castxml_test_gccxml_extra_arguments)
 
-set(_gnu_C gcc)
-set(_gnu_CXX g++)
-
-foreach(lang C CXX)
-  find_program(TEST_GNU_${lang} NAMES ${_gnu_${lang}} DOC "Path to GNU ${_gnu_${lang}} compiler for testing")
-  # Exclude the Apple LLVM tool that is not really a GNU compiler.
-  if(TEST_GNU_${lang})
-    execute_process(
-      COMMAND ${TEST_GNU_${lang}} --version
-      OUTPUT_VARIABLE version
-      ERROR_VARIABLE version
-      RESULT_VARIABLE failed
-      )
-    if(failed OR version MATCHES "Apple LLVM")
-      set(TEST_GNU_${lang} TEST_GNU_${lang}-NOTFOUND)
-    endif()
-  endif()
-  if(TEST_GNU_${lang})
-    message(STATUS "Found GNU ${lang} compiler '${TEST_GNU_${lang}}' to drive tests")
-  endif()
-endforeach()
-
-if(TEST_GNU_C)
-  set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu-c ${TEST_GNU_C})
-
-  # Check if the GNU compiler supports __float128 to enable test.
-  execute_process(
-    COMMAND ${TEST_GNU_C} -c ${CMAKE_CURRENT_SOURCE_DIR}/input/GNU-float128.c
-    OUTPUT_VARIABLE out
-    ERROR_VARIABLE out
-    RESULT_VARIABLE failed_float128_c
-    )
-  if(NOT failed_float128_c)
-    castxml_test_gccxml_c(GNU-float128)
-    set(castxml_test_gccxml_custom_input GNU-float128)
-    set(castxml_test_gccxml_custom_start "")
-    castxml_test_gccxml_c(GNU-float128-nostart)
-    unset(castxml_test_gccxml_custom_start)
-    unset(castxml_test_gccxml_custom_input)
-  endif()
-
-  unset(castxml_test_gccxml_extra_arguments)
-endif()
-
-if(TEST_GNU_CXX)
-  set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu ${TEST_GNU_CXX})
-
-  # Check if the GNU compiler supports __float128 to enable test.
-  execute_process(
-    COMMAND ${TEST_GNU_CXX} -c ${CMAKE_CURRENT_SOURCE_DIR}/input/GNU-float128.cxx
-    OUTPUT_VARIABLE out
-    ERROR_VARIABLE out
-    RESULT_VARIABLE failed_float128_cxx
-    )
-  if(NOT failed_float128_cxx)
-    castxml_test_gccxml(GNU-float128)
-    set(castxml_test_gccxml_custom_input GNU-float128)
-    set(castxml_test_gccxml_custom_start "")
-    castxml_test_gccxml(GNU-float128-nostart)
-    unset(castxml_test_gccxml_custom_start)
-    unset(castxml_test_gccxml_custom_input)
-  endif()
-
-  unset(castxml_test_gccxml_extra_arguments)
-endif()
+set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")")
+castxml_test_gccxml(GNU-float128)
+set(castxml_test_gccxml_custom_input GNU-float128)
+set(castxml_test_gccxml_custom_start "")
+castxml_test_gccxml(GNU-float128-nostart)
+unset(castxml_test_gccxml_custom_start)
+unset(castxml_test_gccxml_custom_input)
+unset(castxml_test_gccxml_extra_arguments)

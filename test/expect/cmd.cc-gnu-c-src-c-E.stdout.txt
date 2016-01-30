@@ -1,2 +1,6 @@
 ^#define __GNUC_MINOR__ 1
-#define __GNUC__ 1$
+#define __GNUC__ 1
+#define __castxml__ [0-9]+
+#define __castxml_clang_major__ [0-9]+
+#define __castxml_clang_minor__ [0-9]+
+#define __castxml_clang_patchlevel__ [0-9]+$

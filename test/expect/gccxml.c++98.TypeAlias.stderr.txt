@@ -1,0 +1,1 @@
+warning: alias declarations are a C\+\+11 extension

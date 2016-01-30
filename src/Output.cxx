@@ -26,6 +26,7 @@
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Mangle.h"
+#include "clang/AST/RecordLayout.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
@@ -233,8 +234,10 @@ class ASTVisitor: public ASTVisitorBase
   }
 
   /** Allocate a dump node for a Clang declaration.  */
-  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete);
-  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete, DumpQual dq);
+  DumpId AddDeclDumpNode(clang::Decl const* d, bool complete,
+                         bool forType = false);
+  DumpId AddDeclDumpNodeForType(clang::Decl const* d, bool complete,
+                                DumpQual dq);
 
   /** Allocate a dump node for a Clang type.  */
   DumpId AddTypeDumpNode(DumpType dt, bool complete, DumpQual dq = DumpQual());
@@ -405,6 +408,8 @@ class ASTVisitor: public ASTVisitorBase
       indicate public, protected, or private membership.  */
   void PrintContextAttribute(clang::Decl const* d);
 
+  void PrintFloat128Type(DumpNode const* dn);
+
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
@@ -514,7 +519,7 @@ public:
 
 //----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
-                                               bool complete) {
+                                               bool complete, bool forType) {
   // Select the definition or canonical declaration.
   d = d->getCanonicalDecl();
   if(clang::RecordDecl const* rd = clang::dyn_cast<clang::RecordDecl>(d)) {
@@ -528,19 +533,19 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
   case clang::Decl::UsingShadow:
     return this->AddDeclDumpNode(
       static_cast<clang::UsingShadowDecl const*>(d)->getTargetDecl(),
-      complete);
+      complete, forType);
   case clang::Decl::LinkageSpec: {
     clang::DeclContext const* dc =
       static_cast<clang::LinkageSpecDecl const*>(d)->getDeclContext();
     return this->AddDeclDumpNode(clang::Decl::castFromDeclContext(dc),
-                                 complete);
+                                 complete, forType);
   } break;
   default:
     break;
   }
 
-  // Skip invalid declarations.
-  if(d->isInvalidDecl()) {
+  // Skip invalid declarations that are not needed for a type element.
+  if (d->isInvalidDecl() && !forType) {
     return DumpId();
   }
 
@@ -566,16 +571,32 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
         }
       }
     }
+
+    if (clang::dyn_cast<clang::TypeAliasDecl>(d)) {
+      return DumpId();
+    }
+
+    if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
+      return DumpId();
+    }
+
+    if (clang::TypedefDecl const* td =
+        clang::dyn_cast<clang::TypedefDecl>(d)) {
+      if (td->getUnderlyingType()->isRValueReferenceType()) {
+        return DumpId();
+      }
+    }
   }
 
   return this->AddDumpNodeImpl(d, complete);
 }
 
 //----------------------------------------------------------------------------
-ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
-                                               bool complete, DumpQual dq) {
+ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
+                                                      bool complete,
+                                                      DumpQual dq) {
   // Get the id for the canonical decl.
-  DumpId id = this->AddDeclDumpNode(d, complete);
+  DumpId id = this->AddDeclDumpNode(d, complete, true);
 
   // If any qualifiers were collected through layers of desugaring
   // then get the id of the qualified type referencing this decl.
@@ -620,15 +641,15 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       t->getAs<clang::ElaboratedType>()->getNamedType(), c),
       complete, dq);
   case clang::Type::Enum:
-    return this->AddDeclDumpNode(t->getAs<clang::EnumType>()->getDecl(),
-                                 complete, dq);
+    return this->AddDeclDumpNodeForType(
+      t->getAs<clang::EnumType>()->getDecl(), complete, dq);
   case clang::Type::Paren:
     return this->AddTypeDumpNode(DumpType(
       t->getAs<clang::ParenType>()->getInnerType(), c),
       complete, dq);
   case clang::Type::Record:
-    return this->AddDeclDumpNode(t->getAs<clang::RecordType>()->getDecl(),
-                                 complete, dq);
+    return this->AddDeclDumpNodeForType(
+      t->getAs<clang::RecordType>()->getDecl(), complete, dq);
   case clang::Type::SubstTemplateTypeParm:
     return this->AddTypeDumpNode(DumpType(
       t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(), c),
@@ -660,7 +681,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
         }
       }
     }
-    return this->AddDeclDumpNode(tdt->getDecl(), complete, dq);
+    return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
   } break;
   default:
     break;
@@ -780,7 +801,7 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       if (rd->isInjectedClassName()) {
         continue;
       }
-      if (isTranslationUnit && rd->getName() == "__castxml_float128") {
+      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -821,7 +842,7 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
     } break;
     case clang::Decl::Record: {
       clang::RecordDecl const* rd = static_cast<clang::RecordDecl const*>(d);
-      if (isTranslationUnit && rd->getName() == "__castxml_float128") {
+      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -1054,7 +1075,7 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
 
   // We cannot mangle __float128 correctly because Clang does not have
   // it as an internal type, so skip mangled attributes involving it.
-  if (s.find("18__castxml_float128") != s.npos) {
+  if (s.find("__float128") != s.npos) {
     s = "";
   }
 
@@ -1305,6 +1326,14 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
+{
+  this->OS << "  <FundamentalType";
+  this->PrintIdAttribute(dn);
+  this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn,
                                       const char* tag,
@@ -1505,6 +1534,14 @@ void ASTVisitor::OutputNamespaceDecl(
 void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
                                   DumpNode const* dn)
 {
+  // As a special case, replace the Clang fake builtin for __float128
+  // with a FundamentalType so we generate the same thing gccxml did.
+  if (this->CI.getLangOpts().CPlusPlus &&
+      d == this->CI.getASTContext().getFloat128StubType()) {
+    this->PrintFloat128Type(dn);
+    return;
+  }
+
   const char* tag;
   switch (d->getTagKind()) {
   case clang::TTK_Class: tag = "Class"; break;
@@ -1530,7 +1567,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     if(dx && dx->isAbstract()) {
       this->OS << " abstract=\"1\"";
     }
-    if(dn->Complete) {
+    if (dn->Complete && !d->isInvalidDecl()) {
       this->PrintMembersAttribute(d);
       doBases = dx && dx->getNumBases();
       if(doBases) {
@@ -1545,12 +1582,20 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   this->PrintAttributesAttribute(d);
   if(doBases) {
     this->OS << ">\n";
+    clang::ASTRecordLayout const& layout = this->CTX.getASTRecordLayout(dx);
     for(clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
           e = dx->bases_end(); i != e; ++i) {
+      clang::QualType bt = i->getType().getCanonicalType();
+      clang::CXXRecordDecl const* bd = clang::dyn_cast<clang::CXXRecordDecl>(
+        bt->getAs<clang::RecordType>()->getDecl());
       this->OS << "    <Base";
-      this->PrintTypeAttribute(i->getType().getCanonicalType(), true);
+      this->PrintTypeAttribute(bt, true);
       this->PrintAccessAttribute(i->getAccessSpecifier());
       this->OS << " virtual=\"" << (i->isVirtual()? 1 : 0) << "\"";
+      if (bd && !i->isVirtual()) {
+        this->OS << " offset=\"" <<
+          layout.getBaseClassOffset(bd).getQuantity() << "\"";
+      }
       this->OS << "/>\n";
     }
     this->OS << "  </" << tag << ">\n";
@@ -1591,9 +1636,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
     if (sl.isValid()) {
       clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
       if (!this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
-        this->OS << "  <FundamentalType";
-        this->PrintIdAttribute(dn);
-        this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
+        this->PrintFloat128Type(dn);
         return;
       }
     }

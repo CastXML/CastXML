@@ -106,7 +106,15 @@ std::string getClangResourceDir()
 //----------------------------------------------------------------------------
 std::string getVersionString()
 {
-  return CASTXML_VERSION;
+  return CASTXML_VERSION_STRING;
+}
+
+//----------------------------------------------------------------------------
+unsigned int getVersionValue()
+{
+  return (CASTXML_VERSION_MAJOR * 1000000 +
+          CASTXML_VERSION_MINOR *    1000 +
+          CASTXML_VERSION_PATCH *       1);
 }
 
 //----------------------------------------------------------------------------
