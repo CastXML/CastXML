@@ -200,12 +200,16 @@ protected:
     return predefines.substr(0, start) + builtins + predefines.substr(end);
   }
 
-  bool NeedFloat128(std::string const& pd) {
+  bool IsActualGNU(std::string const& pd) const {
     return (pd.find("#define __GNUC__ ") != pd.npos &&
             pd.find("#define __clang__ ") == pd.npos &&
             pd.find("#define __INTEL_COMPILER ") == pd.npos &&
             pd.find("#define __CUDACC__ ") == pd.npos &&
-            pd.find("#define __PGI ") == pd.npos &&
+            pd.find("#define __PGI ") == pd.npos);
+  }
+
+  bool NeedFloat128(std::string const& pd) const {
+    return (this->IsActualGNU(pd) &&
             (pd.find("#define __i386__ ") != pd.npos ||
              pd.find("#define __x86_64__ ") != pd.npos ||
              pd.find("#define __ia64__ ") != pd.npos));
