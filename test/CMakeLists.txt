@@ -397,3 +397,11 @@ castxml_test_gccxml(GNU-float128-nostart)
 unset(castxml_test_gccxml_custom_start)
 unset(castxml_test_gccxml_custom_input)
 unset(castxml_test_gccxml_extra_arguments)
+
+set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu-c $<TARGET_FILE:cc-gnu>)
+castxml_test_gccxml_c(GNU-va_arg_pack)
+unset(castxml_test_gccxml_extra_arguments)
+
+set(castxml_test_gccxml_extra_arguments --castxml-cc-gnu $<TARGET_FILE:cc-gnu>)
+castxml_test_gccxml(GNU-va_arg_pack)
+unset(castxml_test_gccxml_extra_arguments)

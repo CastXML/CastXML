@@ -180,6 +180,16 @@ protected:
     if (this->Opts.HaveCC) {
       builtins += this->Opts.Predefines;
 
+      // Provide __builtin_va_arg_pack if simulating the actual GNU compiler.
+      if (this->NeedBuiltinVarArgPack(this->Opts.Predefines)) {
+        // Clang does not support this builtin, so fake it to tolerate
+        // uses in function bodies while parsing.
+        builtins += "\n"
+          "#define __builtin_va_arg_pack() 0\n"
+          "#define __builtin_va_arg_pack_len() 1\n"
+          ;
+      }
+
       // Provide __float128 if simulating the actual GNU compiler.
       if (this->NeedFloat128(this->Opts.Predefines)) {
         // Clang provides its own (fake) builtin in gnu++11 mode.
@@ -206,6 +216,10 @@ protected:
             pd.find("#define __INTEL_COMPILER ") == pd.npos &&
             pd.find("#define __CUDACC__ ") == pd.npos &&
             pd.find("#define __PGI ") == pd.npos);
+  }
+
+  bool NeedBuiltinVarArgPack(std::string const& pd) {
+    return this->IsActualGNU(pd);
   }
 
   bool NeedFloat128(std::string const& pd) const {
