@@ -204,6 +204,13 @@ protected:
         }
       }
 
+      // Prevent glibc use of a GNU extension not implemented by Clang.
+      if (this->NeedNoMathInlines(this->Opts.Predefines)) {
+        builtins += "\n"
+          "#define __NO_MATH_INLINES 1\n"
+          ;
+      }
+
     } else {
       builtins += predefines.substr(start, end-start);
     }
@@ -227,6 +234,13 @@ protected:
             (pd.find("#define __i386__ ") != pd.npos ||
              pd.find("#define __x86_64__ ") != pd.npos ||
              pd.find("#define __ia64__ ") != pd.npos));
+  }
+
+  bool NeedNoMathInlines(std::string const& pd) const {
+    return (this->IsActualGNU(pd) &&
+            (pd.find("#define __i386__ ") != pd.npos &&
+             pd.find("#define __OPTIMIZE__ ") != pd.npos &&
+             pd.find("#define __NO_MATH_INLINES ") == pd.npos));
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,

@@ -205,6 +205,7 @@ castxml_test_cmd(cc-gnu-src-cxx-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${emp
 castxml_test_cmd(cc-gnu-tgt-amd64 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__amd64__ ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-gnu-tgt-explicit --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> ")" -target explicit-target-triple ${empty_cxx} "-###")
 castxml_test_cmd(cc-gnu-tgt-i386 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__i386__ ")" ${empty_cxx} "-###")
+castxml_test_cmd(cc-gnu-tgt-i386-opt-E --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__i386__ --cc-define=__OPTIMIZE__ ")" ${empty_cxx} -E -dM)
 castxml_test_cmd(cc-gnu-tgt-mingw --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=_WIN32 --cc-define=__MINGW32__ ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-gnu-tgt-win --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=_WIN32 ")" ${empty_cxx} "-###")
 castxml_test_cmd(cc-gnu-tgt-x86_64 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")" ${empty_cxx} "-###")
@@ -224,6 +225,7 @@ castxml_test_cmd(cc-gnu-c-std-c11 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> -
 castxml_test_cmd(cc-gnu-c-std-gnu89 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu>              ")" ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-c-std-gnu99 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> -std=199901L ")" ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-c-std-gnu11 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> -std=201112L ")" ${empty_c} "-###")
+castxml_test_cmd(cc-gnu-c-tgt-i386-opt-E --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> --cc-define=__i386__ --cc-define=__OPTIMIZE__ ")" ${empty_c} -E -dM)
 
 # Test --castxml-cc-msvc detection.
 add_executable(cc-msvc cc-msvc.c)
