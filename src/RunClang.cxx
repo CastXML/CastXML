@@ -56,13 +56,22 @@ class ASTConsumer: public clang::ASTConsumer
   clang::CompilerInstance& CI;
   llvm::raw_ostream& OS;
   Options const& Opts;
-  std::queue<clang::CXXRecordDecl*> Classes;
+  struct Class {
+    clang::CXXRecordDecl* RD;
+    int Depth;
+    Class(clang::CXXRecordDecl* rd, int depth): RD(rd), Depth(depth) {}
+  };
+  std::queue<Class> Classes;
+  int ClassImplicitMemberDepth = 0;
 public:
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
               Options const& opts):
     CI(ci), OS(os), Opts(opts) {}
 
-  void AddImplicitMembers(clang::CXXRecordDecl* rd) {
+  void AddImplicitMembers(Class const& c) {
+    clang::CXXRecordDecl* rd = c.RD;
+    this->ClassImplicitMemberDepth = c.Depth + 1;
+
     clang::Sema& sema = this->CI.getSema();
     sema.ForceDeclarationOfImplicitMembers(rd);
 
@@ -96,7 +105,9 @@ public:
   void HandleTagDeclDefinition(clang::TagDecl* d) {
     if(clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
       if(!rd->isDependentContext()) {
-        this->Classes.push(rd);
+        if (this->ClassImplicitMemberDepth < 16) {
+          this->Classes.push(Class(rd, this->ClassImplicitMemberDepth));
+        }
       }
     }
   }
@@ -113,9 +124,9 @@ public:
 
       // Add implicit members to classes.
       while (!this->Classes.empty()) {
-        clang::CXXRecordDecl* rd = this->Classes.front();
+        Class c = this->Classes.front();
         this->Classes.pop();
-        this->AddImplicitMembers(rd);
+        this->AddImplicitMembers(c);
       }
     }
 
