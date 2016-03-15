@@ -26,6 +26,7 @@
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
 #include "clang/AST/Mangle.h"
+#include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -217,6 +218,15 @@ class ASTVisitor: public ASTVisitorBase
     }
   };
 
+  class PrinterHelper: public clang::PrinterHelper {
+    ASTVisitor& Visitor;
+  public:
+    PrinterHelper(ASTVisitor& v): Visitor(v) {}
+    bool handledStmt(clang::Stmt* s, llvm::raw_ostream& os) override {
+      return this->Visitor.PrintHelpStmt(s, os);
+    }
+  };
+
   /** Get the dump status node for a Clang declaration.  */
   DumpNode* GetDumpNode(clang::Decl const* d) {
     return &this->DeclNodes[d];
@@ -398,6 +408,9 @@ class ASTVisitor: public ASTVisitorBase
   /** Output an <Argument/> element inside a function element.  */
   void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete,
                               clang::Expr const* def);
+
+  /** Print some statements (expressions) in a custom form.  */
+  bool PrintHelpStmt(clang::Stmt* s, llvm::raw_ostream& os);
 
   /** Print an access="..." attribute.  */
   void PrintAccessAttribute(clang::AccessSpecifier as);
@@ -1159,6 +1172,19 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 }
 
 //----------------------------------------------------------------------------
+bool ASTVisitor::PrintHelpStmt(clang::Stmt* s, llvm::raw_ostream& os)
+{
+  if (clang::DeclRefExpr const* e = clang::dyn_cast<clang::DeclRefExpr>(s)) {
+    if (clang::NamedDecl const* d =
+        clang::dyn_cast<clang::NamedDecl>(e->getDecl())) {
+      d->printQualifiedName(os, this->PrintingPolicy);
+      return true;
+    }
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
 {
   if (as == clang::AS_private) {
@@ -1488,7 +1514,8 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << " default=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    def->printPretty(rso, 0, this->PrintingPolicy);
+    PrinterHelper ph(*this);
+    def->printPretty(rso, &ph, this->PrintingPolicy);
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
