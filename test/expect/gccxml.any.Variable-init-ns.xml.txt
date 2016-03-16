@@ -1,0 +1,10 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
+  <Variable id="_3" name="C" type="_5c" init="123" context="_1" location="f1:2" file="f1" line="2" static="1" mangled="[^"]+"/>
+  <Variable id="_4" name="var_int" type="_5" init="start::C" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_5c" type="_5" const="1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Variable-init-ns.cxx"/>
+</GCC_XML>$

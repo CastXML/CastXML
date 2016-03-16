@@ -352,6 +352,8 @@ castxml_test_gccxml(Variable)
 castxml_test_gccxml(Variable-annotate)
 castxml_test_gccxml(Variable-in-Class)
 castxml_test_gccxml(Variable-init)
+castxml_test_gccxml(Variable-init-cast)
+castxml_test_gccxml(Variable-init-ns)
 
 # Test multiple start declarations.
 set(castxml_test_gccxml_custom_input Namespace-nested)

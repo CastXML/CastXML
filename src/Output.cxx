@@ -1781,7 +1781,8 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
     this->OS << " init=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    init->printPretty(rso, 0, this->PrintingPolicy);
+    PrinterHelper ph(*this);
+    init->printPretty(rso, &ph, this->PrintingPolicy);
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
