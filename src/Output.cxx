@@ -1174,12 +1174,17 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 //----------------------------------------------------------------------------
 bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
 {
-  if (clang::DeclRefExpr const* e = clang::dyn_cast<clang::DeclRefExpr>(s)) {
+  switch (s->getStmtClass()) {
+  case clang::Stmt::DeclRefExprClass: {
+    clang::DeclRefExpr const* e = static_cast<clang::DeclRefExpr const*>(s);
     if (clang::NamedDecl const* d =
         clang::dyn_cast<clang::NamedDecl>(e->getDecl())) {
       d->printQualifiedName(os, this->PrintingPolicy);
       return true;
     }
+  } break;
+  default:
+    break;
   }
   return false;
 }
