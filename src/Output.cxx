@@ -410,7 +410,7 @@ class ASTVisitor: public ASTVisitorBase
                               clang::Expr const* def);
 
   /** Print some statements (expressions) in a custom form.  */
-  bool PrintHelpStmt(clang::Stmt* s, llvm::raw_ostream& os);
+  bool PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os);
 
   /** Print an access="..." attribute.  */
   void PrintAccessAttribute(clang::AccessSpecifier as);
@@ -1172,7 +1172,7 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 }
 
 //----------------------------------------------------------------------------
-bool ASTVisitor::PrintHelpStmt(clang::Stmt* s, llvm::raw_ostream& os)
+bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
 {
   if (clang::DeclRefExpr const* e = clang::dyn_cast<clang::DeclRefExpr>(s)) {
     if (clang::NamedDecl const* d =
