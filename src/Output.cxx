@@ -25,6 +25,8 @@
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
+#include "clang/AST/Expr.h"
+#include "clang/AST/ExprCXX.h"
 #include "clang/AST/Mangle.h"
 #include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
@@ -1175,6 +1177,34 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
 {
   switch (s->getStmtClass()) {
+  case clang::Stmt::CStyleCastExprClass: {
+    // Duplicate clang::StmtPrinter::VisitCStyleCastExpr
+    // but with canonical type so we do not print an unqualified name.
+    clang::CStyleCastExpr const* e =
+      static_cast<clang::CStyleCastExpr const*>(s);
+    os << "(";
+    e->getTypeAsWritten().getCanonicalType().print(os, this->PrintingPolicy);
+    os << ")";
+    PrinterHelper ph(*this);
+    e->getSubExpr()->printPretty(os, &ph, this->PrintingPolicy);
+    return true;
+  } break;
+  case clang::Stmt::CXXConstCastExprClass: // fallthrough
+  case clang::Stmt::CXXDynamicCastExprClass: // fallthrough
+  case clang::Stmt::CXXReinterpretCastExprClass: // fallthrough
+  case clang::Stmt::CXXStaticCastExprClass: {
+    // Duplicate clang::StmtPrinter::VisitCXXNamedCastExpr
+    // but with canonical type so we do not print an unqualified name.
+    clang::CXXNamedCastExpr const* e =
+      static_cast<clang::CXXNamedCastExpr const*>(s);
+    os << e->getCastName() << '<';
+    e->getTypeAsWritten().getCanonicalType().print(os, this->PrintingPolicy);
+    os << ">(";
+    PrinterHelper ph(*this);
+    e->getSubExpr()->printPretty(os, &ph, this->PrintingPolicy);
+    os << ")";
+    return true;
+  } break;
   case clang::Stmt::DeclRefExprClass: {
     clang::DeclRefExpr const* e = static_cast<clang::DeclRefExpr const*>(s);
     if (clang::NamedDecl const* d =
