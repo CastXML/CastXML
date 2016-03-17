@@ -2069,7 +2069,7 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Start dump with gccxml-compatible format.
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.136\">\n"
+    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.137\">\n"
     ;
 
   // Dump the complete nodes.
