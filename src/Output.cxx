@@ -1206,10 +1206,24 @@ bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
     return true;
   } break;
   case clang::Stmt::DeclRefExprClass: {
+    // Print the fully qualified name of the referenced declaration.
     clang::DeclRefExpr const* e = static_cast<clang::DeclRefExpr const*>(s);
     if (clang::NamedDecl const* d =
         clang::dyn_cast<clang::NamedDecl>(e->getDecl())) {
-      d->printQualifiedName(os, this->PrintingPolicy);
+      std::string s;
+      {
+        llvm::raw_string_ostream rso(s);
+        d->printQualifiedName(rso, this->PrintingPolicy);
+        rso.str();
+      }
+      if (clang::isa<clang::EnumConstantDecl>(d)) {
+        // Clang does not exclude the "::" after an unnamed enum type.
+        std::string::size_type pos = s.find("::::");
+        if (pos != s.npos) {
+          s.erase(pos, 2);
+        }
+      }
+      os << s;
       return true;
     }
   } break;
