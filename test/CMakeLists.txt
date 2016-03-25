@@ -49,6 +49,9 @@ macro(castxml_test_gccxml_common prefix ext std test)
   if("${std}" MATCHES "^gnu(.*)$")
     list(APPEND _castxml_expect ${prefix}.c${CMAKE_MATCH_1}.${test})
   endif()
+  if("${std}" MATCHES "^(c|gnu)[^+]")
+    list(APPEND _castxml_expect ${prefix}.c.${test})
+  endif()
   list(APPEND _castxml_expect ${prefix}.any.${test})
   set(command $<TARGET_FILE:castxml>
     --castxml-gccxml
