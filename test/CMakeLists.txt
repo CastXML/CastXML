@@ -76,8 +76,24 @@ macro(castxml_test_gccxml_c89 test)
   castxml_test_gccxml_common(gccxml c c89 ${test})
 endmacro()
 
+macro(castxml_test_gccxml_c99 test)
+  castxml_test_gccxml_common(gccxml c c99 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_c11 test)
+  castxml_test_gccxml_common(gccxml c c11 ${test})
+endmacro()
+
 macro(castxml_test_gccxml_gnu89 test)
   castxml_test_gccxml_common(gccxml c gnu89 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_gnu99 test)
+  castxml_test_gccxml_common(gccxml c gnu99 ${test})
+endmacro()
+
+macro(castxml_test_gccxml_gnu11 test)
+  castxml_test_gccxml_common(gccxml c gnu11 ${test})
 endmacro()
 
 macro(castxml_test_gccxml_cxx98 test)
@@ -131,6 +147,10 @@ endmacro()
 macro(castxml_test_gccxml_c test)
   castxml_test_gccxml_c89(${test})
   castxml_test_gccxml_gnu89(${test})
+  castxml_test_gccxml_c99(${test})
+  castxml_test_gccxml_gnu99(${test})
+  castxml_test_gccxml_c11(${test})
+  castxml_test_gccxml_gnu11(${test})
 endmacro()
 
 macro(castxml_test_gccxml test)

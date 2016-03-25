@@ -331,14 +331,6 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
       std::cerr << MSG("Objective C");
       return false;
     }
-    if(CI->getLangOpts().C11) {
-      std::cerr << MSG("c11");
-      return false;
-    }
-    if(CI->getLangOpts().C99) {
-      std::cerr << MSG("c99");
-      return false;
-    }
 #   undef MSG
   }
 
