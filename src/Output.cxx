@@ -421,7 +421,8 @@ class ASTVisitor: public ASTVisitorBase
       the containing declaration context (namespace, class, etc.).
       Also prints access="..." attribute for class members to
       indicate public, protected, or private membership.  */
-  void PrintContextAttribute(clang::Decl const* d);
+  void PrintContextAttribute(clang::Decl const* d,
+                             clang::AccessSpecifier alt = clang::AS_none);
 
   void PrintFloat128Type(DumpNode const* dn);
 
@@ -1236,23 +1237,31 @@ bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
 //----------------------------------------------------------------------------
 void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
 {
-  if (as == clang::AS_private) {
+  switch (as) {
+  case clang::AS_private:
     this->OS << " access=\"private\"";
-  } else if (as == clang::AS_protected) {
+    break;
+  case clang::AS_protected:
     this->OS << " access=\"protected\"";
-  } else {
+    break;
+  case clang::AS_public:
     this->OS << " access=\"public\"";
+    break;
+  case clang::AS_none:
+    break;
   }
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
+void ASTVisitor::PrintContextAttribute(clang::Decl const* d,
+                                       clang::AccessSpecifier alt)
 {
   clang::DeclContext const* dc = d->getDeclContext();
   if(DumpId id = this->GetContextIdRef(dc)) {
     this->OS << " context=\"_" << id << "\"";
     if (dc->isRecord()) {
-      this->PrintAccessAttribute(d->getAccess());
+      clang::AccessSpecifier as = d->getAccess();
+      this->PrintAccessAttribute(as != clang::AS_none? as : alt);
     }
   }
 }
@@ -1637,7 +1646,19 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
     this->PrintNameAttribute(rso.str());
   }
-  this->PrintContextAttribute(d);
+  clang::AccessSpecifier access = clang::AS_none;
+  if (dx) {
+    // If this is a template instantiation then get the access of the original
+    // template.  Access of the instantiation itself has no meaning.
+    if (clang::CXXRecordDecl const* dxp =
+        dx->getTemplateInstantiationPattern()) {
+      if (clang::ClassTemplateDecl const* dxpt =
+          dxp->getDescribedClassTemplate()) {
+        access = dxpt->getAccess();
+      }
+    }
+  }
+  this->PrintContextAttribute(d, access);
   this->PrintLocationAttribute(d);
   if(d->getDefinition()) {
     if(dx && dx->isAbstract()) {
