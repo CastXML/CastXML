@@ -80,8 +80,9 @@ public:
       clang::CXXMethodDecl* m = clang::dyn_cast<clang::CXXMethodDecl>(*i);
       if(m && !m->isDeleted() && !m->isInvalidDecl()) {
         bool mark = false;
-        if (clang::CXXConstructorDecl* c =
-           clang::dyn_cast<clang::CXXConstructorDecl>(m)) {
+        clang::CXXConstructorDecl* c =
+           clang::dyn_cast<clang::CXXConstructorDecl>(m);
+        if (c) {
           mark = (c->isDefaultConstructor() ||
                   c->isCopyConstructor() ||
                   c->isMoveConstructor());
@@ -95,6 +96,13 @@ public:
         if (mark) {
           /* Ensure the member is defined.  */
           sema.MarkFunctionReferenced(clang::SourceLocation(), m);
+          if (c && c->isDefaulted() && c->isDefaultConstructor() &&
+              c->isTrivial() && !c->isUsed(false) &&
+              !c->hasAttr<clang::DLLExportAttr>()) {
+            /* Clang does not build the definition of trivial constructors
+               until they are used.  Force semantic checking.  */
+            sema.DefineImplicitDefaultConstructor(clang::SourceLocation(), c);
+          }
           /* Finish implicitly instantiated member.  */
           sema.PerformPendingInstantiations();
         }
