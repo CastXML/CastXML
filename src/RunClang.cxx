@@ -86,8 +86,7 @@ public:
           mark = (c->isDefaultConstructor() ||
                   c->isCopyConstructor() ||
                   c->isMoveConstructor());
-        } else if (clang::CXXDestructorDecl* d =
-                   clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
+        } else if (clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
           mark = true;
         } else {
           mark = (m->isCopyAssignmentOperator() ||
