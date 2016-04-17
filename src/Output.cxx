@@ -25,7 +25,10 @@
 #include "clang/AST/DeclObjC.h"
 #include "clang/AST/DeclOpenMP.h"
 #include "clang/AST/DeclTemplate.h"
+#include "clang/AST/Expr.h"
+#include "clang/AST/ExprCXX.h"
 #include "clang/AST/Mangle.h"
+#include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Frontend/CompilerInstance.h"
@@ -217,6 +220,15 @@ class ASTVisitor: public ASTVisitorBase
     }
   };
 
+  class PrinterHelper: public clang::PrinterHelper {
+    ASTVisitor& Visitor;
+  public:
+    PrinterHelper(ASTVisitor& v): Visitor(v) {}
+    bool handledStmt(clang::Stmt* s, llvm::raw_ostream& os) override {
+      return this->Visitor.PrintHelpStmt(s, os);
+    }
+  };
+
   /** Get the dump status node for a Clang declaration.  */
   DumpNode* GetDumpNode(clang::Decl const* d) {
     return &this->DeclNodes[d];
@@ -399,6 +411,9 @@ class ASTVisitor: public ASTVisitorBase
   void OutputFunctionArgument(clang::ParmVarDecl const* a, bool complete,
                               clang::Expr const* def);
 
+  /** Print some statements (expressions) in a custom form.  */
+  bool PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os);
+
   /** Print an access="..." attribute.  */
   void PrintAccessAttribute(clang::AccessSpecifier as);
 
@@ -406,7 +421,8 @@ class ASTVisitor: public ASTVisitorBase
       the containing declaration context (namespace, class, etc.).
       Also prints access="..." attribute for class members to
       indicate public, protected, or private membership.  */
-  void PrintContextAttribute(clang::Decl const* d);
+  void PrintContextAttribute(clang::Decl const* d,
+                             clang::AccessSpecifier alt = clang::AS_none);
 
   void PrintFloat128Type(DumpNode const* dn);
 
@@ -1159,25 +1175,93 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 }
 
 //----------------------------------------------------------------------------
+bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
+{
+  switch (s->getStmtClass()) {
+  case clang::Stmt::CStyleCastExprClass: {
+    // Duplicate clang::StmtPrinter::VisitCStyleCastExpr
+    // but with canonical type so we do not print an unqualified name.
+    clang::CStyleCastExpr const* e =
+      static_cast<clang::CStyleCastExpr const*>(s);
+    os << "(";
+    e->getTypeAsWritten().getCanonicalType().print(os, this->PrintingPolicy);
+    os << ")";
+    PrinterHelper ph(*this);
+    e->getSubExpr()->printPretty(os, &ph, this->PrintingPolicy);
+    return true;
+  } break;
+  case clang::Stmt::CXXConstCastExprClass: // fallthrough
+  case clang::Stmt::CXXDynamicCastExprClass: // fallthrough
+  case clang::Stmt::CXXReinterpretCastExprClass: // fallthrough
+  case clang::Stmt::CXXStaticCastExprClass: {
+    // Duplicate clang::StmtPrinter::VisitCXXNamedCastExpr
+    // but with canonical type so we do not print an unqualified name.
+    clang::CXXNamedCastExpr const* e =
+      static_cast<clang::CXXNamedCastExpr const*>(s);
+    os << e->getCastName() << '<';
+    e->getTypeAsWritten().getCanonicalType().print(os, this->PrintingPolicy);
+    os << ">(";
+    PrinterHelper ph(*this);
+    e->getSubExpr()->printPretty(os, &ph, this->PrintingPolicy);
+    os << ")";
+    return true;
+  } break;
+  case clang::Stmt::DeclRefExprClass: {
+    // Print the fully qualified name of the referenced declaration.
+    clang::DeclRefExpr const* e = static_cast<clang::DeclRefExpr const*>(s);
+    if (clang::NamedDecl const* d =
+        clang::dyn_cast<clang::NamedDecl>(e->getDecl())) {
+      std::string s;
+      {
+        llvm::raw_string_ostream rso(s);
+        d->printQualifiedName(rso, this->PrintingPolicy);
+        rso.str();
+      }
+      if (clang::isa<clang::EnumConstantDecl>(d)) {
+        // Clang does not exclude the "::" after an unnamed enum type.
+        std::string::size_type pos = s.find("::::");
+        if (pos != s.npos) {
+          s.erase(pos, 2);
+        }
+      }
+      os << s;
+      return true;
+    }
+  } break;
+  default:
+    break;
+  }
+  return false;
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
 {
-  if (as == clang::AS_private) {
+  switch (as) {
+  case clang::AS_private:
     this->OS << " access=\"private\"";
-  } else if (as == clang::AS_protected) {
+    break;
+  case clang::AS_protected:
     this->OS << " access=\"protected\"";
-  } else {
+    break;
+  case clang::AS_public:
     this->OS << " access=\"public\"";
+    break;
+  case clang::AS_none:
+    break;
   }
 }
 
 //----------------------------------------------------------------------------
-void ASTVisitor::PrintContextAttribute(clang::Decl const* d)
+void ASTVisitor::PrintContextAttribute(clang::Decl const* d,
+                                       clang::AccessSpecifier alt)
 {
   clang::DeclContext const* dc = d->getDeclContext();
   if(DumpId id = this->GetContextIdRef(dc)) {
     this->OS << " context=\"_" << id << "\"";
     if (dc->isRecord()) {
-      this->PrintAccessAttribute(d->getAccess());
+      clang::AccessSpecifier as = d->getAccess();
+      this->PrintAccessAttribute(as != clang::AS_none? as : alt);
     }
   }
 }
@@ -1488,7 +1572,8 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << " default=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    def->printPretty(rso, 0, this->PrintingPolicy);
+    PrinterHelper ph(*this);
+    def->printPretty(rso, &ph, this->PrintingPolicy);
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
@@ -1561,7 +1646,19 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
     this->PrintNameAttribute(rso.str());
   }
-  this->PrintContextAttribute(d);
+  clang::AccessSpecifier access = clang::AS_none;
+  if (dx) {
+    // If this is a template instantiation then get the access of the original
+    // template.  Access of the instantiation itself has no meaning.
+    if (clang::CXXRecordDecl const* dxp =
+        dx->getTemplateInstantiationPattern()) {
+      if (clang::ClassTemplateDecl const* dxpt =
+          dxp->getDescribedClassTemplate()) {
+        access = dxpt->getAccess();
+      }
+    }
+  }
+  this->PrintContextAttribute(d, access);
   this->PrintLocationAttribute(d);
   if(d->getDefinition()) {
     if(dx && dx->isAbstract()) {
@@ -1719,7 +1816,8 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
     this->OS << " init=\"";
     std::string s;
     llvm::raw_string_ostream rso(s);
-    init->printPretty(rso, 0, this->PrintingPolicy);
+    PrinterHelper ph(*this);
+    init->printPretty(rso, &ph, this->PrintingPolicy);
     this->OS << encodeXML(rso.str());
     this->OS << "\"";
   }
@@ -2006,7 +2104,7 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Start dump with gccxml-compatible format.
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.136\">\n"
+    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.138\">\n"
     ;
 
   // Dump the complete nodes.

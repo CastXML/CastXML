@@ -56,13 +56,22 @@ class ASTConsumer: public clang::ASTConsumer
   clang::CompilerInstance& CI;
   llvm::raw_ostream& OS;
   Options const& Opts;
-  std::queue<clang::CXXRecordDecl*> Classes;
+  struct Class {
+    clang::CXXRecordDecl* RD;
+    int Depth;
+    Class(clang::CXXRecordDecl* rd, int depth): RD(rd), Depth(depth) {}
+  };
+  std::queue<Class> Classes;
+  int ClassImplicitMemberDepth = 0;
 public:
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
               Options const& opts):
     CI(ci), OS(os), Opts(opts) {}
 
-  void AddImplicitMembers(clang::CXXRecordDecl* rd) {
+  void AddImplicitMembers(Class const& c) {
+    clang::CXXRecordDecl* rd = c.RD;
+    this->ClassImplicitMemberDepth = c.Depth + 1;
+
     clang::Sema& sema = this->CI.getSema();
     sema.ForceDeclarationOfImplicitMembers(rd);
 
@@ -71,13 +80,13 @@ public:
       clang::CXXMethodDecl* m = clang::dyn_cast<clang::CXXMethodDecl>(*i);
       if(m && !m->isDeleted() && !m->isInvalidDecl()) {
         bool mark = false;
-        if (clang::CXXConstructorDecl* c =
-           clang::dyn_cast<clang::CXXConstructorDecl>(m)) {
+        clang::CXXConstructorDecl* c =
+           clang::dyn_cast<clang::CXXConstructorDecl>(m);
+        if (c) {
           mark = (c->isDefaultConstructor() ||
                   c->isCopyConstructor() ||
                   c->isMoveConstructor());
-        } else if (clang::CXXDestructorDecl* d =
-                   clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
+        } else if (clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
           mark = true;
         } else {
           mark = (m->isCopyAssignmentOperator() ||
@@ -86,6 +95,13 @@ public:
         if (mark) {
           /* Ensure the member is defined.  */
           sema.MarkFunctionReferenced(clang::SourceLocation(), m);
+          if (c && c->isDefaulted() && c->isDefaultConstructor() &&
+              c->isTrivial() && !c->isUsed(false) &&
+              !c->hasAttr<clang::DLLExportAttr>()) {
+            /* Clang does not build the definition of trivial constructors
+               until they are used.  Force semantic checking.  */
+            sema.DefineImplicitDefaultConstructor(clang::SourceLocation(), c);
+          }
           /* Finish implicitly instantiated member.  */
           sema.PerformPendingInstantiations();
         }
@@ -96,7 +112,9 @@ public:
   void HandleTagDeclDefinition(clang::TagDecl* d) {
     if(clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
       if(!rd->isDependentContext()) {
-        this->Classes.push(rd);
+        if (this->ClassImplicitMemberDepth < 16) {
+          this->Classes.push(Class(rd, this->ClassImplicitMemberDepth));
+        }
       }
     }
   }
@@ -113,9 +131,9 @@ public:
 
       // Add implicit members to classes.
       while (!this->Classes.empty()) {
-        clang::CXXRecordDecl* rd = this->Classes.front();
+        Class c = this->Classes.front();
         this->Classes.pop();
-        this->AddImplicitMembers(rd);
+        this->AddImplicitMembers(c);
       }
     }
 
@@ -180,6 +198,16 @@ protected:
     if (this->Opts.HaveCC) {
       builtins += this->Opts.Predefines;
 
+      // Provide __builtin_va_arg_pack if simulating the actual GNU compiler.
+      if (this->NeedBuiltinVarArgPack(this->Opts.Predefines)) {
+        // Clang does not support this builtin, so fake it to tolerate
+        // uses in function bodies while parsing.
+        builtins += "\n"
+          "#define __builtin_va_arg_pack() 0\n"
+          "#define __builtin_va_arg_pack_len() 1\n"
+          ;
+      }
+
       // Provide __float128 if simulating the actual GNU compiler.
       if (this->NeedFloat128(this->Opts.Predefines)) {
         // Clang provides its own (fake) builtin in gnu++11 mode.
@@ -194,21 +222,43 @@ protected:
         }
       }
 
+      // Prevent glibc use of a GNU extension not implemented by Clang.
+      if (this->NeedNoMathInlines(this->Opts.Predefines)) {
+        builtins += "\n"
+          "#define __NO_MATH_INLINES 1\n"
+          ;
+      }
+
     } else {
       builtins += predefines.substr(start, end-start);
     }
     return predefines.substr(0, start) + builtins + predefines.substr(end);
   }
 
-  bool NeedFloat128(std::string const& pd) {
+  bool IsActualGNU(std::string const& pd) const {
     return (pd.find("#define __GNUC__ ") != pd.npos &&
             pd.find("#define __clang__ ") == pd.npos &&
             pd.find("#define __INTEL_COMPILER ") == pd.npos &&
             pd.find("#define __CUDACC__ ") == pd.npos &&
-            pd.find("#define __PGI ") == pd.npos &&
+            pd.find("#define __PGI ") == pd.npos);
+  }
+
+  bool NeedBuiltinVarArgPack(std::string const& pd) {
+    return this->IsActualGNU(pd);
+  }
+
+  bool NeedFloat128(std::string const& pd) const {
+    return (this->IsActualGNU(pd) &&
             (pd.find("#define __i386__ ") != pd.npos ||
              pd.find("#define __x86_64__ ") != pd.npos ||
              pd.find("#define __ia64__ ") != pd.npos));
+  }
+
+  bool NeedNoMathInlines(std::string const& pd) const {
+    return (this->IsActualGNU(pd) &&
+            (pd.find("#define __i386__ ") != pd.npos &&
+             pd.find("#define __OPTIMIZE__ ") != pd.npos &&
+             pd.find("#define __NO_MATH_INLINES ") == pd.npos));
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,
@@ -286,14 +336,6 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 #   define MSG(x) "error: '--castxml-gccxml' does not work with " x "\n"
     if(CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
       std::cerr << MSG("Objective C");
-      return false;
-    }
-    if(CI->getLangOpts().C11) {
-      std::cerr << MSG("c11");
-      return false;
-    }
-    if(CI->getLangOpts().C99) {
-      std::cerr << MSG("c99");
       return false;
     }
 #   undef MSG
