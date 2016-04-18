@@ -809,15 +809,21 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       continue;
     }
 
+    // Skip declarations that we use internally as builtins.
+    if (isTranslationUnit) {
+      if (clang::NamedDecl const* nd = clang::dyn_cast<clang::NamedDecl>(d)) {
+        if (nd->getName().find("__castxml") != std::string::npos) {
+          continue;
+        }
+      }
+    }
+
     // Ignore certain members.
     switch (d->getKind()) {
     case clang::Decl::CXXRecord: {
       clang::CXXRecordDecl const* rd =
         static_cast<clang::CXXRecordDecl const*>(d);
       if (rd->isInjectedClassName()) {
-        continue;
-      }
-      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -853,12 +859,6 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
         static_cast<clang::NamespaceDecl const*>(d);
       if (nd->isInline()) {
         this->AddDeclContextMembers(nd, emitted);
-        continue;
-      }
-    } break;
-    case clang::Decl::Record: {
-      clang::RecordDecl const* rd = static_cast<clang::RecordDecl const*>(d);
-      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
