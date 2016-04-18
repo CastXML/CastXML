@@ -222,6 +222,24 @@ protected:
         }
       }
 
+      // Provide __is_assignable builtin if simulating MSVC.
+      // When a future Clang version supports the builtin then
+      // we can skip this when built against such a Clang.
+      if (CI.getLangOpts().MSCompatibilityVersion >= 190000000 &&
+          CI.getLangOpts().CPlusPlus11) {
+        builtins += "\n"
+          "template <typename T> T&& __castxml__declval() noexcept;\n"
+          "template <typename To, typename Fr, typename =\n"
+          "  decltype(__castxml__declval<To>() = __castxml__declval<Fr>())>\n"
+          "  static char (&__castxml__is_assignable_check(int))[1];\n"
+          "template <typename, typename>\n"
+          "  static char (&__castxml__is_assignable_check(...))[2];\n"
+          "#define __is_assignable(_To,_Fr) \\\n"
+          "  (sizeof(__castxml__is_assignable_check<_To,_Fr>(0)) == \\\n"
+          "   sizeof(char(&)[1]))\n"
+          ;
+      }
+
       // Prevent glibc use of a GNU extension not implemented by Clang.
       if (this->NeedNoMathInlines(this->Opts.Predefines)) {
         builtins += "\n"
