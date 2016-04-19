@@ -1647,15 +1647,13 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     this->PrintNameAttribute(rso.str());
   }
   clang::AccessSpecifier access = clang::AS_none;
-  if (dx) {
-    // If this is a template instantiation then get the access of the original
+  if (clang::ClassTemplateSpecializationDecl const* dxts =
+      clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(d)) {
+    // This is a template instantiation so get the access of the original
     // template.  Access of the instantiation itself has no meaning.
-    if (clang::CXXRecordDecl const* dxp =
-        dx->getTemplateInstantiationPattern()) {
-      if (clang::ClassTemplateDecl const* dxpt =
-          dxp->getDescribedClassTemplate()) {
-        access = dxpt->getAccess();
-      }
+    if (clang::ClassTemplateDecl const* dxt =
+        dxts->getSpecializedTemplate()) {
+      access = dxt->getAccess();
     }
   }
   this->PrintContextAttribute(d, access);
@@ -2104,7 +2102,7 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Start dump with gccxml-compatible format.
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.138\">\n"
+    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
     ;
 
   // Dump the complete nodes.
