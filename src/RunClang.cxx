@@ -240,6 +240,42 @@ protected:
           ;
       }
 
+#if LLVM_VERSION_MAJOR < 3 \
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 8
+      // Clang 3.8 and above provide a __make_integer_seq builtin needed
+      // in C++14 mode.  Provide it ourselves for older Clang versions.
+      if (CI.getLangOpts().CPlusPlus14) {
+        builtins += "\n"
+          "template <typename _T, _T> struct __castxml__integral_constant;\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          typename, typename, bool>\n"
+          "  struct __castxml__make_integer_seq_impl;\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          class _T, _T... __v>\n"
+          "  struct __castxml__make_integer_seq_impl<_S,\n"
+          "       __castxml__integral_constant<_T, 0>,\n"
+          "       _S<_T, __v...>, true> {\n"
+          "     typedef _S<_T, __v...> type;\n"
+          "  };\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          class _T, _T __i, _T... __v>\n"
+          "  struct __castxml__make_integer_seq_impl<_S,\n"
+          "       __castxml__integral_constant<_T, __i>,\n"
+          "       _S<_T, __v...>, true>\n"
+          "    : __castxml__make_integer_seq_impl<_S,\n"
+          "       __castxml__integral_constant<_T, __i - 1>,\n"
+          "       _S<_T, __i - 1, __v...>, __i >= 1 > {};\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          typename _T, _T _Sz>\n"
+          "using __castxml__make_integer_seq = typename\n"
+          "  __castxml__make_integer_seq_impl<_S,\n"
+          "      __castxml__integral_constant<_T, _Sz>,\n"
+          "     _S<_T>, (_Sz>=0)>::type;\n"
+          "#define __make_integer_seq __castxml__make_integer_seq\n"
+          ;
+      }
+#endif
+
       // Prevent glibc use of a GNU extension not implemented by Clang.
       if (this->NeedNoMathInlines(this->Opts.Predefines)) {
         builtins += "\n"
