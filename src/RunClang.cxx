@@ -210,16 +210,15 @@ protected:
 
       // Provide __float128 if simulating the actual GNU compiler.
       if (this->NeedFloat128(this->Opts.Predefines)) {
-        // Clang provides its own (fake) builtin in gnu++11 mode.
-        // Otherwise we need to provide our own.
-        if (!(CI.getLangOpts().CPlusPlus11 &&
-              CI.getLangOpts().GNUMode)) {
-          builtins += "\n"
-            "typedef struct __castxml__float128 { "
-            "  char x[16] __attribute__((aligned(16))); "
-            "} __float128;\n"
-            ;
-        }
+        // Clang provides its own (fake) builtin in gnu++11 mode but issues
+        // diagnostics when it is used in some contexts.  Provide our own
+        // approximation of the builtin instead.
+        builtins += "\n"
+          "typedef struct __castxml__float128_s { "
+          "  char x[16] __attribute__((aligned(16))); "
+          "} __castxml__float128;\n"
+          "#define __float128 __castxml__float128\n"
+          ;
       }
 
       // Provide __is_assignable builtin if simulating MSVC.

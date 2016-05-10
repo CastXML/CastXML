@@ -1076,7 +1076,8 @@ void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 //----------------------------------------------------------------------------
 void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
-  this->OS << " name=\"" << encodeXML(name) << "\"";
+  std::string n = stringReplace(name, "__castxml__float128_s", "__float128");
+  this->OS << " name=\"" << encodeXML(n) << "\"";
 }
 
 //----------------------------------------------------------------------------
@@ -1619,14 +1620,6 @@ void ASTVisitor::OutputNamespaceDecl(
 void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
                                   DumpNode const* dn)
 {
-  // As a special case, replace the Clang fake builtin for __float128
-  // with a FundamentalType so we generate the same thing gccxml did.
-  if (this->CI.getLangOpts().CPlusPlus &&
-      d == this->CI.getASTContext().getFloat128StubType()) {
-    this->PrintFloat128Type(dn);
-    return;
-  }
-
   const char* tag;
   switch (d->getTagKind()) {
   case clang::TTK_Class: tag = "Class"; break;
@@ -1725,7 +1718,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
 {
   // As a special case, replace our compatibility Typedef for __float128
   // with a FundamentalType so we generate the same thing gccxml did.
-  if (d->getName() == "__float128" &&
+  if (d->getName() == "__castxml__float128" &&
       clang::isa<clang::TranslationUnitDecl>(d->getDeclContext())) {
     clang::SourceLocation sl = d->getLocation();
     if (sl.isValid()) {
