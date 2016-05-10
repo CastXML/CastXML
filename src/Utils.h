@@ -47,4 +47,8 @@ void suppressInteractiveErrors();
 /// encodeXML - Convert character string to XML representation
 std::string encodeXML(std::string const& in, bool cdata = false);
 
+/// stringReplace - Replace all occurrences of an 'in' string with 'out'.
+std::string stringReplace(std::string str, std::string const& in,
+                          std::string const& out);
+
 #endif // CASTXML_UTILS_H
