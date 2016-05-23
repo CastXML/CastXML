@@ -390,7 +390,8 @@ class ASTVisitor: public ASTVisitorBase
     FH_Const      = (1<<3),
     FH_Virtual    = (1<<4),
     FH_Pure       = (1<<5),
-    FH__Last
+	FH_Final      = (1<<6),
+	FH__Last
   };
 
   /** Output a function element using the name and flags given by
@@ -1451,6 +1452,9 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   if(flags & FH_Pure) {
     this->OS << " pure_virtual=\"1\"";
   }
+  if(flags & FH_Final) {
+    this->OS << " final=\"1\"";
+  }
   if(d->isInlined()) {
     this->OS << " inline=\"1\"";
   }
@@ -1871,7 +1875,10 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   if(d->isPure()) {
     flags |= FH_Pure;
   }
-  if(d->isOverloadedOperator()) {
+  if(d->hasAttr<clang::FinalAttr>()) {
+	  flags |= FH_Final;
+  }
+  if (d->isOverloadedOperator()) {
     this->OutputFunctionHelper(d, dn, "OperatorMethod",
       clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
   } else {
