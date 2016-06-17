@@ -400,6 +400,10 @@ castxml_test_gccxml(using-declaration-start)
 castxml_test_gccxml(using-directive-ns)
 castxml_test_gccxml(using-directive-start)
 
+set(castxml_test_gccxml_custom_start "")
+castxml_test_gccxml(nostart)
+unset(castxml_test_gccxml_custom_start)
+
 if(";${LLVM_TARGETS_TO_BUILD};" MATCHES ";X86;")
   set(castxml_test_gccxml_extra_arguments -target i386-pc-windows-msvc)
   castxml_test_gccxml(Function-calling-convention-ms)

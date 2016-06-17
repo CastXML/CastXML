@@ -1,0 +1,10 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="::" members="[^"]*"/>
+.*<Class id="_[0-9]+" name="A" context="_1" location="f1:1" file="f1" line="1" incomplete="1"/>
+  <OperatorFunction id="_[0-9]+" name="\+" returns="_[0-9]+" context="_1" location="f1:2" file="f1" line="2" mangled="[^"]*">
+    <Argument type="_[0-9]+" location="f1:2" file="f1" line="2"/>
+    <Argument type="_[0-9]+" location="f1:2" file="f1" line="2"/>
+  </OperatorFunction>.*
+  <File id="f1" name=".*/test/input/nostart.cxx"/>
+</GCC_XML>$

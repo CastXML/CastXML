@@ -812,8 +812,10 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
     // Skip declarations that we use internally as builtins.
     if (isTranslationUnit) {
       if (clang::NamedDecl const* nd = clang::dyn_cast<clang::NamedDecl>(d)) {
-        if (nd->getName().find("__castxml") != std::string::npos) {
-          continue;
+        if (clang::IdentifierInfo const* ii = nd->getIdentifier()) {
+          if (ii->getName().find("__castxml") != std::string::npos) {
+            continue;
+          }
         }
       }
     }
