@@ -210,17 +210,70 @@ protected:
 
       // Provide __float128 if simulating the actual GNU compiler.
       if (this->NeedFloat128(this->Opts.Predefines)) {
-        // Clang provides its own (fake) builtin in gnu++11 mode.
-        // Otherwise we need to provide our own.
-        if (!(CI.getLangOpts().CPlusPlus11 &&
-              CI.getLangOpts().GNUMode)) {
-          builtins += "\n"
-            "typedef struct __castxml__float128 { "
-            "  char x[16] __attribute__((aligned(16))); "
-            "} __float128;\n"
-            ;
-        }
+        // Clang provides its own (fake) builtin in gnu++11 mode but issues
+        // diagnostics when it is used in some contexts.  Provide our own
+        // approximation of the builtin instead.
+        builtins += "\n"
+          "typedef struct __castxml__float128_s { "
+          "  char x[16] __attribute__((aligned(16))); "
+          "} __castxml__float128;\n"
+          "#define __float128 __castxml__float128\n"
+          ;
       }
+
+      // Provide __is_assignable builtin if simulating MSVC.
+      // When a future Clang version supports the builtin then
+      // we can skip this when built against such a Clang.
+      if (CI.getLangOpts().MSCompatibilityVersion >= 190000000 &&
+          CI.getLangOpts().CPlusPlus11) {
+        builtins += "\n"
+          "template <typename T> T&& __castxml__declval() noexcept;\n"
+          "template <typename To, typename Fr, typename =\n"
+          "  decltype(__castxml__declval<To>() = __castxml__declval<Fr>())>\n"
+          "  static char (&__castxml__is_assignable_check(int))[1];\n"
+          "template <typename, typename>\n"
+          "  static char (&__castxml__is_assignable_check(...))[2];\n"
+          "#define __is_assignable(_To,_Fr) \\\n"
+          "  (sizeof(__castxml__is_assignable_check<_To,_Fr>(0)) == \\\n"
+          "   sizeof(char(&)[1]))\n"
+          ;
+      }
+
+#if LLVM_VERSION_MAJOR < 3 \
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 8
+      // Clang 3.8 and above provide a __make_integer_seq builtin needed
+      // in C++14 mode.  Provide it ourselves for older Clang versions.
+      if (CI.getLangOpts().CPlusPlus14) {
+        builtins += "\n"
+          "template <typename _T, _T> struct __castxml__integral_constant;\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          typename, typename, bool>\n"
+          "  struct __castxml__make_integer_seq_impl;\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          class _T, _T... __v>\n"
+          "  struct __castxml__make_integer_seq_impl<_S,\n"
+          "       __castxml__integral_constant<_T, 0>,\n"
+          "       _S<_T, __v...>, true> {\n"
+          "     typedef _S<_T, __v...> type;\n"
+          "  };\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          class _T, _T __i, _T... __v>\n"
+          "  struct __castxml__make_integer_seq_impl<_S,\n"
+          "       __castxml__integral_constant<_T, __i>,\n"
+          "       _S<_T, __v...>, true>\n"
+          "    : __castxml__make_integer_seq_impl<_S,\n"
+          "       __castxml__integral_constant<_T, __i - 1>,\n"
+          "       _S<_T, __i - 1, __v...>, __i >= 1 > {};\n"
+          "template <template<typename _U, _U...> class _S,\n"
+          "          typename _T, _T _Sz>\n"
+          "using __castxml__make_integer_seq = typename\n"
+          "  __castxml__make_integer_seq_impl<_S,\n"
+          "      __castxml__integral_constant<_T, _Sz>,\n"
+          "     _S<_T>, (_Sz>=0)>::type;\n"
+          "#define __make_integer_seq __castxml__make_integer_seq\n"
+          ;
+      }
+#endif
 
       // Prevent glibc use of a GNU extension not implemented by Clang.
       if (this->NeedNoMathInlines(this->Opts.Predefines)) {

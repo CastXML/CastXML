@@ -809,15 +809,23 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       continue;
     }
 
+    // Skip declarations that we use internally as builtins.
+    if (isTranslationUnit) {
+      if (clang::NamedDecl const* nd = clang::dyn_cast<clang::NamedDecl>(d)) {
+        if (clang::IdentifierInfo const* ii = nd->getIdentifier()) {
+          if (ii->getName().find("__castxml") != std::string::npos) {
+            continue;
+          }
+        }
+      }
+    }
+
     // Ignore certain members.
     switch (d->getKind()) {
     case clang::Decl::CXXRecord: {
       clang::CXXRecordDecl const* rd =
         static_cast<clang::CXXRecordDecl const*>(d);
       if (rd->isInjectedClassName()) {
-        continue;
-      }
-      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -853,12 +861,6 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
         static_cast<clang::NamespaceDecl const*>(d);
       if (nd->isInline()) {
         this->AddDeclContextMembers(nd, emitted);
-        continue;
-      }
-    } break;
-    case clang::Decl::Record: {
-      clang::RecordDecl const* rd = static_cast<clang::RecordDecl const*>(d);
-      if (isTranslationUnit && rd->getName() == "__castxml__float128") {
         continue;
       }
     } break;
@@ -1076,7 +1078,8 @@ void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 //----------------------------------------------------------------------------
 void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
-  this->OS << " name=\"" << encodeXML(name) << "\"";
+  std::string n = stringReplace(name, "__castxml__float128_s", "__float128");
+  this->OS << " name=\"" << encodeXML(n) << "\"";
 }
 
 //----------------------------------------------------------------------------
@@ -1619,14 +1622,6 @@ void ASTVisitor::OutputNamespaceDecl(
 void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
                                   DumpNode const* dn)
 {
-  // As a special case, replace the Clang fake builtin for __float128
-  // with a FundamentalType so we generate the same thing gccxml did.
-  if (this->CI.getLangOpts().CPlusPlus &&
-      d == this->CI.getASTContext().getFloat128StubType()) {
-    this->PrintFloat128Type(dn);
-    return;
-  }
-
   const char* tag;
   switch (d->getTagKind()) {
   case clang::TTK_Class: tag = "Class"; break;
@@ -1647,15 +1642,13 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     this->PrintNameAttribute(rso.str());
   }
   clang::AccessSpecifier access = clang::AS_none;
-  if (dx) {
-    // If this is a template instantiation then get the access of the original
+  if (clang::ClassTemplateSpecializationDecl const* dxts =
+      clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(d)) {
+    // This is a template instantiation so get the access of the original
     // template.  Access of the instantiation itself has no meaning.
-    if (clang::CXXRecordDecl const* dxp =
-        dx->getTemplateInstantiationPattern()) {
-      if (clang::ClassTemplateDecl const* dxpt =
-          dxp->getDescribedClassTemplate()) {
-        access = dxpt->getAccess();
-      }
+    if (clang::ClassTemplateDecl const* dxt =
+        dxts->getSpecializedTemplate()) {
+      access = dxt->getAccess();
     }
   }
   this->PrintContextAttribute(d, access);
@@ -1727,7 +1720,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
 {
   // As a special case, replace our compatibility Typedef for __float128
   // with a FundamentalType so we generate the same thing gccxml did.
-  if (d->getName() == "__float128" &&
+  if (d->getName() == "__castxml__float128" &&
       clang::isa<clang::TranslationUnitDecl>(d->getDeclContext())) {
     clang::SourceLocation sl = d->getLocation();
     if (sl.isValid()) {
@@ -2104,7 +2097,7 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Start dump with gccxml-compatible format.
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.138\">\n"
+    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
     ;
 
   // Dump the complete nodes.

@@ -1,0 +1,9 @@
+^#define _MSC_VER 1900
+#define _WIN32 1
+#define __castxml__ [0-9]+
+#define __castxml_clang_major__ [0-9]+
+#define __castxml_clang_minor__ [0-9]+
+#define __castxml_clang_patchlevel__ [0-9]+
+#define __cplusplus 199711L
+#define __is_assignable\(_To,_Fr\) \(sizeof\(__castxml__is_assignable_check<_To,_Fr>\(0\)\) == sizeof\(char\(&\)\[1\]\)\)(
+#define __make_integer_seq __castxml__make_integer_seq)?$

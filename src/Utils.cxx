@@ -214,6 +214,17 @@ std::string encodeXML(std::string const& in, bool cdata)
   return xml;
 }
 
+//----------------------------------------------------------------------------
+std::string stringReplace(std::string str, std::string const& in,
+                          std::string const& out) {
+  std::string::size_type p = 0;
+  while ((p = str.find(in, p)) != std::string::npos) {
+    str.replace(p, in.size(), out);
+    p += out.length();
+  }
+  return str;
+}
+
 #if defined(_WIN32)
 # include <windows.h>
 #endif
