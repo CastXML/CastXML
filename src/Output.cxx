@@ -681,11 +681,14 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
   case clang::Type::Typedef: {
     clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
     if(!tdt->isInstantiationDependentType() && tdt->isSugared()) {
-      if(clang::DeclContext const* tdc = tdt->getDecl()->getDeclContext()) {
-        if(clang::CXXRecordDecl const* tdx =
-           clang::dyn_cast<clang::CXXRecordDecl>(tdc)) {
-          if(tdx->getDescribedClassTemplate() ||
-             clang::isa<clang::ClassTemplatePartialSpecializationDecl>(tdx)
+      // Make sure all containing contexts are not templates.
+      clang::Decl const* d = tdt->getDecl();
+      while (clang::DeclContext const* tdc = d->getDeclContext()) {
+        if (clang::CXXRecordDecl const* tdx =
+            clang::dyn_cast<clang::CXXRecordDecl>(tdc)) {
+          d = tdx;
+          if (tdx->getDescribedClassTemplate() ||
+              clang::isa<clang::ClassTemplatePartialSpecializationDecl>(tdx)
              ) {
             // This TypedefType refers to a non-dependent
             // TypedefDecl member of a class template.  Since gccxml
@@ -694,6 +697,8 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
             // referencing a class template as context.
             return this->AddTypeDumpNode(tdt->desugar(), complete, dq);
           }
+        } else {
+          break;
         }
       }
     }
