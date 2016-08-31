@@ -50,10 +50,18 @@
 #include <memory>
 #include <queue>
 
+#if LLVM_VERSION_MAJOR > 3 \
+ || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9
+# define CASTXML_OWNS_OSTREAM
+#endif
+
 //----------------------------------------------------------------------------
 class ASTConsumer: public clang::ASTConsumer
 {
   clang::CompilerInstance& CI;
+#ifdef CASTXML_OWNS_OSTREAM
+  std::unique_ptr<llvm::raw_ostream> OwnOS;
+#endif
   llvm::raw_ostream& OS;
   Options const& Opts;
   struct Class {
@@ -64,9 +72,15 @@ class ASTConsumer: public clang::ASTConsumer
   std::queue<Class> Classes;
   int ClassImplicitMemberDepth = 0;
 public:
+#ifdef CASTXML_OWNS_OSTREAM
+  ASTConsumer(clang::CompilerInstance& ci,
+              std::unique_ptr<llvm::raw_ostream> os, Options const& opts):
+    CI(ci), OwnOS(std::move(os)), OS(*OwnOS), Opts(opts) {}
+#else
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
               Options const& opts):
     CI(ci), OS(os), Opts(opts) {}
+#endif
 
   void AddImplicitMembers(Class const& c) {
     clang::CXXRecordDecl* rd = c.RD;
@@ -344,9 +358,15 @@ class CastXMLSyntaxOnlyAction:
     using llvm::sys::path::filename;
     if(!this->Opts.GccXml) {
       return clang::SyntaxOnlyAction::CreateASTConsumer(CI, InFile);
+#ifdef CASTXML_OWNS_OSTREAM
+    } else if(std::unique_ptr<llvm::raw_ostream> OS =
+              CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
+      return llvm::make_unique<ASTConsumer>(CI, std::move(OS), this->Opts);
+#else
     } else if(llvm::raw_ostream* OS =
               CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
       return llvm::make_unique<ASTConsumer>(CI, *OS, this->Opts);
+#endif
     } else {
       return nullptr;
     }

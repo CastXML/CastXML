@@ -50,6 +50,9 @@ llvm_map_components_to_libnames(llvm_libs
   support
   ${LLVM_TARGETS_TO_BUILD}
   )
+if(WIN32)
+  list(APPEND llvm_libs version.lib)
+endif()
 
 add_executable(castxml
   castxml.cxx
