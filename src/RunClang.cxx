@@ -348,7 +348,7 @@ class CastXMLSyntaxOnlyAction:
               CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
       return llvm::make_unique<ASTConsumer>(CI, *OS, this->Opts);
     } else {
-      return 0;
+      return nullptr;
     }
   }
 public:
@@ -369,7 +369,7 @@ CreateFrontendAction(clang::CompilerInstance* CI, Options const& opts)
     return new CastXMLSyntaxOnlyAction(opts);
   default:
     std::cerr << "error: unsupported action: " << int(action) << "\n";
-    return 0;
+    return nullptr;
   }
 }
 
