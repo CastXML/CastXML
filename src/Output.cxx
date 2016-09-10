@@ -435,6 +435,8 @@ class ASTVisitor: public ASTVisitorBase
   void OutputClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
+  void OutputTypedefNameDecl(clang::TypedefNameDecl const* d, DumpNode const* dn);
+  void OutputTypeAliasDecl(clang::TypeAliasDecl const* d, DumpNode const* dn);
   void OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn);
   void OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
@@ -588,7 +590,7 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
       }
     }
 
-    if (clang::dyn_cast<clang::TypeAliasDecl>(d)) {
+    if (!this->Opts.HaveC1XSupport && clang::dyn_cast<clang::TypeAliasDecl>(d)) {
       return DumpId();
     }
 
@@ -1720,6 +1722,16 @@ void ASTVisitor::OutputClassTemplateSpecializationDecl(
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::OutputTypeAliasDecl(clang::TypeAliasDecl const* d,
+				                     DumpNode const* dn)
+{
+  // TypeAlias is a subclass for TypedefDecl, so 
+  // just process it that way if not a template definition
+  this->OS << "  <TypeAlias";
+  OutputTypedefNameDecl( d, dn);
+  this->OS << "/>\n";
+}
+
 void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
                                    DumpNode const* dn)
 {
@@ -1736,15 +1748,22 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
       }
     }
   }
-
   this->OS << "  <Typedef";
+  OutputTypedefNameDecl( d, dn);
+  this->OS << "/>\n";
+}
+
+//----------------------------------------------------------------------------
+void ASTVisitor::OutputTypedefNameDecl(clang::TypedefNameDecl const* d,
+				                       DumpNode const* dn)
+{
+ 
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
   this->PrintTypeAttribute(d->getUnderlyingType(), dn->Complete);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->PrintAttributesAttribute(d);
-  this->OS << "/>\n";
 }
 
 //----------------------------------------------------------------------------
