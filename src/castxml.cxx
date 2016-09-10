@@ -259,6 +259,8 @@ int main(int argc_in, const char** argv_in)
         opts.HaveTarget = true;
       } else if (strncmp(argv[i], "-std=", 5) == 0) {
         opts.HaveStd = true;
+      } else if (strncmp(argv[i], "--std=gnu++1", 12) || strncmp(argv[i], "--std=c++1",10)){
+	  opts.HaveC1XSupport = true;
       }
     }
   }

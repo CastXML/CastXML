@@ -28,6 +28,7 @@ struct Options
   bool GccXml;
   bool HaveCC;
   bool HaveStd;
+  bool HaveC1XSupport;
   bool HaveTarget;
   struct Include {
     Include(std::string const& d, bool f = false):
