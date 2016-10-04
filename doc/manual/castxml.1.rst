@@ -99,3 +99,36 @@ case, CastXML always adds the following predefined macros:
 
 Source files may use these to identify the tool that is actually doing the
 preprocessing even when ``--castxml-cc-<id>`` changes the predefined macros.
+
+FAQ
+===
+
+Why are C++ function bodies not dumped in XML?
+----------------------------------------------
+
+This feature has not been implemented because the driving project for which
+CastXML was written had no need for function bodies.
+
+Is there a DTD specifying the XML format dumped?
+------------------------------------------------
+
+No.
+
+Why don't I see templates in the output?
+----------------------------------------
+
+This feature has not been implemented because the driving project for which
+CastXML was written had no need for uninstantiated templates.
+Template instantiations will still be dumped, though. For example:
+
+.. code-block:: c++
+
+  template <class T> struct foo {};
+  typedef foo<int>::foo foo_int;
+
+will instantiate ``foo<int>``, which will be included in the output.
+However, there will be no place that explicitly lists the set of types used
+for the instantiation other than in the name. This is because the proper way to
+do it is to dump the templates too and reference them from the instantiations
+with the template arguments listed. Since the features will be linked they
+should be implemented together.
