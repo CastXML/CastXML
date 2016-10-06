@@ -573,6 +573,10 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
         return DumpId();
       }
 
+      if (fd->getLiteralIdentifier()) {
+        return DumpId();
+      }
+
       if (clang::FunctionProtoType const* fpt =
           fd->getType()->getAs<clang::FunctionProtoType>()) {
         if (fpt->getReturnType()->isRValueReferenceType()) {
