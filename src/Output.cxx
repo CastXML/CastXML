@@ -1850,8 +1850,10 @@ void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
   if(d->isOverloadedOperator()) {
     this->OutputFunctionHelper(d, dn, "OperatorFunction",
       clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+  } else if (clang::IdentifierInfo const* ii = d->getIdentifier()) {
+    this->OutputFunctionHelper(d, dn, "Function", ii->getName().str(), flags);
   } else {
-    this->OutputFunctionHelper(d, dn, "Function", d->getName().str(), flags);
+    this->OutputUnimplementedDecl(d, dn);
   }
 }
 
@@ -1881,8 +1883,10 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   if(d->isOverloadedOperator()) {
     this->OutputFunctionHelper(d, dn, "OperatorMethod",
       clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+  } else if (clang::IdentifierInfo const* ii = d->getIdentifier()) {
+    this->OutputFunctionHelper(d, dn, "Method", ii->getName().str(), flags);
   } else {
-    this->OutputFunctionHelper(d, dn, "Method", d->getName().str(), flags);
+    this->OutputUnimplementedDecl(d, dn);
   }
 }
 
