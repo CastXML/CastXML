@@ -381,6 +381,9 @@ class ASTVisitor: public ASTVisitorBase
       output.  */
   void PrintBefriendingAttribute(clang::CXXRecordDecl const* dx);
 
+  /** Print a elaborated="..." attribute */
+  void PrintElaboratedAttribute(clang::QualType t);
+
   /** Flags used by function output methods to pass information
       to the OutputFunctionHelper method.  */
   enum FunctionHelperFlags {
@@ -1422,6 +1425,18 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
 }
 
 //----------------------------------------------------------------------------
+void ASTVisitor::PrintElaboratedAttribute(clang::QualType t)
+{
+  if(t->isPointerType()) {
+    clang::CXXRecordDecl const* dx = t->getPointeeCXXRecordDecl();
+    t = t->getPointeeType();
+  }
+  if (t->isElaboratedTypeSpecifier()) {
+    this->OS << " elaborated=\"" << t->isElaboratedTypeSpecifier() << "\"";
+  }
+}
+
+//----------------------------------------------------------------------------
 void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
 {
   this->OS << "  <FundamentalType";
@@ -1574,11 +1589,12 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
                                         bool complete, clang::Expr const* def)
 {
   this->OS << "    <Argument";
+  clang::QualType t = a->getType();
   std::string name = a->getName().str();
   if(!name.empty()) {
     this->PrintNameAttribute(name);
   }
-  this->PrintTypeAttribute(a->getType(), complete);
+  this->PrintTypeAttribute(t, complete);
   this->PrintLocationAttribute(a);
   if(def) {
     this->OS << " default=\"";
@@ -1590,6 +1606,7 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->OS << "\"";
   }
   this->PrintAttributesAttribute(a);
+  this->PrintElaboratedAttribute(t);
   this->OS << "/>\n";
 }
 
@@ -1748,6 +1765,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->PrintAttributesAttribute(d);
+  this->PrintElaboratedAttribute(d->getUnderlyingType());
   this->OS << "/>\n";
 }
 
@@ -1811,9 +1829,10 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
 void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
 {
   this->OS << "  <Variable";
+  clang::QualType t = d->getType();
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
-  this->PrintTypeAttribute(d->getType(), dn->Complete);
+  this->PrintTypeAttribute(t, dn->Complete);
   if(clang::Expr const* init = d->getInit()) {
     this->OS << " init=\"";
     std::string s;
@@ -1833,6 +1852,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   }
   this->PrintMangledAttribute(d);
   this->PrintAttributesAttribute(d);
+  this->PrintElaboratedAttribute(t);
 
   this->OS << "/>\n";
 }
@@ -2110,7 +2130,7 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Start dump with gccxml-compatible format.
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
+    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.140\">\n"
     ;
 
   // Dump the complete nodes.
