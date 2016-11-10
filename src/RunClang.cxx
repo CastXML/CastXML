@@ -50,12 +50,12 @@
 #include <memory>
 #include <queue>
 
-#if LLVM_VERSION_MAJOR > 3 \
- || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9
-# define CASTXML_OWNS_OSTREAM
+#if LLVM_VERSION_MAJOR > 3 ||                                                 \
+  LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9
+#define CASTXML_OWNS_OSTREAM
 #endif
 
-class ASTConsumer: public clang::ASTConsumer
+class ASTConsumer : public clang::ASTConsumer
 {
   clang::CompilerInstance& CI;
 #ifdef CASTXML_OWNS_OSTREAM
@@ -63,47 +63,63 @@ class ASTConsumer: public clang::ASTConsumer
 #endif
   llvm::raw_ostream& OS;
   Options const& Opts;
-  struct Class {
+  struct Class
+  {
     clang::CXXRecordDecl* RD;
     int Depth;
-    Class(clang::CXXRecordDecl* rd, int depth): RD(rd), Depth(depth) {}
+    Class(clang::CXXRecordDecl* rd, int depth)
+      : RD(rd)
+      , Depth(depth)
+    {
+    }
   };
   std::queue<Class> Classes;
   int ClassImplicitMemberDepth = 0;
+
 public:
 #ifdef CASTXML_OWNS_OSTREAM
   ASTConsumer(clang::CompilerInstance& ci,
-              std::unique_ptr<llvm::raw_ostream> os, Options const& opts):
-    CI(ci), OwnOS(std::move(os)), OS(*OwnOS), Opts(opts) {}
+              std::unique_ptr<llvm::raw_ostream> os, Options const& opts)
+    : CI(ci)
+    , OwnOS(std::move(os))
+    , OS(*OwnOS)
+    , Opts(opts)
+  {
+  }
 #else
   ASTConsumer(clang::CompilerInstance& ci, llvm::raw_ostream& os,
-              Options const& opts):
-    CI(ci), OS(os), Opts(opts) {}
+              Options const& opts)
+    : CI(ci)
+    , OS(os)
+    , Opts(opts)
+  {
+  }
 #endif
 
-  void AddImplicitMembers(Class const& c) {
+  void AddImplicitMembers(Class const& c)
+  {
     clang::CXXRecordDecl* rd = c.RD;
     this->ClassImplicitMemberDepth = c.Depth + 1;
 
     clang::Sema& sema = this->CI.getSema();
     sema.ForceDeclarationOfImplicitMembers(rd);
 
-    for(clang::DeclContext::decl_iterator i = rd->decls_begin(),
-          e = rd->decls_end(); i != e; ++i) {
+    for (clang::DeclContext::decl_iterator i = rd->decls_begin(),
+                                           e = rd->decls_end();
+         i != e; ++i) {
       clang::CXXMethodDecl* m = clang::dyn_cast<clang::CXXMethodDecl>(*i);
-      if(m && !m->isDeleted() && !m->isInvalidDecl()) {
+      if (m && !m->isDeleted() && !m->isInvalidDecl()) {
         bool mark = false;
         clang::CXXConstructorDecl* c =
-           clang::dyn_cast<clang::CXXConstructorDecl>(m);
+          clang::dyn_cast<clang::CXXConstructorDecl>(m);
         if (c) {
-          mark = (c->isDefaultConstructor() ||
-                  c->isCopyConstructor() ||
+          mark = (c->isDefaultConstructor() || c->isCopyConstructor() ||
                   c->isMoveConstructor());
         } else if (clang::dyn_cast<clang::CXXDestructorDecl>(m)) {
           mark = true;
         } else {
-          mark = (m->isCopyAssignmentOperator() ||
-                  m->isMoveAssignmentOperator());
+          mark =
+            (m->isCopyAssignmentOperator() || m->isMoveAssignmentOperator());
         }
         if (mark) {
           /* Ensure the member is defined.  */
@@ -122,9 +138,10 @@ public:
     }
   }
 
-  void HandleTagDeclDefinition(clang::TagDecl* d) {
-    if(clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
-      if(!rd->isDependentContext()) {
+  void HandleTagDeclDefinition(clang::TagDecl* d)
+  {
+    if (clang::CXXRecordDecl* rd = clang::dyn_cast<clang::CXXRecordDecl>(d)) {
+      if (!rd->isDependentContext()) {
         if (this->ClassImplicitMemberDepth < 16) {
           this->Classes.push(Class(rd, this->ClassImplicitMemberDepth));
         }
@@ -132,7 +149,8 @@ public:
     }
   }
 
-  void HandleTranslationUnit(clang::ASTContext& ctx) {
+  void HandleTranslationUnit(clang::ASTContext& ctx)
+  {
     clang::Sema& sema = this->CI.getSema();
 
     // Perform instantiations needed by the original translation unit.
@@ -159,13 +177,17 @@ public:
 };
 
 template <class T>
-class CastXMLPredefines: public T
+class CastXMLPredefines : public T
 {
 protected:
   Options const& Opts;
 
-  CastXMLPredefines(Options const& opts): Opts(opts) {}
-  std::string UpdatePredefines(clang::CompilerInstance const& CI) {
+  CastXMLPredefines(Options const& opts)
+    : Opts(opts)
+  {
+  }
+  std::string UpdatePredefines(clang::CompilerInstance const& CI)
+  {
     std::string const& predefines = CI.getPreprocessor().getPredefines();
 
     // Identify the portion of the predefines string corresponding to
@@ -175,7 +197,7 @@ protected:
     std::string::size_type start = predefines.find(predef_start);
     std::string::size_type end = std::string::npos;
     if (start != std::string::npos) {
-      start += sizeof(predef_start)-1;
+      start += sizeof(predef_start) - 1;
       end = predefines.find(predef_end, start);
       if (end == std::string::npos) {
         end = predefines.size();
@@ -193,15 +215,19 @@ protected:
     builtins +=
 #define STR(x) STR_(x)
 #define STR_(x) #x
-      "#define __castxml_clang_major__ " STR(CLANG_VERSION_MAJOR) "\n"
-      "#define __castxml_clang_minor__ " STR(CLANG_VERSION_MINOR) "\n"
-      "#define __castxml_clang_patchlevel__ "
+      "#define __castxml_clang_major__ " STR(
+        CLANG_VERSION_MAJOR) "\n"
+                             "#define __castxml_clang_minor__ " STR(
+                               CLANG_VERSION_MINOR) "\n"
+                                                    "#define "
+                                                    "__castxml_clang_"
+                                                    "patchlevel__ "
 #ifdef CLANG_VERSION_PATCHLEVEL
       STR(CLANG_VERSION_PATCHLEVEL)
 #else
-      "0"
+                                                    "0"
 #endif
-      "\n"
+        "\n"
 #undef STR
 #undef STR_
       ;
@@ -215,9 +241,8 @@ protected:
         // Clang does not support this builtin, so fake it to tolerate
         // uses in function bodies while parsing.
         builtins += "\n"
-          "#define __builtin_va_arg_pack() 0\n"
-          "#define __builtin_va_arg_pack_len() 1\n"
-          ;
+                    "#define __builtin_va_arg_pack() 0\n"
+                    "#define __builtin_va_arg_pack_len() 1\n";
       }
 
       // Provide __float128 if simulating the actual GNU compiler.
@@ -226,11 +251,10 @@ protected:
         // diagnostics when it is used in some contexts.  Provide our own
         // approximation of the builtin instead.
         builtins += "\n"
-          "typedef struct __castxml__float128_s { "
-          "  char x[16] __attribute__((aligned(16))); "
-          "} __castxml__float128;\n"
-          "#define __float128 __castxml__float128\n"
-          ;
+                    "typedef struct __castxml__float128_s { "
+                    "  char x[16] __attribute__((aligned(16))); "
+                    "} __castxml__float128;\n"
+                    "#define __float128 __castxml__float128\n";
       }
 
       // Provide __is_assignable builtin if simulating MSVC.
@@ -238,7 +262,8 @@ protected:
       // we can skip this when built against such a Clang.
       if (CI.getLangOpts().MSCompatibilityVersion >= 190000000 &&
           CI.getLangOpts().CPlusPlus11) {
-        builtins += "\n"
+        builtins +=
+          "\n"
           "template <typename T> T&& __castxml__declval() noexcept;\n"
           "template <typename To, typename Fr, typename =\n"
           "  decltype(__castxml__declval<To>() = __castxml__declval<Fr>())>\n"
@@ -247,16 +272,15 @@ protected:
           "  static char (&__castxml__is_assignable_check(...))[2];\n"
           "#define __is_assignable(_To,_Fr) \\\n"
           "  (sizeof(__castxml__is_assignable_check<_To,_Fr>(0)) == \\\n"
-          "   sizeof(char(&)[1]))\n"
-          ;
+          "   sizeof(char(&)[1]))\n";
       }
 
-#if LLVM_VERSION_MAJOR < 3 \
- || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 8
+#if LLVM_VERSION_MAJOR < 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR < 8
       // Clang 3.8 and above provide a __make_integer_seq builtin needed
       // in C++14 mode.  Provide it ourselves for older Clang versions.
       if (CI.getLangOpts().CPlusPlus14) {
-        builtins += "\n"
+        builtins +=
+          "\n"
           "template <typename _T, _T> struct __castxml__integral_constant;\n"
           "template <template<typename _U, _U...> class _S,\n"
           "          typename, typename, bool>\n"
@@ -282,25 +306,24 @@ protected:
           "  __castxml__make_integer_seq_impl<_S,\n"
           "      __castxml__integral_constant<_T, _Sz>,\n"
           "     _S<_T>, (_Sz>=0)>::type;\n"
-          "#define __make_integer_seq __castxml__make_integer_seq\n"
-          ;
+          "#define __make_integer_seq __castxml__make_integer_seq\n";
       }
 #endif
 
       // Prevent glibc use of a GNU extension not implemented by Clang.
       if (this->NeedNoMathInlines(this->Opts.Predefines)) {
         builtins += "\n"
-          "#define __NO_MATH_INLINES 1\n"
-          ;
+                    "#define __NO_MATH_INLINES 1\n";
       }
 
     } else {
-      builtins += predefines.substr(start, end-start);
+      builtins += predefines.substr(start, end - start);
     }
     return predefines.substr(0, start) + builtins + predefines.substr(end);
   }
 
-  bool IsActualGNU(std::string const& pd) const {
+  bool IsActualGNU(std::string const& pd) const
+  {
     return (pd.find("#define __GNUC__ ") != pd.npos &&
             pd.find("#define __clang__ ") == pd.npos &&
             pd.find("#define __INTEL_COMPILER ") == pd.npos &&
@@ -308,18 +331,21 @@ protected:
             pd.find("#define __PGI ") == pd.npos);
   }
 
-  bool NeedBuiltinVarArgPack(std::string const& pd) {
+  bool NeedBuiltinVarArgPack(std::string const& pd)
+  {
     return this->IsActualGNU(pd);
   }
 
-  bool NeedFloat128(std::string const& pd) const {
+  bool NeedFloat128(std::string const& pd) const
+  {
     return (this->IsActualGNU(pd) &&
             (pd.find("#define __i386__ ") != pd.npos ||
              pd.find("#define __x86_64__ ") != pd.npos ||
              pd.find("#define __ia64__ ") != pd.npos));
   }
 
-  bool NeedNoMathInlines(std::string const& pd) const {
+  bool NeedNoMathInlines(std::string const& pd) const
+  {
     return (this->IsActualGNU(pd) &&
             (pd.find("#define __i386__ ") != pd.npos &&
              pd.find("#define __OPTIMIZE__ ") != pd.npos &&
@@ -327,7 +353,8 @@ protected:
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI,
-                             llvm::StringRef /*Filename*/) {
+                             llvm::StringRef /*Filename*/)
+  {
     CI.getPreprocessor().setPredefines(this->UpdatePredefines(CI));
 
     // Tell Clang not to tear down the parser at EOF.
@@ -337,54 +364,59 @@ protected:
   }
 };
 
-class CastXMLPrintPreprocessedAction:
-  public CastXMLPredefines<clang::PrintPreprocessedAction>
+class CastXMLPrintPreprocessedAction
+  : public CastXMLPredefines<clang::PrintPreprocessedAction>
 {
 public:
-  CastXMLPrintPreprocessedAction(Options const& opts):
-    CastXMLPredefines(opts) {}
+  CastXMLPrintPreprocessedAction(Options const& opts)
+    : CastXMLPredefines(opts)
+  {
+  }
 };
 
-class CastXMLSyntaxOnlyAction:
-  public CastXMLPredefines<clang::SyntaxOnlyAction>
+class CastXMLSyntaxOnlyAction
+  : public CastXMLPredefines<clang::SyntaxOnlyAction>
 {
-  std::unique_ptr<clang::ASTConsumer>
-  CreateASTConsumer(clang::CompilerInstance &CI,
-                    llvm::StringRef InFile) override {
+  std::unique_ptr<clang::ASTConsumer> CreateASTConsumer(
+    clang::CompilerInstance& CI, llvm::StringRef InFile) override
+  {
     using llvm::sys::path::filename;
-    if(!this->Opts.GccXml) {
+    if (!this->Opts.GccXml) {
       return clang::SyntaxOnlyAction::CreateASTConsumer(CI, InFile);
 #ifdef CASTXML_OWNS_OSTREAM
-    } else if(std::unique_ptr<llvm::raw_ostream> OS =
-              CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
+    } else if (std::unique_ptr<llvm::raw_ostream> OS =
+                 CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
       return llvm::make_unique<ASTConsumer>(CI, std::move(OS), this->Opts);
 #else
-    } else if(llvm::raw_ostream* OS =
-              CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
+    } else if (llvm::raw_ostream* OS =
+                 CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
       return llvm::make_unique<ASTConsumer>(CI, *OS, this->Opts);
 #endif
     } else {
       return nullptr;
     }
   }
+
 public:
-  CastXMLSyntaxOnlyAction(Options const& opts):
-    CastXMLPredefines(opts) {}
+  CastXMLSyntaxOnlyAction(Options const& opts)
+    : CastXMLPredefines(opts)
+  {
+  }
 };
 
-static clang::FrontendAction*
-CreateFrontendAction(clang::CompilerInstance* CI, Options const& opts)
+static clang::FrontendAction* CreateFrontendAction(clang::CompilerInstance* CI,
+                                                   Options const& opts)
 {
   clang::frontend::ActionKind action =
     CI->getInvocation().getFrontendOpts().ProgramAction;
-  switch(action) {
-  case clang::frontend::PrintPreprocessedInput:
-    return new CastXMLPrintPreprocessedAction(opts);
-  case clang::frontend::ParseSyntaxOnly:
-    return new CastXMLSyntaxOnlyAction(opts);
-  default:
-    std::cerr << "error: unsupported action: " << int(action) << "\n";
-    return nullptr;
+  switch (action) {
+    case clang::frontend::PrintPreprocessedInput:
+      return new CastXMLPrintPreprocessedAction(opts);
+    case clang::frontend::ParseSyntaxOnly:
+      return new CastXMLSyntaxOnlyAction(opts);
+    default:
+      std::cerr << "error: unsupported action: " << int(action) << "\n";
+      return nullptr;
   }
 }
 
@@ -392,28 +424,28 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 {
   // Create a diagnostics engine for this compiler instance.
   CI->createDiagnostics();
-  if(!CI->hasDiagnostics()) {
+  if (!CI->hasDiagnostics()) {
     return false;
   }
 
   // Set frontend options we captured directly.
   CI->getFrontendOpts().OutputFile = opts.OutputFile;
 
-  if(opts.GccXml) {
-#   define MSG(x) "error: '--castxml-gccxml' does not work with " x "\n"
-    if(CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
+  if (opts.GccXml) {
+#define MSG(x) "error: '--castxml-gccxml' does not work with " x "\n"
+    if (CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
       std::cerr << MSG("Objective C");
       return false;
     }
-#   undef MSG
+#undef MSG
   }
 
   // Construct our Clang front-end action.  This dispatches
   // handling of each input file with an action based on the
   // flags provided (e.g. -E to preprocess-only).
-  std::unique_ptr<clang::FrontendAction>
-    action(CreateFrontendAction(CI, opts));
-  if(action) {
+  std::unique_ptr<clang::FrontendAction> action(
+    CreateFrontendAction(CI, opts));
+  if (action) {
     return CI->ExecuteAction(*action);
   } else {
     return false;
@@ -423,34 +455,32 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 static llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine>
 runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
 {
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions>
-    diagOpts(new clang::DiagnosticOptions);
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs>
-    diagID(new clang::DiagnosticIDs());
-  std::unique_ptr<llvm::opt::OptTable>
-    opts(clang::driver::createDriverOptTable());
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagOpts(
+    new clang::DiagnosticOptions);
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
+    new clang::DiagnosticIDs());
+  std::unique_ptr<llvm::opt::OptTable> opts(
+    clang::driver::createDriverOptTable());
   unsigned missingArgIndex, missingArgCount;
-#if LLVM_VERSION_MAJOR > 3 \
- || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
-  llvm::opt::InputArgList
-    args(opts->ParseArgs(llvm::makeArrayRef(argBeg, argEnd),
-                         missingArgIndex, missingArgCount));
+#if LLVM_VERSION_MAJOR > 3 ||                                                 \
+  LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
+  llvm::opt::InputArgList args(opts->ParseArgs(
+    llvm::makeArrayRef(argBeg, argEnd), missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, args);
 #else
-  std::unique_ptr<llvm::opt::InputArgList>
-    args(opts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
+  std::unique_ptr<llvm::opt::InputArgList> args(
+    opts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, *args);
 #endif
   clang::TextDiagnosticPrinter* diagClient =
     new clang::TextDiagnosticPrinter(llvm::errs(), &*diagOpts);
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine>
-    diags(new clang::DiagnosticsEngine(diagID, &*diagOpts, diagClient));
+  llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine> diags(
+    new clang::DiagnosticsEngine(diagID, &*diagOpts, diagClient));
   clang::ProcessWarningOptions(*diags, *diagOpts, /*ReportDiags=*/false);
   return diags;
 }
 
-static int runClangImpl(const char* const* argBeg,
-                        const char* const* argEnd,
+static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
                         Options const& opts)
 {
   // Construct a diagnostics engine for use while processing driver options.
@@ -465,12 +495,12 @@ static int runClangImpl(const char* const* argBeg,
       !llvm::sys::fs::is_directory(d.ResourceDir)) {
     d.ResourceDir = getClangResourceDir();
   }
-  llvm::SmallVector<const char *, 16> cArgs;
+  llvm::SmallVector<const char*, 16> cArgs;
   cArgs.push_back("<clang>");
   cArgs.insert(cArgs.end(), argBeg, argEnd);
 
   // Tell the driver not to generate any commands past syntax parsing.
-  if(opts.PPOnly) {
+  if (opts.PPOnly) {
     cArgs.push_back("-E");
   } else {
     cArgs.push_back("-fsyntax-only");
@@ -483,13 +513,13 @@ static int runClangImpl(const char* const* argBeg,
   }
 
   // For '-###' just print the jobs and exit early.
-  if(c->getArgs().hasArg(clang::driver::options::OPT__HASH_HASH_HASH)) {
+  if (c->getArgs().hasArg(clang::driver::options::OPT__HASH_HASH_HASH)) {
     c->getJobs().Print(llvm::errs(), "\n", true);
     return 0;
   }
 
   // Reject '-o' with multiple inputs.
-  if(!opts.OutputFile.empty() && c->getJobs().size() > 1) {
+  if (!opts.OutputFile.empty() && c->getJobs().size() > 1) {
     diags->Report(clang::diag::err_drv_output_argument_with_multiple_files);
     return 1;
   }
@@ -497,17 +527,17 @@ static int runClangImpl(const char* const* argBeg,
   // Run Clang for each compilation computed by the driver.
   // This should be once per input source file.
   bool result = true;
-  for(auto const& job : c->getJobs()) {
+  for (auto const& job : c->getJobs()) {
     clang::driver::Command const* cmd =
       llvm::dyn_cast<clang::driver::Command>(&job);
-    if(cmd && strcmp(cmd->getCreator().getName(), "clang") == 0) {
+    if (cmd && strcmp(cmd->getCreator().getName(), "clang") == 0) {
       // Invoke Clang with this set of arguments.
-      std::unique_ptr<clang::CompilerInstance>
-        CI(new clang::CompilerInstance());
+      std::unique_ptr<clang::CompilerInstance> CI(
+        new clang::CompilerInstance());
       const char* const* cmdArgBeg = cmd->getArguments().data();
       const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
-      if (clang::CompilerInvocation::CreateFromArgs
-          (CI->getInvocation(), cmdArgBeg, cmdArgEnd, *diags)) {
+      if (clang::CompilerInvocation::CreateFromArgs(
+            CI->getInvocation(), cmdArgBeg, cmdArgEnd, *diags)) {
         if (diags->hasErrorOccurred()) {
           return 1;
         }
@@ -521,25 +551,23 @@ static int runClangImpl(const char* const* argBeg,
       llvm::raw_svector_ostream msg(buf);
       job.Print(msg, "\n", true);
       diags->Report(clang::diag::err_fe_expected_clang_command);
-      diags->Report(clang::diag::err_fe_expected_compiler_job)
-        << msg.str();
+      diags->Report(clang::diag::err_fe_expected_compiler_job) << msg.str();
       result = false;
     }
   }
-  return result? 0:1;
+  return result ? 0 : 1;
 }
 
-int runClang(const char* const* argBeg,
-             const char* const* argEnd,
+int runClang(const char* const* argBeg, const char* const* argEnd,
              Options const& opts)
 {
   llvm::SmallVector<const char*, 32> args(argBeg, argEnd);
   std::string fmsc_version = "-fmsc-version=";
   std::string std_flag = "-std=";
 
-  if(opts.HaveCC) {
+  if (opts.HaveCC) {
     // Configure target to match that of given compiler.
-    if(!opts.HaveTarget && !opts.Triple.empty()) {
+    if (!opts.HaveTarget && !opts.Triple.empty()) {
       args.push_back("-target");
       args.push_back(opts.Triple.c_str());
     }
@@ -549,10 +577,11 @@ int runClang(const char* const* argBeg,
     args.push_back("-nostdlibinc");
 
     // Add header search paths detected from given compiler.
-    for(std::vector<Options::Include>::const_iterator
-          i = opts.Includes.begin(), e = opts.Includes.end();
-        i != e; ++i) {
-      if(i->Framework) {
+    for (std::vector<Options::Include>::const_iterator
+           i = opts.Includes.begin(),
+           e = opts.Includes.end();
+         i != e; ++i) {
+      if (i->Framework) {
         args.push_back("-iframework");
       } else {
         args.push_back("-isystem");
@@ -565,18 +594,18 @@ int runClang(const char* const* argBeg,
 
     // Configure language options to match given compiler.
     std::string const& pd = opts.Predefines;
-    if(pd.find("#define _MSC_EXTENSIONS ") != pd.npos) {
+    if (pd.find("#define _MSC_EXTENSIONS ") != pd.npos) {
       args.push_back("-fms-extensions");
     }
-    if(const char* d = strstr(pd.c_str(), "#define _MSC_VER ")) {
+    if (const char* d = strstr(pd.c_str(), "#define _MSC_VER ")) {
       args.push_back("-fms-compatibility");
       // Extract the _MSC_VER value to give to -fmsc-version=.
       d += 17;
-      if(const char* e = strchr(d, '\n')) {
-        if(*(e - 1) == '\r') {
+      if (const char* e = strchr(d, '\n')) {
+        if (*(e - 1) == '\r') {
           --e;
         }
-        std::string const msc_ver_str(d, e-d);
+        std::string const msc_ver_str(d, e - d);
         fmsc_version += msc_ver_str;
         args.push_back(fmsc_version.c_str());
 
@@ -621,7 +650,7 @@ int runClang(const char* const* argBeg,
           }
 
           // Add the standard year.
-          std::string const std_date_str(d, e-d);
+          std::string const std_date_str(d, e - d);
           errno = 0;
           long std_date = std::strtol(std_date_str.c_str(), nullptr, 10);
           if (errno != 0) {
@@ -640,14 +669,14 @@ int runClang(const char* const* argBeg,
           args.push_back(std_flag.c_str());
         }
       } else if (const char* d =
-                 strstr(pd.c_str(), "#define __STDC_VERSION__ ")) {
+                   strstr(pd.c_str(), "#define __STDC_VERSION__ ")) {
         // Extract the C standard level.
         d += 25;
         if (const char* e = strchr(d, '\n')) {
           if (*(e - 1) == '\r') {
             --e;
           }
-          std::string const std_date_str(d, e-d);
+          std::string const std_date_str(d, e - d);
           errno = 0;
           long std_date = std::strtol(std_date_str.c_str(), nullptr, 10);
           if (errno != 0) {

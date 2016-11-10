@@ -1,1 +1,1 @@
-typedef int &start;
+typedef int& start;

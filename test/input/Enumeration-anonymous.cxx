@@ -1,6 +1,7 @@
 namespace start {
-  enum {
-    ev0,
-    ev1
-  };
+enum
+{
+  ev0,
+  ev1
+};
 }

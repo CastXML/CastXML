@@ -1,1 +1,3 @@
-class __attribute__ ((annotate ("an annotation"))) start {};
+class __attribute__((annotate("an annotation"))) start
+{
+};

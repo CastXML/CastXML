@@ -1,18 +1,18 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:6" file="f1" line="6" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
-  <Typedef id="_3" name="Int" type="_9" context="_1" access="private" location="f1:2" file="f1" line="2"/>
-  <Method id="_4" name="method" returns="_9" context="_1" access="public" location="f1:4" file="f1" line="4" mangled="[^"]+">
-    <Argument type="_3" location="f1:4" file="f1" line="4"/>
+  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:9" file="f1" line="9" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
+  <Typedef id="_3" name="Int" type="_9" context="_1" access="private" location="f1:4" file="f1" line="4"/>
+  <Method id="_4" name="method" returns="_9" context="_1" access="public" location="f1:7" file="f1" line="7" mangled="[^"]+">
+    <Argument type="_3" location="f1:7" file="f1" line="7"/>
   </Method>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_6" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?>
-    <Argument type="_10" location="f1:6" file="f1" line="6"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?>
+    <Argument type="_10" location="f1:9" file="f1" line="9"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_11" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_10" location="f1:6" file="f1" line="6"/>
+  <OperatorMethod id="_7" name="=" returns="_11" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_10" location="f1:9" file="f1" line="9"/>
   </OperatorMethod>
-  <Destructor id="_8" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_10" type="_1c"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>

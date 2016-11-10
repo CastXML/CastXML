@@ -29,20 +29,23 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <iostream>
-#include <sstream>
 #include <set>
+#include <sstream>
+#include <string.h>
 #include <system_error>
 #include <vector>
-#include <string.h>
 
-#if LLVM_VERSION_MAJOR > 3 \
- || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
-# include "llvm/Support/StringSaver.h"
+#if LLVM_VERSION_MAJOR > 3 ||                                                 \
+  LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
+#include "llvm/Support/StringSaver.h"
 #else
-class StringSaver: public llvm::cl::StringSaver {
+class StringSaver : public llvm::cl::StringSaver
+{
   std::set<std::string> Strings;
+
 public:
-  const char* SaveString(const char* s) {
+  const char* SaveString(const char* s)
+  {
     return this->Strings.insert(s).first->c_str();
   }
 };
@@ -59,18 +62,17 @@ int main(int argc_in, const char** argv_in)
 
   llvm::SmallVector<const char*, 64> argv;
   llvm::SpecificBumpPtrAllocator<char> argAlloc;
-  if(std::error_code e =
-     llvm::sys::Process::GetArgumentVector(
-       argv, llvm::ArrayRef<const char*>(argv_in, argc_in), argAlloc)) {
+  if (std::error_code e = llvm::sys::Process::GetArgumentVector(
+        argv, llvm::ArrayRef<const char*>(argv_in, argc_in), argAlloc)) {
     llvm::errs() << "error: could not get arguments: " << e.message() << "\n";
     return 1;
-  } else if(argv.empty()) {
+  } else if (argv.empty()) {
     llvm::errs() << "error: no argv[0]?!\n";
     return 1;
   }
 
-#if LLVM_VERSION_MAJOR > 3 \
- || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 8
+#if LLVM_VERSION_MAJOR > 3 ||                                                 \
+  LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 8
   llvm::BumpPtrAllocator argSaverAlloc;
   llvm::StringSaver argSaver(argSaverAlloc);
 #elif LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR == 7
@@ -79,12 +81,12 @@ int main(int argc_in, const char** argv_in)
 #else
   StringSaver argSaver;
 #endif
-  llvm::cl::ExpandResponseFiles(
-    argSaver, llvm::cl::TokenizeGNUCommandLine, argv);
+  llvm::cl::ExpandResponseFiles(argSaver, llvm::cl::TokenizeGNUCommandLine,
+                                argv);
 
   size_t const argc = argv.size();
 
-  if(!findResourceDir(argv[0], std::cerr)) {
+  if (!findResourceDir(argv[0], std::cerr)) {
     return 1;
   }
 
@@ -126,13 +128,13 @@ int main(int argc_in, const char** argv_in)
   /* clang-format on */
 
   Options opts;
-  llvm::SmallVector<const char *, 16> clang_args;
-  llvm::SmallVector<const char *, 16> cc_args;
+  llvm::SmallVector<const char*, 16> clang_args;
+  llvm::SmallVector<const char*, 16> cc_args;
   const char* cc_id = 0;
 
-  for(size_t i=1; i < argc; ++i) {
-    if(strcmp(argv[i], "--castxml-gccxml") == 0) {
-      if(!opts.GccXml) {
+  for (size_t i = 1; i < argc; ++i) {
+    if (strcmp(argv[i], "--castxml-gccxml") == 0) {
+      if (!opts.GccXml) {
         opts.GccXml = true;
       } else {
         /* clang-format off */
@@ -144,8 +146,8 @@ int main(int argc_in, const char** argv_in)
         /* clang-format on */
         return 1;
       }
-    } else if(strcmp(argv[i], "--castxml-start") == 0) {
-      if((i+1) < argc) {
+    } else if (strcmp(argv[i], "--castxml-start") == 0) {
+      if ((i + 1) < argc) {
         std::string item;
         std::stringstream stream(argv[++i]);
         while (std::getline(stream, item, ',')) {
@@ -162,14 +164,14 @@ int main(int argc_in, const char** argv_in)
         /* clang-format on */
         return 1;
       }
-    } else if(strncmp(argv[i], "--castxml-cc-", 13) == 0) {
-      if(!cc_id) {
+    } else if (strncmp(argv[i], "--castxml-cc-", 13) == 0) {
+      if (!cc_id) {
         cc_id = argv[i] + 13;
-        if((i+1) >= argc) {
+        if ((i + 1) >= argc) {
           continue;
         }
         ++i;
-        if(strncmp(argv[i], "-", 1) == 0) {
+        if (strncmp(argv[i], "-", 1) == 0) {
           /* clang-format off */
           std::cerr <<
             "error: argument to '--castxml-cc-" << cc_id <<
@@ -180,10 +182,10 @@ int main(int argc_in, const char** argv_in)
           /* clang-format on */
           return 1;
         }
-        if(strcmp(argv[i], "(") == 0) {
+        if (strcmp(argv[i], "(") == 0) {
           unsigned int depth = 1;
-          for(++i; i < argc && depth > 0; ++i) {
-            if(strncmp(argv[i], "--castxml-", 10) == 0) {
+          for (++i; i < argc && depth > 0; ++i) {
+            if (strncmp(argv[i], "--castxml-", 10) == 0) {
               /* clang-format off */
               std::cerr <<
                 "error: arguments to '--castxml-cc-" << cc_id <<
@@ -193,18 +195,18 @@ int main(int argc_in, const char** argv_in)
                 ;
               /* clang-format on */
               return 1;
-            } else if(strcmp(argv[i], "(") == 0) {
+            } else if (strcmp(argv[i], "(") == 0) {
               ++depth;
               cc_args.push_back(argv[i]);
-            } else if(strcmp(argv[i], ")") == 0) {
-              if(--depth) {
+            } else if (strcmp(argv[i], ")") == 0) {
+              if (--depth) {
                 cc_args.push_back(argv[i]);
               }
             } else {
               cc_args.push_back(argv[i]);
             }
           }
-          if(depth) {
+          if (depth) {
             /* clang-format off */
             std::cerr <<
               "error: unbalanced parentheses after '--castxml-cc-" <<
@@ -229,10 +231,10 @@ int main(int argc_in, const char** argv_in)
         /* clang-format on */
         return 1;
       }
-    } else if(strcmp(argv[i], "-E") == 0) {
+    } else if (strcmp(argv[i], "-E") == 0) {
       opts.PPOnly = true;
-    } else if(strcmp(argv[i], "-o") == 0) {
-      if((i+1) < argc) {
+    } else if (strcmp(argv[i], "-o") == 0) {
+      if ((i + 1) < argc) {
         opts.OutputFile = argv[++i];
       } else {
         /* clang-format off */
@@ -244,8 +246,8 @@ int main(int argc_in, const char** argv_in)
         /* clang-format on */
         return 1;
       }
-    } else if(strcmp(argv[i], "-help") == 0 ||
-              strcmp(argv[i], "--help") == 0) {
+    } else if (strcmp(argv[i], "-help") == 0 ||
+               strcmp(argv[i], "--help") == 0) {
       /* clang-format off */
       std::cout <<
         usage <<
@@ -258,7 +260,7 @@ int main(int argc_in, const char** argv_in)
       /* clang-format on */
       // Also print Clang help.
       clang_args.push_back(argv[i]);
-    } else if(strcmp(argv[i], "--version") == 0) {
+    } else if (strcmp(argv[i], "--version") == 0) {
       /* clang-format off */
       std::cout <<
         "castxml version " << getVersionString() << "\n"
@@ -282,9 +284,9 @@ int main(int argc_in, const char** argv_in)
     }
   }
 
-  if(cc_id) {
+  if (cc_id) {
     opts.HaveCC = true;
-    if(cc_args.empty()) {
+    if (cc_args.empty()) {
       /* clang-format off */
       std::cerr <<
         "error: '--castxml-cc-" << cc_id <<
@@ -295,13 +297,13 @@ int main(int argc_in, const char** argv_in)
       /* clang-format on */
       return 1;
     }
-    if(!detectCC(cc_id, cc_args.data(), cc_args.data() + cc_args.size(),
-                 opts)) {
+    if (!detectCC(cc_id, cc_args.data(), cc_args.data() + cc_args.size(),
+                  opts)) {
       return 1;
     }
   }
 
-  if(clang_args.empty()) {
+  if (clang_args.empty()) {
     return 0;
   }
 

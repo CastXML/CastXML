@@ -1,6 +1,6 @@
 namespace N {
-  class A;
+class A;
 }
 namespace start {
-  using namespace N;
+using namespace N;
 }

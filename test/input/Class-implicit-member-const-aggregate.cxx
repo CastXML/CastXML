@@ -1,3 +1,4 @@
-struct start {
+struct start
+{
   int const data;
 };

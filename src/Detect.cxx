@@ -34,20 +34,19 @@ static std::string getClangBuiltinIncludeDir()
   return getClangResourceDir() + "/include";
 }
 
-static bool failedCC(const char* id,
-                     std::vector<const char*> const& args,
-                     std::string const& out,
-                     std::string const& err,
+static bool failedCC(const char* id, std::vector<const char*> const& args,
+                     std::string const& out, std::string const& err,
                      std::string const& msg)
 {
   std::cerr << "error: '--castxml-cc-" << id
             << "' compiler command failed:\n\n";
-  for(std::vector<const char*>::const_iterator i = args.begin(),
-        e = args.end(); i != e; ++i) {
+  for (std::vector<const char *>::const_iterator i = args.begin(),
+                                                 e = args.end();
+       i != e; ++i) {
     std::cerr << " '" << *i << "'";
   }
   std::cerr << "\n";
-  if(!msg.empty()) {
+  if (!msg.empty()) {
     std::cerr << msg << "\n";
   } else {
     std::cerr << out << "\n";
@@ -61,11 +60,10 @@ static void fixPredefines(Options& opts)
   // Remove any detected conflicting definition of a Clang builtin macro.
   std::string& pd = opts.Predefines;
   std::string::size_type beg = 0;
-  while ((beg = pd.find("#define __has", beg),
-          beg != std::string::npos)) {
+  while ((beg = pd.find("#define __has", beg), beg != std::string::npos)) {
     std::string::size_type end = pd.find('\n', beg);
     if (end != std::string::npos) {
-      pd.erase(beg, end+1 - beg);
+      pd.erase(beg, end + 1 - beg);
     } else {
       pd.erase(beg);
     }
@@ -76,31 +74,28 @@ static void setTriple(Options& opts)
 {
   std::string const& pd = opts.Predefines;
   llvm::Triple triple(llvm::sys::getDefaultTargetTriple());
-  if(pd.find("#define __x86_64__ 1") != pd.npos ||
-     pd.find("#define _M_X64 ") != pd.npos) {
+  if (pd.find("#define __x86_64__ 1") != pd.npos ||
+      pd.find("#define _M_X64 ") != pd.npos) {
     triple.setArchName("x86_64");
-  } else if(pd.find("#define __amd64__ 1") != pd.npos ||
-            pd.find("#define _M_AMD64 ") != pd.npos) {
+  } else if (pd.find("#define __amd64__ 1") != pd.npos ||
+             pd.find("#define _M_AMD64 ") != pd.npos) {
     triple.setArchName("amd64");
-  } else if(pd.find("#define __i386__ 1") != pd.npos ||
-            pd.find("#define _M_IX86 ") != pd.npos) {
+  } else if (pd.find("#define __i386__ 1") != pd.npos ||
+             pd.find("#define _M_IX86 ") != pd.npos) {
     triple.setArchName("i386");
   }
-  if(pd.find("#define _WIN32 1") != pd.npos) {
+  if (pd.find("#define _WIN32 1") != pd.npos) {
     triple.setVendorName("pc");
     triple.setOSName("windows");
   }
-  if(pd.find("#define __MINGW32__ 1") != pd.npos) {
+  if (pd.find("#define __MINGW32__ 1") != pd.npos) {
     triple.setEnvironmentName("gnu");
   }
   opts.Triple = triple.getTriple();
 }
 
-static bool detectCC_GNU(const char* const* argBeg,
-                         const char* const* argEnd,
-                         Options& opts,
-                         const char* id,
-                         const char* ext)
+static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
+                         Options& opts, const char* id, const char* ext)
 {
   std::string const fwExplicitSuffix = " (framework directory)";
   std::string const fwImplicitSuffix = "/Frameworks";
@@ -114,33 +109,33 @@ static bool detectCC_GNU(const char* const* argBeg,
   cc_args.push_back("-dM");
   cc_args.push_back("-v");
   cc_args.push_back(empty_cpp.c_str());
-  if(runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
-     ret == 0) {
+  if (runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
+      ret == 0) {
     opts.Predefines = out;
     const char* start_line = "#include <...> search starts here:";
-    if(const char* c = strstr(err.c_str(), start_line)) {
-      if((c = strchr(c, '\n'), c++)) {
-        while(*c++ == ' ') {
-          if(const char* e = strchr(c, '\n')) {
+    if (const char* c = strstr(err.c_str(), start_line)) {
+      if ((c = strchr(c, '\n'), c++)) {
+        while (*c++ == ' ') {
+          if (const char* e = strchr(c, '\n')) {
             const char* s = c;
             c = e + 1;
-            if(*(e - 1) == '\r') {
+            if (*(e - 1) == '\r') {
               --e;
             }
-            std::string inc(s, e-s);
+            std::string inc(s, e - s);
             std::replace(inc.begin(), inc.end(), '\\', '/');
             bool fw = ((inc.size() > fwExplicitSuffix.size()) &&
-                       (inc.substr(inc.size()-fwExplicitSuffix.size()) ==
+                       (inc.substr(inc.size() - fwExplicitSuffix.size()) ==
                         fwExplicitSuffix));
-            if(fw) {
-              inc = inc.substr(0, inc.size()-fwExplicitSuffix.size());
+            if (fw) {
+              inc = inc.substr(0, inc.size() - fwExplicitSuffix.size());
             } else {
               fw = ((inc.size() > fwImplicitSuffix.size()) &&
-                    (inc.substr(inc.size()-fwImplicitSuffix.size()) ==
+                    (inc.substr(inc.size() - fwImplicitSuffix.size()) ==
                      fwImplicitSuffix));
             }
             // Replace the compiler builtin include directory with ours.
-            if (!fw && llvm::sys::fs::exists(inc+"/emmintrin.h")) {
+            if (!fw && llvm::sys::fs::exists(inc + "/emmintrin.h")) {
               inc = getClangBuiltinIncludeDir();
             }
             opts.Includes.push_back(Options::Include(inc, fw));
@@ -156,11 +151,8 @@ static bool detectCC_GNU(const char* const* argBeg,
   }
 }
 
-static bool detectCC_MSVC(const char* const* argBeg,
-                          const char* const* argEnd,
-                          Options& opts,
-                          const char* id,
-                          const char* ext)
+static bool detectCC_MSVC(const char* const* argBeg, const char* const* argEnd,
+                          Options& opts, const char* id, const char* ext)
 {
   std::vector<const char*> cc_args(argBeg, argEnd);
   std::string detect_vs_cpp = getResourceDir() + "/detect_vs." + ext;
@@ -171,16 +163,16 @@ static bool detectCC_MSVC(const char* const* argBeg,
   cc_args.push_back("-c");
   cc_args.push_back("-FoNUL");
   cc_args.push_back(detect_vs_cpp.c_str());
-  if(runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
-     ret == 0) {
-    if(const char* predefs = strstr(out.c_str(), "\n#define")) {
-      opts.Predefines = predefs+1;
+  if (runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
+      ret == 0) {
+    if (const char* predefs = strstr(out.c_str(), "\n#define")) {
+      opts.Predefines = predefs + 1;
     }
-    if(const char* includes_str = std::getenv("INCLUDE")) {
+    if (const char* includes_str = std::getenv("INCLUDE")) {
       llvm::SmallVector<llvm::StringRef, 8> includes;
       llvm::StringRef includes_ref(includes_str);
       includes_ref.split(includes, ";", -1, false);
-      for (llvm::StringRef i: includes) {
+      for (llvm::StringRef i : includes) {
         if (!i.empty()) {
           std::string inc = i;
           std::replace(inc.begin(), inc.end(), '\\', '/');
@@ -196,10 +188,8 @@ static bool detectCC_MSVC(const char* const* argBeg,
   }
 }
 
-bool detectCC(const char* id,
-              const char* const* argBeg,
-              const char* const* argEnd,
-              Options& opts)
+bool detectCC(const char* id, const char* const* argBeg,
+              const char* const* argEnd, Options& opts)
 {
   if (strcmp(id, "gnu") == 0) {
     return detectCC_GNU(argBeg, argEnd, opts, id, "cpp");

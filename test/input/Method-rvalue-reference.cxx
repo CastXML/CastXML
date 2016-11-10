@@ -1,4 +1,5 @@
-class start {
+class start
+{
   start(start&);
   start(start&&);
   start& operator=(start&);

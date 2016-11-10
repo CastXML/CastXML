@@ -1,3 +1,4 @@
-class start {
+class start
+{
   operator int();
 };

@@ -18,10 +18,10 @@
 #include "Version.h"
 
 #include <cxsys/Process.h>
+#include <fstream>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Path.h>
-#include <fstream>
 #include <vector>
 
 static std::string castxmlResourceDir;
@@ -29,8 +29,8 @@ static std::string castxmlClangResourceDir;
 
 static std::string GetMainExecutable(const char* argv0)
 {
-  return llvm::sys::fs::getMainExecutable
-    (argv0, (void*)(intptr_t)GetMainExecutable);
+  return llvm::sys::fs::getMainExecutable(argv0,
+                                          (void*)(intptr_t)GetMainExecutable);
 }
 
 static bool tryBuildDir(std::string const& dir)
@@ -44,10 +44,8 @@ static bool tryBuildDir(std::string const& dir)
   std::ifstream cl_fin(cl_dir_txt.c_str());
   std::string src_dir;
   std::string cl_dir;
-  if (std::getline(src_fin, src_dir) &&
-      llvm::sys::fs::is_directory(src_dir) &&
-      std::getline(cl_fin, cl_dir) &&
-      llvm::sys::fs::is_directory(cl_dir)) {
+  if (std::getline(src_fin, src_dir) && llvm::sys::fs::is_directory(src_dir) &&
+      std::getline(cl_fin, cl_dir) && llvm::sys::fs::is_directory(cl_dir)) {
     castxmlResourceDir = src_dir + "/share/castxml";
     castxmlClangResourceDir = cl_dir;
     return true;
@@ -78,8 +76,7 @@ bool findResourceDir(const char* argv0, std::ostream& error)
     llvm::sys::path::remove_filename(dir2);
     // Build tree has
     //   <build>/bin[/<config>]/castxml
-    if (!tryBuildDir(dir.str()) &&
-        !tryBuildDir(dir2.str())) {
+    if (!tryBuildDir(dir.str()) && !tryBuildDir(dir2.str())) {
       error << "Unable to locate resources for " << exe << "\n";
       return false;
     }
@@ -105,14 +102,12 @@ std::string getVersionString()
 
 unsigned int getVersionValue()
 {
-  return (CASTXML_VERSION_MAJOR * 1000000 +
-          CASTXML_VERSION_MINOR *    1000 +
-          CASTXML_VERSION_PATCH *       1);
+  return (CASTXML_VERSION_MAJOR * 1000000 + CASTXML_VERSION_MINOR * 1000 +
+          CASTXML_VERSION_PATCH * 1);
 }
 
-bool runCommand(int argc, const char* const* argv,
-                int& ret, std::string& out, std::string& err,
-                std::string& msg)
+bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
+                std::string& err, std::string& msg)
 {
   std::vector<const char*> cmd(argv, argv + argc);
   cmd.push_back(0);
@@ -135,39 +130,39 @@ bool runCommand(int argc, const char* const* argv,
   char* data;
   int length;
   int pipe;
-  while((pipe = cxsysProcess_WaitForData(cp, &data, &length, 0)) > 0) {
-    if(pipe == cxsysProcess_Pipe_STDOUT) {
-      outBuf.insert(outBuf.end(), data, data+length);
-    } else if(pipe == cxsysProcess_Pipe_STDERR) {
-      errBuf.insert(errBuf.end(), data, data+length);
+  while ((pipe = cxsysProcess_WaitForData(cp, &data, &length, 0)) > 0) {
+    if (pipe == cxsysProcess_Pipe_STDOUT) {
+      outBuf.insert(outBuf.end(), data, data + length);
+    } else if (pipe == cxsysProcess_Pipe_STDERR) {
+      errBuf.insert(errBuf.end(), data, data + length);
     }
   }
 
   cxsysProcess_WaitForExit(cp, 0);
-  if(!outBuf.empty()) {
+  if (!outBuf.empty()) {
     out.append(&*outBuf.begin(), outBuf.size());
   }
-  if(!errBuf.empty()) {
+  if (!errBuf.empty()) {
     err.append(&*errBuf.begin(), errBuf.size());
   }
 
   bool result = true;
-  switch(cxsysProcess_GetState(cp)) {
-  case cxsysProcess_State_Exited:
-    ret = cxsysProcess_GetExitValue(cp);
-    break;
-  case cxsysProcess_State_Exception:
-    msg = cxsysProcess_GetExceptionString(cp);
-    result = false;
-    break;
-  case cxsysProcess_State_Error:
-    msg = cxsysProcess_GetErrorString(cp);
-    result = false;
-    break;
-  default:
-    msg = "Process terminated in unexpected state.\n";
-    result = false;
-    break;
+  switch (cxsysProcess_GetState(cp)) {
+    case cxsysProcess_State_Exited:
+      ret = cxsysProcess_GetExitValue(cp);
+      break;
+    case cxsysProcess_State_Exception:
+      msg = cxsysProcess_GetExceptionString(cp);
+      result = false;
+      break;
+    case cxsysProcess_State_Error:
+      msg = cxsysProcess_GetErrorString(cp);
+      result = false;
+      break;
+    default:
+      msg = "Process terminated in unexpected state.\n";
+      result = false;
+      break;
   }
 
   cxsysProcess_Delete(cp);
@@ -178,27 +173,34 @@ std::string encodeXML(std::string const& in, bool cdata)
 {
   std::string xml;
   const char* last = in.c_str();
-  for(const char* c = last; *c; ++c) {
-    switch(*c) {
-#   define XML(OUT)               \
-      xml.append(last, c - last); \
-      last = c + 1;               \
-      xml.append(OUT)
-    case '&': XML("&amp;"); break;
-    case '<': XML("&lt;"); break;
-    case '>': XML("&gt;"); break;
-    case '\'':
-      if(!cdata) {
-        XML("&apos;");
-      }
-      break;
-    case '"':
-      if(!cdata) {
-        XML("&quot;");
-      }
-      break;
-    default: break;
-#   undef XML
+  for (const char* c = last; *c; ++c) {
+    switch (*c) {
+#define XML(OUT)                                                              \
+  xml.append(last, c - last);                                                 \
+  last = c + 1;                                                               \
+  xml.append(OUT)
+      case '&':
+        XML("&amp;");
+        break;
+      case '<':
+        XML("&lt;");
+        break;
+      case '>':
+        XML("&gt;");
+        break;
+      case '\'':
+        if (!cdata) {
+          XML("&apos;");
+        }
+        break;
+      case '"':
+        if (!cdata) {
+          XML("&quot;");
+        }
+        break;
+      default:
+        break;
+#undef XML
     }
   }
   xml.append(last);
@@ -206,7 +208,8 @@ std::string encodeXML(std::string const& in, bool cdata)
 }
 
 std::string stringReplace(std::string str, std::string const& in,
-                          std::string const& out) {
+                          std::string const& out)
+{
   std::string::size_type p = 0;
   while ((p = str.find(in, p)) != std::string::npos) {
     str.replace(p, in.size(), out);
@@ -216,7 +219,7 @@ std::string stringReplace(std::string str, std::string const& in,
 }
 
 #if defined(_WIN32)
-# include <windows.h>
+#include <windows.h>
 #endif
 
 void suppressInteractiveErrors()

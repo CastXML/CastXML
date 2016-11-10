@@ -1,9 +1,11 @@
-template <typename T> class base {
+template <typename T>
+class base
+{
 protected:
   T data;
   base();
-  void operator=(base const& a) {
-    this->data = a.data;
-  }
+  void operator=(base const& a) { this->data = a.data; }
 };
-class start: public base<int const> {};
+class start : public base<int const>
+{
+};

@@ -1,3 +1,4 @@
 namespace start {
-  template <typename T> T function(T);
+template <typename T>
+T function(T);
 }

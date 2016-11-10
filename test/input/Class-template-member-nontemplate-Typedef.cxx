@@ -1,5 +1,8 @@
-template <typename> struct A {
-  struct B {
+template <typename>
+struct A
+{
+  struct B
+  {
     typedef int intermediate_type;
     typedef intermediate_type type;
   };

@@ -1,10 +1,10 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:7" file="f1" line="7"/>
-  <Typedef id="_2" name="type" type="_4" context="_5" access="public" location="f1:4" file="f1" line="4"/>
+  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:10" file="f1" line="10"/>
+  <Typedef id="_2" name="type" type="_4" context="_5" access="public" location="f1:7" file="f1" line="7"/>
   <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
-  <Struct id="_5" name="B" context="_6" access="public" location="f1:2" file="f1" line="2" size="[0-9]+" align="[0-9]+"/>
-  <Struct id="_6" name="A&lt;int&gt;" context="_3" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>
+  <Struct id="_5" name="B" context="_6" access="public" location="f1:4" file="f1" line="4" size="[0-9]+" align="[0-9]+"/>
+  <Struct id="_6" name="A&lt;int&gt;" context="_3" location="f1:2" file="f1" line="2" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/Class-template-member-nontemplate-Typedef.cxx"/>
 </GCC_XML>$

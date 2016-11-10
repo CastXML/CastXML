@@ -37,9 +37,8 @@ std::string getVersionString();
 unsigned int getVersionValue();
 
 /// runCommand - Run a given command line and capture the output.
-bool runCommand(int argc, const char* const* argv,
-                int& ret, std::string& out, std::string& err,
-                std::string& msg);
+bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
+                std::string& err, std::string& msg);
 
 /// suppressInteractiveErrors - Disable Windows error dialog popups
 void suppressInteractiveErrors();

@@ -1,5 +1,6 @@
 class start;
-class start {
+class start
+{
 public:
   start();
   start(start const&);

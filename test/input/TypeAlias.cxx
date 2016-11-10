@@ -1,3 +1,3 @@
 namespace start {
-  using type = int;
+using type = int;
 }

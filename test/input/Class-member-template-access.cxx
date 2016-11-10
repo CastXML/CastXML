@@ -1,5 +1,10 @@
-class start {
-  template <typename> class member {};
+class start
+{
+  template <typename>
+  class member
+  {
+  };
+
 public:
   typedef member<char> member_char; // incomplete
 };

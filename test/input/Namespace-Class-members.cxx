@@ -1,6 +1,7 @@
 namespace start {
-  class A {
-    static int data;
-  };
-  int A::data;
+class A
+{
+  static int data;
+};
+int A::data;
 }
