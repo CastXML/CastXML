@@ -89,6 +89,7 @@ int main(int argc_in, const char** argv_in)
     return 1;
   }
 
+  /* clang-format off */
   const char* usage =
     "Usage: castxml ( <castxml-opt> | <clang-opt> | <src> )...\n"
     "\n"
@@ -123,6 +124,7 @@ int main(int argc_in, const char** argv_in)
     "    Print castxml and internal Clang compiler version information\n"
     "\n"
     ;
+  /* clang-format on */
 
   Options opts;
   llvm::SmallVector<const char *, 16> clang_args;
@@ -134,11 +136,13 @@ int main(int argc_in, const char** argv_in)
       if(!opts.GccXml) {
         opts.GccXml = true;
       } else {
+        /* clang-format off */
         std::cerr <<
           "error: '--castxml-gccxml' may be given at most once!\n"
           "\n" <<
           usage
           ;
+        /* clang-format on */
         return 1;
       }
     } else if(strcmp(argv[i], "--castxml-start") == 0) {
@@ -149,12 +153,14 @@ int main(int argc_in, const char** argv_in)
           opts.StartNames.push_back(item);
         }
       } else {
+        /* clang-format off */
         std::cerr <<
           "error: argument to '--castxml-start' is missing "
           "(expected 1 value)\n"
           "\n" <<
           usage
           ;
+        /* clang-format on */
         return 1;
       }
     } else if(strncmp(argv[i], "--castxml-cc-", 13) == 0) {
@@ -165,24 +171,28 @@ int main(int argc_in, const char** argv_in)
         }
         ++i;
         if(strncmp(argv[i], "-", 1) == 0) {
+          /* clang-format off */
           std::cerr <<
             "error: argument to '--castxml-cc-" << cc_id <<
             "' may not start with '-'\n"
             "\n" <<
             usage
             ;
+          /* clang-format on */
           return 1;
         }
         if(strcmp(argv[i], "(") == 0) {
           unsigned int depth = 1;
           for(++i; i < argc && depth > 0; ++i) {
             if(strncmp(argv[i], "--castxml-", 10) == 0) {
+              /* clang-format off */
               std::cerr <<
                 "error: arguments to '--castxml-cc-" << cc_id <<
                 "' may not start with '--castxml-'\n"
                 "\n" <<
                 usage
                 ;
+              /* clang-format on */
               return 1;
             } else if(strcmp(argv[i], "(") == 0) {
               ++depth;
@@ -196,12 +206,14 @@ int main(int argc_in, const char** argv_in)
             }
           }
           if(depth) {
+            /* clang-format off */
             std::cerr <<
               "error: unbalanced parentheses after '--castxml-cc-" <<
               cc_id << "'\n"
               "\n" <<
               usage
               ;
+            /* clang-format on */
             return 1;
           }
           --i;
@@ -209,11 +221,13 @@ int main(int argc_in, const char** argv_in)
           cc_args.push_back(argv[i]);
         }
       } else {
+        /* clang-format off */
         std::cerr <<
           "error: '--castxml-cc-<id>' may be given at most once!\n"
           "\n" <<
           usage
           ;
+        /* clang-format on */
         return 1;
       }
     } else if(strcmp(argv[i], "-E") == 0) {
@@ -222,15 +236,18 @@ int main(int argc_in, const char** argv_in)
       if((i+1) < argc) {
         opts.OutputFile = argv[++i];
       } else {
+        /* clang-format off */
         std::cerr <<
           "error: argument to '-o' is missing (expected 1 value)\n"
           "\n" <<
           usage
           ;
+        /* clang-format on */
         return 1;
       }
     } else if(strcmp(argv[i], "-help") == 0 ||
               strcmp(argv[i], "--help") == 0) {
+      /* clang-format off */
       std::cout <<
         usage <<
         "\n"
@@ -239,15 +256,18 @@ int main(int argc_in, const char** argv_in)
         "---------------------------------------------------------------"
         "\n" <<
         std::endl;
+      /* clang-format on */
       // Also print Clang help.
       clang_args.push_back(argv[i]);
     } else if(strcmp(argv[i], "--version") == 0) {
+      /* clang-format off */
       std::cout <<
         "castxml version " << getVersionString() << "\n"
         "\n"
         "CastXML project maintained and supported by Kitware "
         "(kitware.com).\n" <<
         std::endl;
+      /* clang-format on */
       // Also print Clang version.
       clang_args.push_back(argv[i]);
     } else {
@@ -266,12 +286,14 @@ int main(int argc_in, const char** argv_in)
   if(cc_id) {
     opts.HaveCC = true;
     if(cc_args.empty()) {
+      /* clang-format off */
       std::cerr <<
         "error: '--castxml-cc-" << cc_id <<
         "' must be followed by a compiler command!\n"
         "\n" <<
         usage
         ;
+      /* clang-format on */
       return 1;
     }
     if(!detectCC(cc_id, cc_args.data(), cc_args.data() + cc_args.size(),

@@ -141,8 +141,10 @@ protected:
 #include "clang/AST/DeclNodes.inc"
 
   void OutputUnimplementedDecl(clang::Decl const* d, DumpNode const* dn) {
+    /* clang-format off */
     this->OS << "  <Unimplemented id=\"_" << dn->Index
              << "\" kind=\"" << encodeXML(d->getDeclKindName()) << "\"/>\n";
+    /* clang-format on */
   }
 
   // Report all type nodes as unimplemented until overridden.
@@ -154,9 +156,11 @@ protected:
 #include "clang/AST/TypeNodes.def"
 
   void OutputUnimplementedType(clang::Type const* t, DumpNode const* dn) {
+    /* clang-format off */
     this->OS << "  <Unimplemented id=\"_" << dn->Index
              << "\" type_class=\"" << encodeXML(t->getTypeClassName())
              << "\"/>\n";
+    /* clang-format on */
   }
 };
 
@@ -965,19 +969,23 @@ void ASTVisitor::ProcessQueue()
 void ASTVisitor::ProcessFileQueue()
 {
   if(this->FileBuiltin) {
+    /* clang-format off */
     this->OS <<
       "  <File id=\"f0\" name=\"" << encodeXML("<builtin>") << "\"/>\n"
       ;
+    /* clang-format on */
   }
   while(!this->FileQueue.empty()) {
     clang::FileEntry const* f = this->FileQueue.front();
     this->FileQueue.pop();
+    /* clang-format off */
     this->OS <<
       "  <File"
       " id=\"f" << this->FileNodes[f] << "\""
       " name=\"" << encodeXML(f->getName()) << "\""
       "/>\n"
       ;
+    /* clang-format on */
   }
 }
 
@@ -1173,10 +1181,12 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
         this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
       unsigned int id = this->AddDumpFile(f);
       unsigned int line = fsl.getExpansionLineNumber();
+      /* clang-format off */
       this->OS <<
         " location=\"f" << id << ":" << line << "\""
         " file=\"f" << id << "\""
         " line=\"" << line << "\"";
+      /* clang-format on */
       return;
     }
   }
@@ -2108,10 +2118,12 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   }
 
   // Start dump with gccxml-compatible format.
+  /* clang-format off */
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
     "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
     ;
+  /* clang-format on */
 
   // Dump the complete nodes.
   this->ProcessQueue();
@@ -2127,9 +2139,11 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   this->ProcessFileQueue();
 
   // Finish dump.
+  /* clang-format off */
   this->OS <<
     "</GCC_XML>\n"
     ;
+  /* clang-format on */
 }
 
 //----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Variable id="_1" name="start" type="_2" init="" context="_3" location="f1:11" file="f1" line="11" mangled="[^"]+"/>
+  <Variable id="_1" name="start" type="_2" init="" context="_3" location="f1:13" file="f1" line="13" mangled="[^"]+"/>
   <Struct id="_2" name="C&lt;void&gt;" context="_3" location="f1:6" file="f1" line="6" members="_4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_4" name="C" context="_2" access="public" location="f1:7" file="f1" line="7" inline="1"/>
   <Constructor id="_5" name="C" context="_2" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?>
