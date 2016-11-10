@@ -42,7 +42,6 @@
 #include <string>
 #include <vector>
 
-//----------------------------------------------------------------------------
 class ASTVisitorBase
 {
 protected:
@@ -164,7 +163,6 @@ protected:
   }
 };
 
-//----------------------------------------------------------------------------
 class ASTVisitor: public ASTVisitorBase
 {
   // Store a type to be visited, possibly as a record member.
@@ -537,7 +535,6 @@ public:
   void HandleTranslationUnit(clang::TranslationUnitDecl const* tu);
 };
 
-//----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
                                                bool complete, bool forType) {
   // Select the definition or canonical declaration.
@@ -615,7 +612,6 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
   return this->AddDumpNodeImpl(d, complete);
 }
 
-//----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
                                                       bool complete,
                                                       DumpQual dq) {
@@ -631,7 +627,6 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
   return id;
 }
 
-//----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                                DumpQual dq) {
   clang::QualType t = dt.Type;
@@ -728,7 +723,6 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
   return id;
 }
 
-//----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::AddQualDumpNode(DumpId id) {
   DumpNode* dn = this->GetDumpNode(id);
   if (!dn->Index) {
@@ -740,7 +734,6 @@ ASTVisitor::DumpId ASTVisitor::AddQualDumpNode(DumpId id) {
   return dn->Index;
 }
 
-//----------------------------------------------------------------------------
 template <typename K>
 ASTVisitor::DumpId ASTVisitor::AddDumpNodeImpl(K k, bool complete)
 {
@@ -766,7 +759,6 @@ ASTVisitor::DumpId ASTVisitor::AddDumpNodeImpl(K k, bool complete)
   return dn->Index;
 }
 
-//----------------------------------------------------------------------------
 unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
 {
   unsigned int& index = this->FileNodes[f];
@@ -777,7 +769,6 @@ unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
   return index;
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
                                       std::set<DumpId>* emitted)
 {
@@ -792,7 +783,6 @@ void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
                                          std::set<DumpId>* emitted)
 {
@@ -807,7 +797,6 @@ void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
                                        std::set<DumpId>& emitted)
 {
@@ -894,7 +883,6 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::AddStartDecl(clang::Decl const* d)
 {
   switch (d->getKind()) {
@@ -924,7 +912,6 @@ void ASTVisitor::AddStartDecl(clang::Decl const* d)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::QueueIncompleteDumpNodes()
 {
   // Queue declaration nodes that do not need complete output.
@@ -944,7 +931,6 @@ void ASTVisitor::QueueIncompleteDumpNodes()
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::ProcessQueue()
 {
   // Dispatch each entry in the queue based on its node kind.
@@ -965,7 +951,6 @@ void ASTVisitor::ProcessQueue()
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::ProcessFileQueue()
 {
   if(this->FileBuiltin) {
@@ -989,7 +974,6 @@ void ASTVisitor::ProcessFileQueue()
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputDecl(clang::Decl const* d, DumpNode const* dn)
 {
   // Dispatch output of the declaration.
@@ -1004,7 +988,6 @@ void ASTVisitor::OutputDecl(clang::Decl const* d, DumpNode const* dn)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
 {
   clang::QualType t = dt.Type;
@@ -1027,7 +1010,6 @@ void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputCvQualifiedType(DumpNode const* dn)
 {
   DumpId id = dn->Index;
@@ -1052,7 +1034,6 @@ void ASTVisitor::OutputCvQualifiedType(DumpNode const* dn)
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 ASTVisitor::DumpId ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
 {
   while (dc->isInlineNamespace()) {
@@ -1066,7 +1047,6 @@ ASTVisitor::DumpId ASTVisitor::GetContextIdRef(clang::DeclContext const* dc)
   }
 }
 
-//----------------------------------------------------------------------------
 std::string ASTVisitor::GetContextName(clang::CXXMethodDecl const* d)
 {
   clang::DeclContext const* dc = d->getDeclContext();
@@ -1076,7 +1056,6 @@ std::string ASTVisitor::GetContextName(clang::CXXMethodDecl const* d)
   return "";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintTypeIdRef(clang::QualType t, bool complete)
 {
   // Add the type node.
@@ -1086,20 +1065,17 @@ void ASTVisitor::PrintTypeIdRef(clang::QualType t, bool complete)
   this->OS << "_" << id;
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 {
   this->OS << " id=\"_" << dn->Index << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
   std::string n = stringReplace(name, "__castxml__float128_s", "__float128");
   this->OS << " name=\"" << encodeXML(n) << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
 {
   // Compute the mangled name.
@@ -1123,13 +1099,11 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
   this->OS << " mangled=\"" << encodeXML(s) << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
 {
   this->OS << " offset=\"" << offset << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintABIAttributes(clang::TypeDecl const* d)
 {
   if(clang::TypeDecl const* td = clang::dyn_cast<clang::TypeDecl>(d)) {
@@ -1140,14 +1114,12 @@ void ASTVisitor::PrintABIAttributes(clang::TypeDecl const* d)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintABIAttributes(clang::TypeInfo const& t)
 {
   this->OS << " size=\"" << t.Width << "\"";
   this->OS << " align=\"" << t.Align << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintBaseTypeAttribute(clang::Type const* c, bool complete)
 {
   this->OS << " basetype=\"";
@@ -1155,7 +1127,6 @@ void ASTVisitor::PrintBaseTypeAttribute(clang::Type const* c, bool complete)
   this->OS << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintTypeAttribute(clang::QualType t, bool complete)
 {
   this->OS << " type=\"";
@@ -1163,7 +1134,6 @@ void ASTVisitor::PrintTypeAttribute(clang::QualType t, bool complete)
   this->OS << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintReturnsAttribute(clang::QualType t, bool complete)
 {
   this->OS << " returns=\"";
@@ -1171,7 +1141,6 @@ void ASTVisitor::PrintReturnsAttribute(clang::QualType t, bool complete)
   this->OS << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
 {
   clang::SourceLocation sl = d->getLocation();
@@ -1196,7 +1165,6 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
   }
 }
 
-//----------------------------------------------------------------------------
 bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
 {
   switch (s->getStmtClass()) {
@@ -1256,7 +1224,6 @@ bool ASTVisitor::PrintHelpStmt(clang::Stmt const* s, llvm::raw_ostream& os)
   return false;
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
 {
   switch (as) {
@@ -1274,7 +1241,6 @@ void ASTVisitor::PrintAccessAttribute(clang::AccessSpecifier as)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintContextAttribute(clang::Decl const* d,
                                        clang::AccessSpecifier alt)
 {
@@ -1288,7 +1254,6 @@ void ASTVisitor::PrintContextAttribute(clang::Decl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
 {
   std::set<DumpId> emitted;
@@ -1296,7 +1261,6 @@ void ASTVisitor::PrintMembersAttribute(clang::DeclContext const* dc)
   this->PrintMembersAttribute(emitted);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintMembersAttribute(std::set<DumpId> const& emitted)
 {
   if(!emitted.empty()) {
@@ -1311,7 +1275,6 @@ void ASTVisitor::PrintMembersAttribute(std::set<DumpId> const& emitted)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
 {
   this->OS << " bases=\"";
@@ -1330,7 +1293,6 @@ void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
   this->OS << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintAttributesAttribute(
   std::vector<std::string> const& attrs)
 {
@@ -1346,7 +1308,6 @@ void ASTVisitor::PrintAttributesAttribute(
   this->OS << "\"";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintAttributesAttribute(clang::Decl const* d)
 {
   std::vector<std::string> attributes;
@@ -1354,7 +1315,6 @@ void ASTVisitor::PrintAttributesAttribute(clang::Decl const* d)
   this->PrintAttributesAttribute(attributes);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
                                            std::vector<std::string>& attrs)
 {
@@ -1375,7 +1335,6 @@ void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
                                    std::vector<std::string>& attrs)
 {
@@ -1384,7 +1343,6 @@ void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
                                       bool complete)
 {
@@ -1402,7 +1360,6 @@ void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
 {
   if(dx && dx->hasFriends()) {
@@ -1431,7 +1388,6 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
 {
   this->OS << "  <FundamentalType";
@@ -1439,7 +1395,6 @@ void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
   this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn,
                                       const char* tag,
@@ -1539,7 +1494,6 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
                                           DumpNode const* dn, const char* tag,
                                           clang::Type const* c)
@@ -1579,7 +1533,6 @@ void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
                                         bool complete, clang::Expr const* def)
 {
@@ -1603,7 +1556,6 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputTranslationUnitDecl(
   clang::TranslationUnitDecl const* d, DumpNode const* dn)
 {
@@ -1616,7 +1568,6 @@ void ASTVisitor::OutputTranslationUnitDecl(
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputNamespaceDecl(
   clang::NamespaceDecl const* d, DumpNode const* dn)
 {
@@ -1637,7 +1588,6 @@ void ASTVisitor::OutputNamespaceDecl(
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
                                   DumpNode const* dn)
 {
@@ -1713,7 +1663,6 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
                                      DumpNode const* dn)
 {
@@ -1726,14 +1675,12 @@ void ASTVisitor::OutputCXXRecordDecl(clang::CXXRecordDecl const* d,
   this->OutputRecordDecl(d, dn);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputClassTemplateSpecializationDecl(
   clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn)
 {
   this->OutputCXXRecordDecl(d, dn);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
                                    DumpNode const* dn)
 {
@@ -1761,7 +1708,6 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
 {
   this->OS << "  <Enumeration";
@@ -1795,7 +1741,6 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
 {
   this->OS << "  <Field";
@@ -1817,7 +1762,6 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
 {
   this->OS << "  <Variable";
@@ -1847,7 +1791,6 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
                                     DumpNode const* dn)
 {
@@ -1871,7 +1814,6 @@ void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
                                      DumpNode const* dn)
 {
@@ -1904,7 +1846,6 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
                                          DumpNode const* dn)
 {
@@ -1927,7 +1868,6 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   this->OutputFunctionHelper(d, dn, "Converter", "", flags);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
                                           DumpNode const* dn)
 {
@@ -1945,7 +1885,6 @@ void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
                              this->GetContextName(d), flags);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
                                          DumpNode const* dn)
 {
@@ -1966,7 +1905,6 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
                              this->GetContextName(d), flags);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
                                    DumpNode const* dn)
 {
@@ -1990,7 +1928,6 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputConstantArrayType(clang::ConstantArrayType const* t,
                                          DumpNode const* dn)
 {
@@ -2001,7 +1938,6 @@ void ASTVisitor::OutputConstantArrayType(clang::ConstantArrayType const* t,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
                                            DumpNode const* dn)
 {
@@ -2012,14 +1948,12 @@ void ASTVisitor::OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputFunctionProtoType(clang::FunctionProtoType const* t,
                                          DumpNode const* dn)
 {
   this->OutputFunctionTypeHelper(t, dn, "FunctionType", 0);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                            DumpNode const* dn)
 {
@@ -2029,7 +1963,6 @@ void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
                                          DumpNode const* dn)
 {
@@ -2045,14 +1978,12 @@ void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputMethodType(clang::FunctionProtoType const* t,
                                   clang::Type const* c, DumpNode const* dn)
 {
   this->OutputFunctionTypeHelper(t, dn, "MethodType", c);
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputOffsetType(clang::QualType t, clang::Type const* c,
                                   DumpNode const* dn)
 {
@@ -2063,7 +1994,6 @@ void ASTVisitor::OutputOffsetType(clang::QualType t, clang::Type const* c,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::OutputPointerType(clang::PointerType const* t,
                                    DumpNode const* dn)
 {
@@ -2073,7 +2003,6 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "/>\n";
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::LookupStart(clang::DeclContext const* dc,
                              std::string const& name)
 {
@@ -2101,7 +2030,6 @@ void ASTVisitor::LookupStart(clang::DeclContext const* dc,
   }
 }
 
-//----------------------------------------------------------------------------
 void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 {
   // Add the starting nodes for the dump.
@@ -2146,7 +2074,6 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   /* clang-format on */
 }
 
-//----------------------------------------------------------------------------
 void outputXML(clang::CompilerInstance& ci,
                clang::ASTContext& ctx,
                llvm::raw_ostream& os,

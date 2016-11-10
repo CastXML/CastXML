@@ -29,13 +29,11 @@
 #include <iostream>
 #include <string.h>
 
-//----------------------------------------------------------------------------
 static std::string getClangBuiltinIncludeDir()
 {
   return getClangResourceDir() + "/include";
 }
 
-//----------------------------------------------------------------------------
 static bool failedCC(const char* id,
                      std::vector<const char*> const& args,
                      std::string const& out,
@@ -58,7 +56,6 @@ static bool failedCC(const char* id,
   return false;
 }
 
-//----------------------------------------------------------------------------
 static void fixPredefines(Options& opts)
 {
   // Remove any detected conflicting definition of a Clang builtin macro.
@@ -75,7 +72,6 @@ static void fixPredefines(Options& opts)
   }
 }
 
-//----------------------------------------------------------------------------
 static void setTriple(Options& opts)
 {
   std::string const& pd = opts.Predefines;
@@ -100,7 +96,6 @@ static void setTriple(Options& opts)
   opts.Triple = triple.getTriple();
 }
 
-//----------------------------------------------------------------------------
 static bool detectCC_GNU(const char* const* argBeg,
                          const char* const* argEnd,
                          Options& opts,
@@ -161,7 +156,6 @@ static bool detectCC_GNU(const char* const* argBeg,
   }
 }
 
-//----------------------------------------------------------------------------
 static bool detectCC_MSVC(const char* const* argBeg,
                           const char* const* argEnd,
                           Options& opts,
@@ -202,7 +196,6 @@ static bool detectCC_MSVC(const char* const* argBeg,
   }
 }
 
-//----------------------------------------------------------------------------
 bool detectCC(const char* id,
               const char* const* argBeg,
               const char* const* argEnd,

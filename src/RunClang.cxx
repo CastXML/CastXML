@@ -55,7 +55,6 @@
 # define CASTXML_OWNS_OSTREAM
 #endif
 
-//----------------------------------------------------------------------------
 class ASTConsumer: public clang::ASTConsumer
 {
   clang::CompilerInstance& CI;
@@ -159,7 +158,6 @@ public:
   }
 };
 
-//----------------------------------------------------------------------------
 template <class T>
 class CastXMLPredefines: public T
 {
@@ -339,7 +337,6 @@ protected:
   }
 };
 
-//----------------------------------------------------------------------------
 class CastXMLPrintPreprocessedAction:
   public CastXMLPredefines<clang::PrintPreprocessedAction>
 {
@@ -348,7 +345,6 @@ public:
     CastXMLPredefines(opts) {}
 };
 
-//----------------------------------------------------------------------------
 class CastXMLSyntaxOnlyAction:
   public CastXMLPredefines<clang::SyntaxOnlyAction>
 {
@@ -376,7 +372,6 @@ public:
     CastXMLPredefines(opts) {}
 };
 
-//----------------------------------------------------------------------------
 static clang::FrontendAction*
 CreateFrontendAction(clang::CompilerInstance* CI, Options const& opts)
 {
@@ -393,7 +388,6 @@ CreateFrontendAction(clang::CompilerInstance* CI, Options const& opts)
   }
 }
 
-//----------------------------------------------------------------------------
 static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 {
   // Create a diagnostics engine for this compiler instance.
@@ -426,7 +420,6 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
   }
 }
 
-//----------------------------------------------------------------------------
 static llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine>
 runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
 {
@@ -456,7 +449,6 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
   return diags;
 }
 
-//----------------------------------------------------------------------------
 static int runClangImpl(const char* const* argBeg,
                         const char* const* argEnd,
                         Options const& opts)
@@ -537,7 +529,6 @@ static int runClangImpl(const char* const* argBeg,
   return result? 0:1;
 }
 
-//----------------------------------------------------------------------------
 int runClang(const char* const* argBeg,
              const char* const* argEnd,
              Options const& opts)

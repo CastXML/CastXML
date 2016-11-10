@@ -27,14 +27,12 @@
 static std::string castxmlResourceDir;
 static std::string castxmlClangResourceDir;
 
-//----------------------------------------------------------------------------
 static std::string GetMainExecutable(const char* argv0)
 {
   return llvm::sys::fs::getMainExecutable
     (argv0, (void*)(intptr_t)GetMainExecutable);
 }
 
-//----------------------------------------------------------------------------
 static bool tryBuildDir(std::string const& dir)
 {
   // Build tree has
@@ -57,7 +55,6 @@ static bool tryBuildDir(std::string const& dir)
   return false;
 }
 
-//----------------------------------------------------------------------------
 bool findResourceDir(const char* argv0, std::ostream& error)
 {
   std::string exe = GetMainExecutable(argv0);
@@ -91,25 +88,21 @@ bool findResourceDir(const char* argv0, std::ostream& error)
   return true;
 }
 
-//----------------------------------------------------------------------------
 std::string getResourceDir()
 {
   return castxmlResourceDir;
 }
 
-//----------------------------------------------------------------------------
 std::string getClangResourceDir()
 {
   return castxmlClangResourceDir;
 }
 
-//----------------------------------------------------------------------------
 std::string getVersionString()
 {
   return CASTXML_VERSION_STRING;
 }
 
-//----------------------------------------------------------------------------
 unsigned int getVersionValue()
 {
   return (CASTXML_VERSION_MAJOR * 1000000 +
@@ -117,7 +110,6 @@ unsigned int getVersionValue()
           CASTXML_VERSION_PATCH *       1);
 }
 
-//----------------------------------------------------------------------------
 bool runCommand(int argc, const char* const* argv,
                 int& ret, std::string& out, std::string& err,
                 std::string& msg)
@@ -182,7 +174,6 @@ bool runCommand(int argc, const char* const* argv,
   return result;
 }
 
-//----------------------------------------------------------------------------
 std::string encodeXML(std::string const& in, bool cdata)
 {
   std::string xml;
@@ -214,7 +205,6 @@ std::string encodeXML(std::string const& in, bool cdata)
   return xml;
 }
 
-//----------------------------------------------------------------------------
 std::string stringReplace(std::string str, std::string const& in,
                           std::string const& out) {
   std::string::size_type p = 0;
@@ -229,7 +219,6 @@ std::string stringReplace(std::string str, std::string const& in,
 # include <windows.h>
 #endif
 
-//----------------------------------------------------------------------------
 void suppressInteractiveErrors()
 {
 #if defined(_WIN32)

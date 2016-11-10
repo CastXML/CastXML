@@ -48,7 +48,6 @@ public:
 };
 #endif
 
-//----------------------------------------------------------------------------
 int main(int argc_in, const char** argv_in)
 {
   suppressInteractiveErrors();
