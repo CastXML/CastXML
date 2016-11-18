@@ -107,8 +107,15 @@ int main(int argc_in, const char** argv_in)
     "    <cc> names a compiler (e.g. \"gcc\") and <cc-opt>... specifies\n"
     "    options that may affect its target (e.g. \"-m32\").\n"
     "\n"
+    "  --castxml-output=<v>\n"
+    "    Write castxml-format output to <src>.xml or file named by '-o'\n"
+    "    The <v> specifies the \"epic\" format version number to generate,\n"
+    "    and must be '1'.\n"
+    "\n"
     "  --castxml-gccxml\n"
     "    Write gccxml-format output to <src>.xml or file named by '-o'\n"
+    "    Use this option if you need an output similar to the one generated\n"
+    "    by the legacy gccxml tool.\n"
     "\n"
     "  --castxml-start <name>[,<name>]...\n"
     "    Start AST traversal at declaration(s) with the given (qualified)\n"
@@ -140,6 +147,29 @@ int main(int argc_in, const char** argv_in)
         /* clang-format off */
         std::cerr <<
           "error: '--castxml-gccxml' may be given at most once!\n"
+          "\n" <<
+          usage
+          ;
+        /* clang-format on */
+        return 1;
+      }
+    } else if (strncmp(argv[i], "--castxml-output=", 17) == 0) {
+      if (!opts.CastXml) {
+        opts.CastXml = true;
+        opts.CastXmlEpicFormatVersion = atoi(argv[i] + 17);
+        if (opts.CastXmlEpicFormatVersion != 1) {
+          /* clang-format off */
+            std::cerr <<
+              "error: '--castxml-output=<v>' accepts only '1' as '<v>'!\n"
+              "\n" <<
+              usage
+              ;
+          /* clang-format on */
+        }
+      } else {
+        /* clang-format off */
+        std::cerr <<
+          "error: '--castxml-output=<v>' may be given at most once!\n"
           "\n" <<
           usage
           ;
@@ -301,6 +331,18 @@ int main(int argc_in, const char** argv_in)
                   opts)) {
       return 1;
     }
+  }
+
+  if (opts.GccXml && opts.CastXml) {
+    /* clang-format off */
+    std::cerr <<
+      "error: '--castxml-gccxml' and '--castxml-output=<v>'"
+      " may not be not be used together!\n"
+      "\n" <<
+      usage
+      ;
+    /* clang-format on */
+    return 1;
   }
 
   if (clang_args.empty()) {

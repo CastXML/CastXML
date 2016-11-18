@@ -641,7 +641,7 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
   }
 
   // Skip C++11 declarations gccxml does not support.
-  if (this->Opts.GccXml) {
+  if (this->Opts.GccXml || this->Opts.CastXml) {
     if (clang::FunctionDecl const* fd =
           clang::dyn_cast<clang::FunctionDecl>(d)) {
       if (fd->isDeleted()) {
@@ -2123,23 +2123,44 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
 
 void ASTVisitor::OutputStartXMLTags()
 {
-  // Start dump with gccxml-compatible format.
   /* clang-format off */
   this->OS <<
     "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
     ;
   /* clang-format on */
+  if (this->Opts.CastXml) {
+    // Start dump with castxml-compatible format.
+    /* clang-format off */
+    this->OS <<
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".0.0\">\n"
+      ;
+    /* clang-format on */
+  } else if (this->Opts.GccXml) {
+    // Start dump with gccxml-compatible format (legacy).
+    /* clang-format off */
+    this->OS <<
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
+      ;
+    /* clang-format on */
+  }
 }
 
 void ASTVisitor::OutputEndXMLTags()
 {
   // Finish dump.
-  /* clang-format off */
-  this->OS <<
-    "</GCC_XML>\n"
-    ;
-  /* clang-format on */
+  if (this->Opts.CastXml) {
+    /* clang-format off */
+    this->OS <<
+      "</CastXML>\n"
+      ;
+    /* clang-format on */
+  } else if (this->Opts.GccXml) {
+    /* clang-format off */
+    this->OS <<
+      "</GCC_XML>\n"
+      ;
+    /* clang-format on */
+  }
 }
 
 void ASTVisitor::LookupStart(clang::DeclContext const* dc,

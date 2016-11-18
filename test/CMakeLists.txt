@@ -189,17 +189,45 @@ castxml_test_cmd(cc-paren-nested --castxml-cc-gnu "(" "(" ")" ")")
 castxml_test_cmd(cc-paren-unbalanced --castxml-cc-gnu "(")
 castxml_test_cmd(cc-twice --castxml-cc-msvc cl --castxml-cc-gnu gcc)
 castxml_test_cmd(cc-unknown --castxml-cc-unknown cc)
+
 castxml_test_cmd(gccxml-and-E --castxml-gccxml -E)
+castxml_test_cmd(castxml-and-E --castxml-output=1 -E)
+
 castxml_test_cmd(gccxml-twice --castxml-gccxml --castxml-gccxml)
+castxml_test_cmd(castxml-twice --castxml-output=1 --castxml-output=1)
+
+castxml_test_cmd(castxml-mix1 --castxml-gccxml --castxml-output=1)
+castxml_test_cmd(castxml-mix2 --castxml-output=1 --castxml-gccxml)
+
+castxml_test_cmd(castxml-wrong-epic-version --castxml-output=0)
+
 castxml_test_cmd(gccxml-and-c99 --castxml-gccxml -std=c99 ${empty_c})
+castxml_test_cmd(castxml-and-c99 --castxml-output=1 -std=c99 ${empty_c})
+
 castxml_test_cmd(gccxml-and-c11 --castxml-gccxml -std=c11 ${empty_c})
+castxml_test_cmd(castxml-and-c11 --castxml-output=1 -std=c11 ${empty_c})
+
 castxml_test_cmd(gccxml-and-c++11 --castxml-gccxml -std=c++11 ${empty_cxx})
+castxml_test_cmd(castxml-and-c++11 --castxml-output=1 -std=c++11 ${empty_cxx})
+
 castxml_test_cmd(gccxml-and-c++14 --castxml-gccxml -std=c++14 ${empty_cxx})
+castxml_test_cmd(castxml-and-c++14 --castxml-output=1 -std=c++14 ${empty_cxx})
+
 castxml_test_cmd(gccxml-and-objc1 --castxml-gccxml ${empty_m})
+castxml_test_cmd(castxml-and-objc1 --castxml-output=1 ${empty_m})
+
 castxml_test_cmd(gccxml-and-objc2 --castxml-gccxml ${empty_mm})
+castxml_test_cmd(castxml-and-objc2 --castxml-output=1 ${empty_mm})
+
 castxml_test_cmd(gccxml-empty-c++98 --castxml-gccxml -std=c++98 ${empty_cxx})
+castxml_test_cmd(castxml-empty-c++98 --castxml-output=1 -std=c++98 ${empty_cxx})
+
 castxml_test_cmd(gccxml-empty-c++98-E --castxml-gccxml -std=c++98 ${empty_cxx} -E)
+castxml_test_cmd(castxml-empty-c++98-E --castxml-output=1 -std=c++98 ${empty_cxx} -E)
+
 castxml_test_cmd(gccxml-empty-c++98-c --castxml-gccxml -std=c++98 ${empty_cxx} -c)
+castxml_test_cmd(castxml-empty-c++98-c --castxml-output=1 -std=c++98 ${empty_cxx} -c)
+
 castxml_test_cmd(std-c++98-src-c -std=c++98 ${empty_c})
 castxml_test_cmd(std-c89-src-cxx -std=c89 ${empty_cxx})
 castxml_test_cmd(input-missing ${input}/does-not-exist.c)
@@ -214,7 +242,8 @@ math(EXPR __castxml__ "1000000*${CastXML_VERSION_MAJOR} + 1000*${CastXML_VERSION
 configure_file(expect/cmd.predefined-macros.stdout.txt.in
                expect/cmd.predefined-macros.stdout.txt @ONLY)
 set(castxml_test_cmd_expect ${CMAKE_CURRENT_BINARY_DIR}/expect/cmd.predefined-macros)
-castxml_test_cmd(predefined-macros --castxml-gccxml ${empty_cxx} -E -dM)
+castxml_test_cmd(gccxml-predefined-macros --castxml-gccxml ${empty_cxx} -E -dM)
+castxml_test_cmd(castxml-predefined-macros --castxml-output=1 ${empty_cxx} -E -dM)
 unset(castxml_test_cmd_expect)
 
 # Test --castxml-cc-gnu detection.
