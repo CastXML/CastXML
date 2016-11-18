@@ -353,6 +353,12 @@ class ASTVisitor : public ASTVisitorBase
   void ProcessQueue();
   void ProcessFileQueue();
 
+  /** Output start tags on top of xml file. */
+  void OutputStartXMLTags();
+
+  /** Output end tags. */
+  void OutputEndXMLTags();
+
   /** Dispatch output of a declaration.  */
   void OutputDecl(clang::Decl const* d, DumpNode const* dn);
 
@@ -2115,6 +2121,27 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "/>\n";
 }
 
+void ASTVisitor::OutputStartXMLTags()
+{
+  // Start dump with gccxml-compatible format.
+  /* clang-format off */
+  this->OS <<
+    "<?xml version=\"1.0\"?>\n"
+    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
+    ;
+  /* clang-format on */
+}
+
+void ASTVisitor::OutputEndXMLTags()
+{
+  // Finish dump.
+  /* clang-format off */
+  this->OS <<
+    "</GCC_XML>\n"
+    ;
+  /* clang-format on */
+}
+
 void ASTVisitor::LookupStart(clang::DeclContext const* dc,
                              std::string const& name)
 {
@@ -2158,13 +2185,8 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
     this->AddStartDecl(tu);
   }
 
-  // Start dump with gccxml-compatible format.
-  /* clang-format off */
-  this->OS <<
-    "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
-    ;
-  /* clang-format on */
+  // Dump opening tags.
+  this->OutputStartXMLTags();
 
   // Dump the complete nodes.
   this->ProcessQueue();
@@ -2179,12 +2201,8 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Dump the filename queue.
   this->ProcessFileQueue();
 
-  // Finish dump.
-  /* clang-format off */
-  this->OS <<
-    "</GCC_XML>\n"
-    ;
-  /* clang-format on */
+  // Dump end tags.
+  this->OutputEndXMLTags();
 }
 
 void outputXML(clang::CompilerInstance& ci, clang::ASTContext& ctx,
