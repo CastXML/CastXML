@@ -1,0 +1,5 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+.*<FundamentalType id="_[0-9]+" name="__float128" size="128" align="128"/>.*
+  <File id="f1" name=".*/test/input/GNU-float128-nostart.c"/>
+</CastXML>$

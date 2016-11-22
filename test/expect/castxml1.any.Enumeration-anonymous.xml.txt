@@ -1,0 +1,10 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3"/>
+  <Enumeration id="_3" name="" context="_1" location="f1:2" file="f1" line="2">
+    <EnumValue name="ev0" init="0"/>
+    <EnumValue name="ev1" init="1"/>
+  </Enumeration>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Enumeration-anonymous.cxx"/>
+</CastXML>$

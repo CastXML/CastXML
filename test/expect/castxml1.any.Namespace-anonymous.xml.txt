@@ -1,0 +1,8 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3"/>
+  <Namespace id="_3" context="_1" members="_4"/>
+  <Struct id="_4" name="A" context="_3" location="f1:3" file="f1" line="3" incomplete="1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Namespace-anonymous.cxx"/>
+</CastXML>$

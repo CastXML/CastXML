@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:13" file="f1" line="13" members="_3 _4 _5 _6" bases="_7 _8 _9" size="[0-9]+" align="[0-9]+">
+    <Base type="_7" access="public" virtual="0" offset="0"/>
+    <Base type="_8" access="public" virtual="0" offset="1"/>
+    <Base type="_9" access="public" virtual="0" offset="2"/>
+  </Class>
+.*
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Class-base-offset.cxx"/>
+</CastXML>$
