@@ -1,4 +1,4 @@
 namespace N {
-  class start;
+class start;
 }
 using N::start;

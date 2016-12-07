@@ -1,5 +1,5 @@
 namespace start {
-  namespace {
-    struct A;
-  }
+namespace {
+struct A;
+}
 }

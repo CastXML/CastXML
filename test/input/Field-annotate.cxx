@@ -1,3 +1,4 @@
-class start {
-  __attribute__ ((annotate ("an annotation"))) int field;
+class start
+{
+  __attribute__((annotate("an annotation"))) int field;
 };

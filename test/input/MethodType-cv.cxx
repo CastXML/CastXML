@@ -1,2 +1,2 @@
 class A;
-typedef int (A::* const volatile start)(int) const volatile;
+typedef int (A::*const volatile start)(int) const volatile;

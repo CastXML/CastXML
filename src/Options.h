@@ -22,16 +22,26 @@
 
 struct Options
 {
-  Options(): PPOnly(false), GccXml(false), HaveCC(false),
-    HaveStd(false), HaveTarget(false) {}
+  Options()
+    : PPOnly(false)
+    , GccXml(false)
+    , HaveCC(false)
+    , HaveStd(false)
+    , HaveTarget(false)
+  {
+  }
   bool PPOnly;
   bool GccXml;
   bool HaveCC;
   bool HaveStd;
   bool HaveTarget;
-  struct Include {
-    Include(std::string const& d, bool f = false):
-      Directory(d), Framework(f) {}
+  struct Include
+  {
+    Include(std::string const& d, bool f = false)
+      : Directory(d)
+      , Framework(f)
+    {
+    }
     std::string Directory;
     bool Framework;
   };

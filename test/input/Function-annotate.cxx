@@ -1,1 +1,1 @@
-__attribute__ ((annotate ("an annotation"))) void start(int);
+__attribute__((annotate("an annotation"))) void start(int);

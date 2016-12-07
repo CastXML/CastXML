@@ -1,2 +1,2 @@
 class A;
-typedef int A::* start;
+typedef int A::*start;

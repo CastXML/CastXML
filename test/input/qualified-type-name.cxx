@@ -1,2 +1,4 @@
-namespace ns { typedef int type; }
+namespace ns {
+typedef int type;
+}
 typedef ns::type start;

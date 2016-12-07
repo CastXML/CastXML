@@ -1,2 +1,2 @@
 class A;
-A operator+(A,A);
+A operator+(A, A);

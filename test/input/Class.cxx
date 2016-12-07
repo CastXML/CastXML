@@ -1,1 +1,3 @@
-class start {};
+class start
+{
+};

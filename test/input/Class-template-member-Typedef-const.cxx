@@ -1,5 +1,8 @@
-template <typename T> class start {
+template <typename T>
+class start
+{
   typedef T IntConst;
+
 public:
   T method(IntConst);
 };

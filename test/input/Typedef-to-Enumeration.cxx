@@ -1,2 +1,4 @@
-enum E {};
+enum E
+{
+};
 typedef E start;

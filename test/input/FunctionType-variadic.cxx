@@ -1,1 +1,1 @@
-typedef void start(int,...);
+typedef void start(int, ...);

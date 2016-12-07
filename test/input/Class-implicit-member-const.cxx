@@ -1,5 +1,7 @@
-class start {
+class start
+{
   int const data;
+
 public:
   start();
 };

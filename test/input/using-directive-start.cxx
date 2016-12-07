@@ -1,4 +1,4 @@
 namespace A {
-  class start;
+class start;
 }
 using namespace A;

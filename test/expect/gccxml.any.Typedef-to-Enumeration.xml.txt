@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:2" file="f1" line="2"/>
+  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:4" file="f1" line="4"/>
   <Enumeration id="_2" name="E" context="_3" location="f1:1" file="f1" line="1"/>
   <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/Typedef-to-Enumeration.cxx"/>

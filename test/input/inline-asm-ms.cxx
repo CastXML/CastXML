@@ -1,1 +1,4 @@
-void start() { __asm { int 1 } }
+void start()
+{
+  __asm { int 1 }
+}

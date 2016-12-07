@@ -1,19 +1,19 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:4" file="f1" line="4" members="_3 _4 _5 _6" bases="_7 _8" size="[0-9]+" align="[0-9]+">
+  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:12" file="f1" line="12" members="_3 _4 _5 _6" bases="_7 _8" size="[0-9]+" align="[0-9]+">
     <Base type="_7" access="public" virtual="0" offset="[0-9]+"/>
     <Base type="_8" access="public" virtual="0" offset="[0-9]+"/>
   </Class>
-  <Constructor id="_3" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throw="">
-    <Argument type="_9" location="f1:4" file="f1" line="4"/>
+  <Constructor id="_3" name="start" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1" throw="">
+    <Argument type="_9" location="f1:12" file="f1" line="12"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_10" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" throw="" mangled="[^"]+">
-    <Argument type="_9" location="f1:4" file="f1" line="4"/>
+  <OperatorMethod id="_5" name="=" returns="_10" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1" throw="" mangled="[^"]+">
+    <Argument type="_9" location="f1:12" file="f1" line="12"/>
   </OperatorMethod>
-  <Destructor id="_6" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")?/>
   <Class id="_7" name="non_dependent_base" context="_2" location="f1:1" file="f1" line="1" members="_11 _12 _13 _14" size="[0-9]+" align="[0-9]+"/>
-  <Class id="_8" name="dependent_base&lt;int&gt;" context="_2" location="f1:2" file="f1" line="2" members="_15 _16 _17 _18" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_8" name="dependent_base&lt;int&gt;" context="_2" location="f1:5" file="f1" line="5" members="_15 _16 _17 _18" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_9" type="_1c"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_10" type="_1"/>
@@ -25,14 +25,14 @@
     <Argument type="_19" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_14" name="non_dependent_base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_15" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_16" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throw="">
-    <Argument type="_21" location="f1:2" file="f1" line="2"/>
+  <Constructor id="_15" name="dependent_base" context="_8" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_16" name="dependent_base" context="_8" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1" throw="">
+    <Argument type="_21" location="f1:5" file="f1" line="5"/>
   </Constructor>
-  <OperatorMethod id="_17" name="=" returns="_22" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" throw="" mangled="[^"]+">
-    <Argument type="_21" location="f1:2" file="f1" line="2"/>
+  <OperatorMethod id="_17" name="=" returns="_22" context="_8" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1" throw="" mangled="[^"]+">
+    <Argument type="_21" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
-  <Destructor id="_18" name="dependent_base" context="_8" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_18" name="dependent_base" context="_8" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
   <ReferenceType id="_19" type="_7c"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
   <ReferenceType id="_20" type="_7"/>

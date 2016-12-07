@@ -1,5 +1,7 @@
-class start {
+class start
+{
   int& ref;
+
 public:
   start();
 };

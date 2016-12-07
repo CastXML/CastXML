@@ -1,2 +1,1 @@
-typedef enum {
-} start;
+typedef enum {} start;

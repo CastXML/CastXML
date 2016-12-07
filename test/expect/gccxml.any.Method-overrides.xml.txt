@@ -1,23 +1,23 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:4" file="f1" line="4" members="_3 _4 _5 _6 _7" bases="_8" size="[0-9]+" align="[0-9]+">
+  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7" bases="_8" size="[0-9]+" align="[0-9]+">
     <Base type="_8" access="public" virtual="0" offset="0"/>
   </Class>
-  <Method id="_3" name="method" returns="_9" context="_1" access="private" location="f1:5" file="f1" line="5" virtual="1" overrides="_10" mangled="[^"]+">
-    <Argument type="_9" location="f1:5" file="f1" line="5"/>
+  <Method id="_3" name="method" returns="_9" context="_1" access="private" location="f1:7" file="f1" line="7" virtual="1" overrides="_10" mangled="[^"]+">
+    <Argument type="_9" location="f1:7" file="f1" line="7"/>
   </Method>
-  <OperatorMethod id="_4" name="=" returns="_11" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_12" location="f1:4" file="f1" line="4"/>
+  <OperatorMethod id="_4" name="=" returns="_11" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_12" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
-  <Destructor id="_5" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_6" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_7" name="start" context="_1" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"( throw="")?>
-    <Argument type="_12" location="f1:4" file="f1" line="4"/>
+  <Destructor id="_5" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_7" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?>
+    <Argument type="_12" location="f1:5" file="f1" line="5"/>
   </Constructor>
   <Class id="_8" name="base" context="_2" location="f1:1" file="f1" line="1" members="_10 _13 _14 _15 _16" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
-  <Method id="_10" name="method" returns="_9" context="_8" access="private" location="f1:2" file="f1" line="2" virtual="1" mangled="[^"]+">
-    <Argument type="_9" location="f1:2" file="f1" line="2"/>
+  <Method id="_10" name="method" returns="_9" context="_8" access="private" location="f1:3" file="f1" line="3" virtual="1" mangled="[^"]+">
+    <Argument type="_9" location="f1:3" file="f1" line="3"/>
   </Method>
   <ReferenceType id="_11" type="_1"/>
   <ReferenceType id="_12" type="_1c"/>

@@ -19,20 +19,18 @@
 #include <cxsys/Configure.h>
 
 namespace llvm {
-  class raw_ostream;
+class raw_ostream;
 }
 
 namespace clang {
-  class CompilerInstance;
-  class ASTContext;
+class CompilerInstance;
+class ASTContext;
 }
 
 struct Options;
 
 /// outputXML - Print a gccxml-compatible AST dump.
-void outputXML(clang::CompilerInstance& ci,
-               clang::ASTContext& ctx,
-               llvm::raw_ostream& os,
-               Options const& opts);
+void outputXML(clang::CompilerInstance& ci, clang::ASTContext& ctx,
+               llvm::raw_ostream& os, Options const& opts);
 
 #endif // CASTXML_OUTPUT_H
