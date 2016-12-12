@@ -1,0 +1,10 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5"/>
+  <Typedef id="_3" name="Int" type="_6" context="_1" location="f1:2" file="f1" line="2"/>
+  <Variable id="_4" name="var_int" type="_6" init="\(int\)123" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+"/>
+  <Variable id="_5" name="var_int2" type="_6" init="static_cast&lt;int&gt;\(123\)" context="_1" location="f1:4" file="f1" line="4" mangled="[^"]+"/>
+  <FundamentalType id="_6" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Variable-init-cast.cxx"/>
+</CastXML>$

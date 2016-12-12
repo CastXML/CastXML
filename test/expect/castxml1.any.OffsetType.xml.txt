@@ -1,0 +1,9 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:2" file="f1" line="2"/>
+  <OffsetType id="_2" basetype="_4" type="_5"/>
+  <Class id="_4" name="A" context="_3" location="f1:1" file="f1" line="1" incomplete="1"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/OffsetType.cxx"/>
+</CastXML>$

@@ -1,0 +1,23 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
+  <Variable id="_3" name="C" type="_9c" init="0" context="_1" access="private" location="f1:3" file="f1" line="3" static="1" mangled="[^"]+"/>
+  <Method id="_4" name="method" returns="_9" context="_1" access="private" location="f1:4" file="f1" line="4" mangled="[^"]+">
+    <Argument type="_9" location="f1:4" file="f1" line="4" default="start::C"/>
+  </Method>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+    <Argument type="_10" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_7" name="=" returns="_11" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_10" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
+  <ReferenceType id="_10" type="_1c"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <ReferenceType id="_11" type="_1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Method-Argument-default.cxx"/>
+</CastXML>$
