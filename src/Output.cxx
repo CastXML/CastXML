@@ -540,6 +540,7 @@ class ASTVisitor : public ASTVisitorBase
   void OutputOffsetType(clang::QualType t, clang::Type const* c,
                         DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
+  void OutputElaboratedType(clang::ElaboratedType const* t, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -733,9 +734,12 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
         DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
         complete, dq);
     case clang::Type::Elaborated:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
-        complete, dq);
+        if (this->Opts.GccXml || !t->isElaboratedTypeSpecifier()) {
+          return this->AddTypeDumpNode(
+            DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
+            complete, dq);
+        }
+        break;
     case clang::Type::Enum:
       return this->AddDeclDumpNodeForType(
         t->getAs<clang::EnumType>()->getDecl(), complete, dq);
@@ -2123,6 +2127,15 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "/>\n";
 }
 
+void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
+                                      DumpNode const* dn)
+{
+  this->OS << "  <ElaboratedType";
+  this->PrintIdAttribute(dn);
+  this->PrintTypeAttribute(t->getNamedType(), false);
+  this->OS << "/>\n";
+}
+
 void ASTVisitor::OutputStartXMLTags()
 {
   /* clang-format off */
@@ -2134,7 +2147,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".0.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.0\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
