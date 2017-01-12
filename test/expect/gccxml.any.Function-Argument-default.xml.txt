@@ -6,7 +6,7 @@
   </Function>
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_5" type="_6c"/>
+  <PointerType id="_5" type="_6c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_6c" type="_6" const="1"/>
   <Namespace id="_3" name="::"/>
   <FundamentalType id="_6" name="char" size="[0-9]+" align="[0-9]+"/>

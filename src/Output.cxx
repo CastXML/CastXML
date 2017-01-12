@@ -2118,6 +2118,7 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "  <PointerType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
   this->OS << "/>\n";
 }
 
@@ -2139,7 +2140,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with gccxml-compatible format (legacy).
     /* clang-format off */
     this->OS <<
-      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.140\">\n"
       ;
     /* clang-format on */
   }

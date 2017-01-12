@@ -6,8 +6,8 @@
     <Argument type="_5" location="f1:1" file="f1" line="1"/>
   </Function>
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_4" type="_6"/>
-  <PointerType id="_5" type="_7"/>
+  <PointerType id="_4" type="_6" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_5" type="_7" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <FundamentalType id="_6" name="int" size="[0-9]+" align="[0-9]+"/>
   <FunctionType id="_7" returns="_6">

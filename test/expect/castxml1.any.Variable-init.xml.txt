@@ -4,7 +4,7 @@
   <Variable id="_3" name="var_int" type="_5" init="123" context="_1" location="f1:2" file="f1" line="2" mangled="[^"]+"/>
   <Variable id="_4" name="var_str" type="_6" init="&quot;abc&quot;" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+"/>
   <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_6" type="_7c"/>
+  <PointerType id="_6" type="_7c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
   <Namespace id="_2" name="::"/>
   <FundamentalType id="_7" name="char" size="[0-9]+" align="[0-9]+"/>

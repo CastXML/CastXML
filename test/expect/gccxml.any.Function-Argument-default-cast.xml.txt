@@ -32,12 +32,12 @@
   <Constructor id="_16" name="Derived" context="_4" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")?>
     <Argument type="_25" location="f1:7" file="f1" line="7"/>
   </Constructor>
-  <PointerType id="_17" type="_3"/>
-  <PointerType id="_18" type="_3c"/>
+  <PointerType id="_17" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_18" type="_3c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_3c" type="_3" const="1"/>
   <FundamentalType id="_19" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_20" name="void" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_21" type="_4"/>
+  <PointerType id="_21" type="_4" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_22" type="_3"/>
   <ReferenceType id="_23" type="_3c"/>
   <ReferenceType id="_24" type="_4"/>
