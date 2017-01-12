@@ -72,6 +72,25 @@ if(DEFINED LLVM_BUILD_BINARY_DIR)
     "  ${CastXML_SOURCE_DIR}/README.rst")
 endif()
 
+set(found_clang 0)
+set(tried_clang)
+foreach(inc ${LLVM_INCLUDE_DIRS})
+  if(EXISTS "${inc}/clang/AST/ASTConsumer.h")
+    set(found_clang 1)
+    break()
+  else()
+    set(tried_clang "  ${inc}\n")
+  endif()
+endforeach()
+if(NOT found_clang)
+  message(FATAL_ERROR
+    "LLVM_DIR refers to a LLVM installation:\n"
+    "  ${LLVM_DIR}\n"
+    "that does not have `clang/` headers in any include directory:\n"
+    "${tried_clang}"
+    )
+endif()
+
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
