@@ -2,7 +2,7 @@
 <CastXML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3 _4 _5"/>
   <Variable id="_3" name="C" type="_6c" init="0" context="_1" location="f1:2" file="f1" line="2" static="1" mangled="[^"]+"/>
-  <Enumeration id="_4" name="" context="_1" location="f1:3" file="f1" line="3">
+  <Enumeration id="_4" name="" context="_1" location="f1:3" file="f1" line="3" size="[0-9]+" align="[0-9]+">
     <EnumValue name="E" init="0"/>
   </Enumeration>
   <Function id="_5" name="f" returns="_7" context="_1" location="f1:7" file="f1" line="7" mangled="[^"]+">

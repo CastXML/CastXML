@@ -1823,6 +1823,7 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
   this->PrintNameAttribute(name);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->PrintABIAttributes(d);
   this->PrintAttributesAttribute(d);
   clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
   clang::EnumDecl::enumerator_iterator enum_end = d->enumerator_end();
