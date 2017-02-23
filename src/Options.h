@@ -16,7 +16,6 @@
 #ifndef CASTXML_OPTIONS_H
 #define CASTXML_OPTIONS_H
 
-#include <cxsys/Configure.h>
 #include <string>
 #include <vector>
 

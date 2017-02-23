@@ -16,7 +16,6 @@
 #ifndef CASTXML_UTILS_H
 #define CASTXML_UTILS_H
 
-#include <cxsys/Configure.h>
 #include <string>
 
 /// findResources - Call from main() to find resources

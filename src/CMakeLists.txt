@@ -66,7 +66,6 @@ add_executable(castxml
   Utils.cxx Utils.h
   )
 target_link_libraries(castxml
-  cxsys
   ${clang_libs}
   ${llvm_libs}
   )

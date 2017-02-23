@@ -55,12 +55,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${std_cxx11}")
 endif()
 
-set(KWSYS_NAMESPACE cxsys)
-set(KWSYS_USE_Process 1)
-set(KWSYS_HEADER_ROOT ${CastXML_BINARY_DIR}/src)
-add_subdirectory(src/kwsys)
-include_directories(${KWSYS_HEADER_ROOT})
-
 find_package(LLVM REQUIRED)
 
 if(DEFINED LLVM_BUILD_BINARY_DIR)
