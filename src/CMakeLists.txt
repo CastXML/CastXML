@@ -30,6 +30,8 @@ configure_file(
   "${CastXML_BINARY_DIR}/src/Version.h" @ONLY
   )
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 set(clang_libs
   clangFrontend
   clangDriver
