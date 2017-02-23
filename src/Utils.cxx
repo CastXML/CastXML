@@ -17,11 +17,12 @@
 #include "Utils.h"
 #include "Version.h"
 
-#include <cxsys/Process.h>
 #include <fstream>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Path.h>
+#include <llvm/Support/Program.h>
+#include <system_error>
 #include <vector>
 
 static std::string castxmlResourceDir;
@@ -109,64 +110,58 @@ unsigned int getVersionValue()
 bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
                 std::string& err, std::string& msg)
 {
+  // Find the program to run.
+  llvm::ErrorOr<std::string> maybeProg = llvm::sys::findProgramByName(argv[0]);
+  if (std::error_code e = maybeProg.getError()) {
+    msg = e.message();
+    return false;
+  }
+  std::string const& prog = *maybeProg;
+
+  // Create a temporary directory to hold output files.
+  llvm::SmallString<128> tmpDir;
+  if (std::error_code e =
+      llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
+    msg = e.message();
+    return false;
+  }
+  llvm::SmallString<128> tmpOut = tmpDir;
+  tmpOut.append("out");
+  llvm::SmallString<128> tmpErr = tmpDir;
+  tmpErr.append("err");
+
+  // Construct file redirects.
+  llvm::StringRef inFile; // empty means /dev/null
+  llvm::StringRef outFile = tmpOut.str();
+  llvm::StringRef errFile = tmpErr.str();
+  llvm::StringRef const* redirects[3];
+  redirects[0] = &inFile;
+  redirects[1] = &outFile;
+  redirects[2] = &errFile;
+
   std::vector<const char*> cmd(argv, argv + argc);
   cmd.push_back(0);
-  ret = 1;
-  out = "";
-  err = "";
-  std::vector<char> outBuf;
-  std::vector<char> errBuf;
 
-  cxsysProcess* cp = cxsysProcess_New();
-  cxsysProcess_SetCommand(cp, &*cmd.begin());
-  cxsysProcess_SetOption(cp, cxsysProcess_Option_HideWindow, 1);
-#ifdef _WIN32
-  cxsysProcess_SetPipeFile(cp, cxsysProcess_Pipe_STDIN, "//./nul");
-#else
-  cxsysProcess_SetPipeFile(cp, cxsysProcess_Pipe_STDIN, "/dev/null");
-#endif
-  cxsysProcess_Execute(cp);
+  // Actually run the command.
+  ret = llvm::sys::ExecuteAndWait(prog, &*cmd.begin(), nullptr, redirects,
+                                  0, 0, &msg, nullptr);
 
-  char* data;
-  int length;
-  int pipe;
-  while ((pipe = cxsysProcess_WaitForData(cp, &data, &length, 0)) > 0) {
-    if (pipe == cxsysProcess_Pipe_STDOUT) {
-      outBuf.insert(outBuf.end(), data, data + length);
-    } else if (pipe == cxsysProcess_Pipe_STDERR) {
-      errBuf.insert(errBuf.end(), data, data + length);
-    }
+  // Load the output from the temporary files.
+  {
+  std::ifstream fout(outFile.str());
+  std::ifstream ferr(errFile.str());
+  out.assign(std::istreambuf_iterator<char>(fout),
+             std::istreambuf_iterator<char>());
+  err.assign(std::istreambuf_iterator<char>(ferr),
+             std::istreambuf_iterator<char>());
   }
 
-  cxsysProcess_WaitForExit(cp, 0);
-  if (!outBuf.empty()) {
-    out.append(&*outBuf.begin(), outBuf.size());
-  }
-  if (!errBuf.empty()) {
-    err.append(&*errBuf.begin(), errBuf.size());
-  }
+  // Remove temporary files and directory.
+  llvm::sys::fs::remove(llvm::Twine(tmpOut));
+  llvm::sys::fs::remove(llvm::Twine(tmpErr));
+  llvm::sys::fs::remove(llvm::Twine(tmpDir));
 
-  bool result = true;
-  switch (cxsysProcess_GetState(cp)) {
-    case cxsysProcess_State_Exited:
-      ret = cxsysProcess_GetExitValue(cp);
-      break;
-    case cxsysProcess_State_Exception:
-      msg = cxsysProcess_GetExceptionString(cp);
-      result = false;
-      break;
-    case cxsysProcess_State_Error:
-      msg = cxsysProcess_GetErrorString(cp);
-      result = false;
-      break;
-    default:
-      msg = "Process terminated in unexpected state.\n";
-      result = false;
-      break;
-  }
-
-  cxsysProcess_Delete(cp);
-  return result;
+  return ret >= 0;
 }
 
 std::string encodeXML(std::string const& in, bool cdata)
