@@ -353,6 +353,12 @@ class ASTVisitor : public ASTVisitorBase
   void ProcessQueue();
   void ProcessFileQueue();
 
+  /** Output start tags on top of xml file. */
+  void OutputStartXMLTags();
+
+  /** Output end tags. */
+  void OutputEndXMLTags();
+
   /** Dispatch output of a declaration.  */
   void OutputDecl(clang::Decl const* d, DumpNode const* dn);
 
@@ -534,6 +540,7 @@ class ASTVisitor : public ASTVisitorBase
   void OutputOffsetType(clang::QualType t, clang::Type const* c,
                         DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
+  void OutputElaboratedType(clang::ElaboratedType const* t, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -635,7 +642,7 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
   }
 
   // Skip C++11 declarations gccxml does not support.
-  if (this->Opts.GccXml) {
+  if (this->Opts.GccXml || this->Opts.CastXml) {
     if (clang::FunctionDecl const* fd =
           clang::dyn_cast<clang::FunctionDecl>(d)) {
       if (fd->isDeleted()) {
@@ -727,9 +734,12 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
         DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
         complete, dq);
     case clang::Type::Elaborated:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
-        complete, dq);
+        if (this->Opts.GccXml || !t->isElaboratedTypeSpecifier()) {
+          return this->AddTypeDumpNode(
+            DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
+            complete, dq);
+        }
+        break;
     case clang::Type::Enum:
       return this->AddDeclDumpNodeForType(
         t->getAs<clang::EnumType>()->getDecl(), complete, dq);
@@ -1817,6 +1827,7 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
   this->PrintNameAttribute(name);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  this->PrintABIAttributes(d);
   this->PrintAttributesAttribute(d);
   clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
   clang::EnumDecl::enumerator_iterator enum_end = d->enumerator_end();
@@ -2112,7 +2123,59 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "  <PointerType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
   this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
+                                      DumpNode const* dn)
+{
+  this->OS << "  <ElaboratedType";
+  this->PrintIdAttribute(dn);
+  this->PrintTypeAttribute(t->getNamedType(), false);
+  this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputStartXMLTags()
+{
+  /* clang-format off */
+  this->OS <<
+    "<?xml version=\"1.0\"?>\n"
+    ;
+  /* clang-format on */
+  if (this->Opts.CastXml) {
+    // Start dump with castxml-compatible format.
+    /* clang-format off */
+    this->OS <<
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.0\">\n"
+      ;
+    /* clang-format on */
+  } else if (this->Opts.GccXml) {
+    // Start dump with gccxml-compatible format (legacy).
+    /* clang-format off */
+    this->OS <<
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.140\">\n"
+      ;
+    /* clang-format on */
+  }
+}
+
+void ASTVisitor::OutputEndXMLTags()
+{
+  // Finish dump.
+  if (this->Opts.CastXml) {
+    /* clang-format off */
+    this->OS <<
+      "</CastXML>\n"
+      ;
+    /* clang-format on */
+  } else if (this->Opts.GccXml) {
+    /* clang-format off */
+    this->OS <<
+      "</GCC_XML>\n"
+      ;
+    /* clang-format on */
+  }
 }
 
 void ASTVisitor::LookupStart(clang::DeclContext const* dc,
@@ -2158,13 +2221,8 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
     this->AddStartDecl(tu);
   }
 
-  // Start dump with gccxml-compatible format.
-  /* clang-format off */
-  this->OS <<
-    "<?xml version=\"1.0\"?>\n"
-    "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.139\">\n"
-    ;
-  /* clang-format on */
+  // Dump opening tags.
+  this->OutputStartXMLTags();
 
   // Dump the complete nodes.
   this->ProcessQueue();
@@ -2179,12 +2237,8 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
   // Dump the filename queue.
   this->ProcessFileQueue();
 
-  // Finish dump.
-  /* clang-format off */
-  this->OS <<
-    "</GCC_XML>\n"
-    ;
-  /* clang-format on */
+  // Dump end tags.
+  this->OutputEndXMLTags();
 }
 
 void outputXML(clang::CompilerInstance& ci, clang::ASTContext& ctx,

@@ -16,8 +16,6 @@
 #ifndef CASTXML_OUTPUT_H
 #define CASTXML_OUTPUT_H
 
-#include <cxsys/Configure.h>
-
 namespace llvm {
 class raw_ostream;
 }

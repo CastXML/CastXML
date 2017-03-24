@@ -16,7 +16,6 @@
 #ifndef CASTXML_OPTIONS_H
 #define CASTXML_OPTIONS_H
 
-#include <cxsys/Configure.h>
 #include <string>
 #include <vector>
 
@@ -25,16 +24,20 @@ struct Options
   Options()
     : PPOnly(false)
     , GccXml(false)
+    , CastXml(false)
     , HaveCC(false)
     , HaveStd(false)
     , HaveTarget(false)
+    , CastXmlEpicFormatVersion(1)
   {
   }
   bool PPOnly;
   bool GccXml;
+  bool CastXml;
   bool HaveCC;
   bool HaveStd;
   bool HaveTarget;
+  unsigned int CastXmlEpicFormatVersion;
   struct Include
   {
     Include(std::string const& d, bool f = false)

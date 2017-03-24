@@ -18,9 +18,7 @@ Abstract Syntax Tree (AST) to a representation in XML.
 
 Source files are parsed as complete translation units using an
 internal `Clang`_ compiler.  XML output is enabled by the
-``--castxml-gccxml`` option and produces a format close to
-that of `gccxml`_.  Future versions of ``castxml`` may support
-alternative output formats.
+``--castxml-output=<v>`` or ``--castxml-gccxml`` option.
 
 .. _`Clang`: http://clang.llvm.org/
 .. _`gccxml`: http://gccxml.org
@@ -50,6 +48,11 @@ Remaining options are given to the internal Clang compiler.
   The language standard level detected from the given compiler
   may be overridden by a separate Clang ``-std=`` option.
 
+``--castxml-output=<v>``
+  Write XML output to to ``<src>.xml`` or file named by ``-o``.
+  The ``<v>`` specifies the "epic" format version number to generate,
+  and must be ``1``.
+
 ``--castxml-gccxml``
   Generate XML output in a format close to that of `gccxml`_.
   Write output to ``<src>.xml`` or file named by ``-o``.
@@ -69,11 +72,49 @@ Remaining options are given to the internal Clang compiler.
   Print ``castxml`` and internal Clang compiler usage information.
 
 ``-o <file>``
-  Write output to ``<file>``.  At most one ``<src>`` file may
-  be specified as input.
+  If output is generated (e.g. via ``--castxml-output=<v>``), write
+  the output to ``<file>``.  At most one ``<src>`` file may be specified
+  as input.
 
 ``--version``
   Print ``castxml`` and internal Clang compiler version information.
+
+
+Output Format Versions
+======================
+
+With ``--castxml-output=<v>``
+-----------------------------
+
+The XML root element tag will be of the form:
+
+.. code-block:: xml
+
+  <CastXML format="1.0.0">
+
+* The first component is the ``epic`` format version number given to the
+  ``--castxml-output=<v>`` flag, and currently must always be ``1``.
+* The second component is the ``major`` format version number and increments
+  when a new XML element is added or for other major changes.
+  Clients will need updating.
+* The third component is the ``minor`` format version number and increments
+  whenever a new XML attribute is added to an existing element or a minor
+  bug is fixed in the XML output of an existing element or attribute
+  (clients should work unchanged unless they want the new info).
+
+With ``--castxml-gccxml``
+-------------------------
+
+The XML root element tag will be of the form:
+
+.. code-block:: xml
+
+  <GCC_XML version="0.9.0" cvs_revision="1.139">
+
+The ``version`` number corresponds to the last `gccxml`_ version that was
+ever released (for backward compatibility).  The ``cvs_revision`` number is
+a running number that is incremented for each minor change in the xml format.
+
 
 Preprocessing
 =============

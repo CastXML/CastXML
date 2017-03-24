@@ -55,12 +55,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${std_cxx11}")
 endif()
 
-set(KWSYS_NAMESPACE cxsys)
-set(KWSYS_USE_Process 1)
-set(KWSYS_HEADER_ROOT ${CastXML_BINARY_DIR}/src)
-add_subdirectory(src/kwsys)
-include_directories(${KWSYS_HEADER_ROOT})
-
 find_package(LLVM REQUIRED)
 
 if(DEFINED LLVM_BUILD_BINARY_DIR)
@@ -70,6 +64,25 @@ if(DEFINED LLVM_BUILD_BINARY_DIR)
     "CastXML must be built against a LLVM/Clang install tree as "
     "specified in\n"
     "  ${CastXML_SOURCE_DIR}/README.rst")
+endif()
+
+set(found_clang 0)
+set(tried_clang)
+foreach(inc ${LLVM_INCLUDE_DIRS})
+  if(EXISTS "${inc}/clang/AST/ASTConsumer.h")
+    set(found_clang 1)
+    break()
+  else()
+    set(tried_clang "  ${inc}\n")
+  endif()
+endforeach()
+if(NOT found_clang)
+  message(FATAL_ERROR
+    "LLVM_DIR refers to a LLVM installation:\n"
+    "  ${LLVM_DIR}\n"
+    "that does not have `clang/` headers in any include directory:\n"
+    "${tried_clang}"
+    )
 endif()
 
 add_definitions(${LLVM_DEFINITIONS})

@@ -13,10 +13,10 @@
     <Argument type="_10" location="f1:8" file="f1" line="8"/>
   </Function>
   <FundamentalType id="_5" name="void" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_7" type="_11"/>
-  <PointerType id="_8" type="_12"/>
-  <PointerType id="_9" type="_13"/>
-  <PointerType id="_10" type="_14"/>
+  <PointerType id="_7" type="_11" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_8" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_9" type="_13" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_10" type="_14" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_6" name="::"/>
   <FunctionType id="_11" returns="_5"/>
   <FunctionType id="_12" returns="_5" attributes="__stdcall__"/>

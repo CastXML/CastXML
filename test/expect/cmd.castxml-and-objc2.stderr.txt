@@ -1,0 +1,1 @@
+^error: '--castxml-output=<v>' does not work with Objective C$

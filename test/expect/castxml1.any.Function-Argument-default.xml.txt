@@ -1,0 +1,14 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="[^"]+">
+    <Argument type="_4" location="f1:1" file="f1" line="1" default="123"/>
+    <Argument type="_5" location="f1:1" file="f1" line="1" default="&quot;abc&quot;"/>
+  </Function>
+  <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_5" type="_6c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_6c" type="_6" const="1"/>
+  <Namespace id="_3" name="::"/>
+  <FundamentalType id="_6" name="char" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Function-Argument-default.cxx"/>
+</CastXML>$

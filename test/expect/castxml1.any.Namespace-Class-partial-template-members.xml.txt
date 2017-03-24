@@ -1,0 +1,5 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2"/>
+  <Namespace id="_2" name="::"/>
+</CastXML>$

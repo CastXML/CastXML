@@ -381,7 +381,7 @@ class CastXMLSyntaxOnlyAction
     clang::CompilerInstance& CI, llvm::StringRef InFile) override
   {
     using llvm::sys::path::filename;
-    if (!this->Opts.GccXml) {
+    if (!this->Opts.GccXml && !this->Opts.CastXml) {
       return clang::SyntaxOnlyAction::CreateASTConsumer(CI, InFile);
 #ifdef CASTXML_OWNS_OSTREAM
     } else if (std::unique_ptr<llvm::raw_ostream> OS =
@@ -433,6 +433,15 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 
   if (opts.GccXml) {
 #define MSG(x) "error: '--castxml-gccxml' does not work with " x "\n"
+    if (CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
+      std::cerr << MSG("Objective C");
+      return false;
+    }
+#undef MSG
+  }
+
+  if (opts.CastXml) {
+#define MSG(x) "error: '--castxml-output=<v>' does not work with " x "\n"
     if (CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
       std::cerr << MSG("Objective C");
       return false;
