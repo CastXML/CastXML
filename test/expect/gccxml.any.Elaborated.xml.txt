@@ -9,41 +9,41 @@
   <Typedef id="_8" name="s5" type="_35" context="_1" location="f1:10" file="f1" line="10"/>
   <Typedef id="_9" name="s6" type="_36" context="_1" location="f1:11" file="f1" line="11"/>
   <Enumeration id="_10" name="Foo2" context="_1" location="f1:14" file="f1" line="14" size="[0-9]+" align="[0-9]+"/>
-  <Variable id="_11" name="e1" type="_39" context="_1" location="f1:16" file="f1" line="16" mangled="[^"]+"/>
-  <Variable id="_12" name="e2" type="_40" context="_1" location="f1:17" file="f1" line="17" mangled="[^"]+"/>
-  <Variable id="_13" name="e3" type="_41" context="_1" location="f1:18" file="f1" line="18" mangled="[^"]+"/>
-  <Variable id="_14" name="e4" type="_42" context="_1" location="f1:19" file="f1" line="19" mangled="[^"]+"/>
-  <Typedef id="_15" name="e5" type="_39" context="_1" location="f1:20" file="f1" line="20"/>
-  <Typedef id="_16" name="e6" type="_40" context="_1" location="f1:21" file="f1" line="21"/>
-  <Union id="_17" name="Foo3" context="_1" location="f1:24" file="f1" line="24" members="_43 _44 _45 _46" size="[0-9]+" align="[0-9]+"/>
-  <Variable id="_18" name="u1" type="_47" context="_1" location="f1:26" file="f1" line="26" mangled="[^"]+"/>
-  <Variable id="_19" name="u2" type="_48" context="_1" location="f1:27" file="f1" line="27" mangled="[^"]+"/>
-  <Variable id="_20" name="u3" type="_49" context="_1" location="f1:28" file="f1" line="28" mangled="[^"]+"/>
-  <Variable id="_21" name="u4" type="_50" context="_1" location="f1:29" file="f1" line="29" mangled="[^"]+"/>
-  <Typedef id="_22" name="u5" type="_47" context="_1" location="f1:30" file="f1" line="30"/>
-  <Typedef id="_23" name="u6" type="_48" context="_1" location="f1:31" file="f1" line="31"/>
-  <Class id="_24" name="Foo4" context="_1" location="f1:34" file="f1" line="34" members="_51 _52 _53 _54" size="[0-9]+" align="[0-9]+"/>
-  <Variable id="_25" name="c1" type="_55" context="_1" location="f1:36" file="f1" line="36" mangled="[^"]+"/>
-  <Variable id="_26" name="c2" type="_56" context="_1" location="f1:37" file="f1" line="37" mangled="[^"]+"/>
-  <Variable id="_27" name="c3" type="_49" context="_1" location="f1:38" file="f1" line="38" mangled="[^"]+"/>
-  <Variable id="_28" name="c4" type="_57" context="_1" location="f1:39" file="f1" line="39" mangled="[^"]+"/>
-  <Typedef id="_29" name="c5" type="_55" context="_1" location="f1:40" file="f1" line="40"/>
-  <Typedef id="_30" name="c6" type="_56" context="_1" location="f1:41" file="f1" line="41"/>
-  <Function id="_31" name="func1" returns="_58" context="_1" location="f1:44" file="f1" line="44" mangled="[^"]+">
-    <Argument name="a1" type="_35" location="f1:44" file="f1" line="44"/>
-    <Argument name="a2" type="_36" location="f1:44" file="f1" line="44"/>
+  <Variable id="_11" name="e1" type="_39" context="_1" location="f1:18" file="f1" line="18" mangled="[^"]+"/>
+  <Variable id="_12" name="e2" type="_40" context="_1" location="f1:19" file="f1" line="19" mangled="[^"]+"/>
+  <Variable id="_13" name="e3" type="_41" context="_1" location="f1:20" file="f1" line="20" mangled="[^"]+"/>
+  <Variable id="_14" name="e4" type="_42" context="_1" location="f1:21" file="f1" line="21" mangled="[^"]+"/>
+  <Typedef id="_15" name="e5" type="_39" context="_1" location="f1:22" file="f1" line="22"/>
+  <Typedef id="_16" name="e6" type="_40" context="_1" location="f1:23" file="f1" line="23"/>
+  <Union id="_17" name="Foo3" context="_1" location="f1:26" file="f1" line="26" members="_43 _44 _45 _46" size="[0-9]+" align="[0-9]+"/>
+  <Variable id="_18" name="u1" type="_47" context="_1" location="f1:30" file="f1" line="30" mangled="[^"]+"/>
+  <Variable id="_19" name="u2" type="_48" context="_1" location="f1:31" file="f1" line="31" mangled="[^"]+"/>
+  <Variable id="_20" name="u3" type="_49" context="_1" location="f1:32" file="f1" line="32" mangled="[^"]+"/>
+  <Variable id="_21" name="u4" type="_50" context="_1" location="f1:33" file="f1" line="33" mangled="[^"]+"/>
+  <Typedef id="_22" name="u5" type="_47" context="_1" location="f1:34" file="f1" line="34"/>
+  <Typedef id="_23" name="u6" type="_48" context="_1" location="f1:35" file="f1" line="35"/>
+  <Class id="_24" name="Foo4" context="_1" location="f1:38" file="f1" line="38" members="_51 _52 _53 _54" size="[0-9]+" align="[0-9]+"/>
+  <Variable id="_25" name="c1" type="_55" context="_1" location="f1:42" file="f1" line="42" mangled="[^"]+"/>
+  <Variable id="_26" name="c2" type="_56" context="_1" location="f1:43" file="f1" line="43" mangled="[^"]+"/>
+  <Variable id="_27" name="c3" type="_49" context="_1" location="f1:44" file="f1" line="44" mangled="[^"]+"/>
+  <Variable id="_28" name="c4" type="_57" context="_1" location="f1:45" file="f1" line="45" mangled="[^"]+"/>
+  <Typedef id="_29" name="c5" type="_55" context="_1" location="f1:46" file="f1" line="46"/>
+  <Typedef id="_30" name="c6" type="_56" context="_1" location="f1:47" file="f1" line="47"/>
+  <Function id="_31" name="func1" returns="_58" context="_1" location="f1:50" file="f1" line="50" mangled="[^"]+">
+    <Argument name="a1" type="_35" location="f1:50" file="f1" line="50"/>
+    <Argument name="a2" type="_36" location="f1:50" file="f1" line="50"/>
   </Function>
-  <Function id="_32" name="func2" returns="_58" context="_1" location="f1:45" file="f1" line="45" mangled="[^"]+">
-    <Argument name="a3" type="_39" location="f1:45" file="f1" line="45"/>
-    <Argument name="a4" type="_40" location="f1:45" file="f1" line="45"/>
+  <Function id="_32" name="func2" returns="_58" context="_1" location="f1:51" file="f1" line="51" mangled="[^"]+">
+    <Argument name="a3" type="_39" location="f1:51" file="f1" line="51"/>
+    <Argument name="a4" type="_40" location="f1:51" file="f1" line="51"/>
   </Function>
-  <Function id="_33" name="func3" returns="_58" context="_1" location="f1:46" file="f1" line="46" mangled="[^"]+">
-    <Argument name="a5" type="_47" location="f1:46" file="f1" line="46"/>
-    <Argument name="a6" type="_48" location="f1:46" file="f1" line="46"/>
+  <Function id="_33" name="func3" returns="_58" context="_1" location="f1:52" file="f1" line="52" mangled="[^"]+">
+    <Argument name="a5" type="_47" location="f1:52" file="f1" line="52"/>
+    <Argument name="a6" type="_48" location="f1:52" file="f1" line="52"/>
   </Function>
-  <Function id="_34" name="func4" returns="_58" context="_1" location="f1:47" file="f1" line="47" mangled="[^"]+">
-    <Argument name="a7" type="_55" location="f1:47" file="f1" line="47"/>
-    <Argument name="a8" type="_56" location="f1:47" file="f1" line="47"/>
+  <Function id="_34" name="func4" returns="_58" context="_1" location="f1:53" file="f1" line="53" mangled="[^"]+">
+    <Argument name="a7" type="_55" location="f1:53" file="f1" line="53"/>
+    <Argument name="a8" type="_56" location="f1:53" file="f1" line="53"/>
   </Function>
   <PointerType id="_35" type="_3" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_36" type="_3" size="[0-9]+" align="[0-9]+"/>
@@ -55,27 +55,27 @@
   <PointerType id="_41" type="_10c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_10c" type="_10" const="1"/>
   <PointerType id="_42" type="_10c" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_43" name="Foo3" context="_17" access="public" location="f1:24" file="f1" line="24" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_44" name="Foo3" context="_17" access="public" location="f1:24" file="f1" line="24" inline="1" artificial="1"( throw="")?>
-    <Argument type="_59" location="f1:24" file="f1" line="24"/>
+  <Constructor id="_43" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_44" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")?>
+    <Argument type="_59" location="f1:26" file="f1" line="26"/>
   </Constructor>
-  <OperatorMethod id="_45" name="=" returns="_60" context="_17" access="public" location="f1:24" file="f1" line="24" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_59" location="f1:24" file="f1" line="24"/>
+  <OperatorMethod id="_45" name="=" returns="_60" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_59" location="f1:26" file="f1" line="26"/>
   </OperatorMethod>
-  <Destructor id="_46" name="Foo3" context="_17" access="public" location="f1:24" file="f1" line="24" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_46" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")?/>
   <PointerType id="_47" type="_17" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_48" type="_17" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_49" type="_17c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_17c" type="_17" const="1"/>
   <PointerType id="_50" type="_17c" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_51" name="Foo4" context="_24" access="public" location="f1:34" file="f1" line="34" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_52" name="Foo4" context="_24" access="public" location="f1:34" file="f1" line="34" inline="1" artificial="1"( throw="")?>
-    <Argument type="_61" location="f1:34" file="f1" line="34"/>
+  <Constructor id="_51" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_52" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")?>
+    <Argument type="_61" location="f1:38" file="f1" line="38"/>
   </Constructor>
-  <OperatorMethod id="_53" name="=" returns="_62" context="_24" access="public" location="f1:34" file="f1" line="34" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_61" location="f1:34" file="f1" line="34"/>
+  <OperatorMethod id="_53" name="=" returns="_62" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_61" location="f1:38" file="f1" line="38"/>
   </OperatorMethod>
-  <Destructor id="_54" name="Foo4" context="_24" access="public" location="f1:34" file="f1" line="34" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_54" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")?/>
   <PointerType id="_55" type="_24" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_56" type="_24" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_57" type="_24c" size="[0-9]+" align="[0-9]+"/>

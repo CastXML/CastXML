@@ -121,7 +121,7 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   // Create a temporary directory to hold output files.
   llvm::SmallString<128> tmpDir;
   if (std::error_code e =
-      llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
+        llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
     msg = e.message();
     return false;
   }
@@ -143,17 +143,17 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   cmd.push_back(0);
 
   // Actually run the command.
-  ret = llvm::sys::ExecuteAndWait(prog, &*cmd.begin(), nullptr, redirects,
-                                  0, 0, &msg, nullptr);
+  ret = llvm::sys::ExecuteAndWait(prog, &*cmd.begin(), nullptr, redirects, 0,
+                                  0, &msg, nullptr);
 
   // Load the output from the temporary files.
   {
-  std::ifstream fout(outFile.str());
-  std::ifstream ferr(errFile.str());
-  out.assign(std::istreambuf_iterator<char>(fout),
-             std::istreambuf_iterator<char>());
-  err.assign(std::istreambuf_iterator<char>(ferr),
-             std::istreambuf_iterator<char>());
+    std::ifstream fout(outFile.str());
+    std::ifstream ferr(errFile.str());
+    out.assign(std::istreambuf_iterator<char>(fout),
+               std::istreambuf_iterator<char>());
+    err.assign(std::istreambuf_iterator<char>(ferr),
+               std::istreambuf_iterator<char>());
   }
 
   // Remove temporary files and directory.
