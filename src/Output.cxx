@@ -31,6 +31,7 @@
 #include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/Basic/Specifiers.h"
+#include "clang/Basic/TargetInfo.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/Support/raw_ostream.h"
@@ -499,6 +500,7 @@ class ASTVisitor : public ASTVisitorBase
   void PrintContextAttribute(clang::Decl const* d,
                              clang::AccessSpecifier alt = clang::AS_none);
 
+  bool HaveFloat128Type() const;
   void PrintFloat128Type(DumpNode const* dn);
 
   // Decl node output methods.
@@ -1175,10 +1177,12 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
     this->MangleContext->mangleName(d, rso);
   }
 
-  // We cannot mangle __float128 correctly because Clang does not have
-  // it as an internal type, so skip mangled attributes involving it.
-  if (s.find("__float128") != s.npos) {
-    s = "";
+  if (!this->HaveFloat128Type()) {
+    // We cannot mangle __float128 correctly because Clang does not have
+    // it as an internal type, so skip mangled attributes involving it.
+    if (s.find("__float128") != s.npos) {
+      s = "";
+    }
   }
 
   // Strip a leading 1 byte in MS mangling.
@@ -1484,6 +1488,15 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
     }
     this->OS << "\"";
   }
+}
+
+bool ASTVisitor::HaveFloat128Type() const
+{
+#if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR > 8
+  return this->CI.getTarget().hasFloat128Type();
+#else
+  return false;
+#endif
 }
 
 void ASTVisitor::PrintFloat128Type(DumpNode const* dn)

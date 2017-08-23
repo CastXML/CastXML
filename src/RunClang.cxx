@@ -24,6 +24,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
+#include "clang/Basic/TargetInfo.h"
 #include "clang/Basic/Version.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
@@ -246,7 +247,8 @@ protected:
       }
 
       // Provide __float128 if simulating the actual GNU compiler.
-      if (this->NeedFloat128(this->Opts.Predefines)) {
+      if (!this->HaveFloat128(CI) &&
+          this->NeedFloat128(this->Opts.Predefines)) {
         // Clang provides its own (fake) builtin in gnu++11 mode but issues
         // diagnostics when it is used in some contexts.  Provide our own
         // approximation of the builtin instead.
@@ -342,6 +344,16 @@ protected:
             (pd.find("#define __i386__ ") != pd.npos ||
              pd.find("#define __x86_64__ ") != pd.npos ||
              pd.find("#define __ia64__ ") != pd.npos));
+  }
+
+  bool HaveFloat128(clang::CompilerInstance const& CI) const
+  {
+#if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR > 8
+    return CI.getTarget().hasFloat128Type();
+#else
+    static_cast<void>(CI);
+    return false;
+#endif
   }
 
   bool NeedNoMathInlines(std::string const& pd) const

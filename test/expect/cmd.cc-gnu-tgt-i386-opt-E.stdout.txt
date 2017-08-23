@@ -8,6 +8,6 @@
 #define __castxml_clang_major__ [0-9]+
 #define __castxml_clang_minor__ [0-9]+
 #define __castxml_clang_patchlevel__ [0-9]+
-#define __cplusplus 199711L
-#define __float128 __castxml__float128
+#define __cplusplus 199711L(
+#define __float128 __castxml__float128)?
 #define __i386__ 1$
