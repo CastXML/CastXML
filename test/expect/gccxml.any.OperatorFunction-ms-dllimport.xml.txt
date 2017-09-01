@@ -1,0 +1,13 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3"/>
+  <OperatorFunction id="_3" name="&lt;&lt;" returns="_4" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="dllimport">
+    <Argument type="_4" location="f1:3" file="f1" line="3"/>
+    <Argument type="_5" location="f1:3" file="f1" line="3"/>
+  </OperatorFunction>
+  <ReferenceType id="_4" type="_6" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <Class id="_6" name="A" context="_2" location="f1:1" file="f1" line="1" incomplete="1"/>
+  <File id="f1" name=".*/test/input/OperatorFunction-ms-dllimport.cxx"/>
+</GCC_XML>$

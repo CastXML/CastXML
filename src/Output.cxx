@@ -1445,6 +1445,14 @@ void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
   for (auto const* a : d->specific_attrs<clang::AnnotateAttr>()) {
     attrs.push_back("annotate(" + a->getAnnotation().str() + ")");
   }
+
+  if (d->hasAttr<clang::DLLExportAttr>()) {
+    attrs.push_back("dllexport");
+  }
+
+  if (d->hasAttr<clang::DLLImportAttr>()) {
+    attrs.push_back("dllimport");
+  }
 }
 
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
@@ -2178,14 +2186,14 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.1\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.2\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
     // Start dump with gccxml-compatible format (legacy).
     /* clang-format off */
     this->OS <<
-      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.141\">\n"
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.142\">\n"
       ;
     /* clang-format on */
   }

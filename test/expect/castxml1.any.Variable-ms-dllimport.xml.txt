@@ -1,0 +1,7 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Variable id="_1" name="start" type="_2" context="_3" location="f1:1" file="f1" line="1" extern="1" mangled="[^"]+" attributes="dllimport"/>
+  <FundamentalType id="_2" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/Variable-ms-dllimport.cxx"/>
+</CastXML>$
