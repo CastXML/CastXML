@@ -368,8 +368,12 @@ protected:
              pd.find("#define __NO_MATH_INLINES ") == pd.npos));
   }
 
-  bool BeginSourceFileAction(clang::CompilerInstance& CI,
-                             llvm::StringRef /*Filename*/)
+  bool BeginSourceFileAction(clang::CompilerInstance& CI
+#if LLVM_VERSION_MAJOR < 5
+                             ,
+                             llvm::StringRef /*Filename*/
+#endif
+                             ) override
   {
     CI.getPreprocessor().setPredefines(this->UpdatePredefines(CI));
 
