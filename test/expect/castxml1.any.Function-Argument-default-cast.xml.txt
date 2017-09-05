@@ -5,16 +5,16 @@
   <Struct id="_4" name="Derived" context="_1" location="f1:7" file="f1" line="7" members="_13 _14 _15 _16" bases="_3" size="[0-9]+" align="[0-9]+">
     <Base type="_3" access="public" virtual="0" offset="0"/>
   </Struct>
-  <Function id="_5" name="b" returns="_17" context="_1" location="f1:10" file="f1" line="10" mangled="[^"]+"/>
-  <Function id="_6" name="bc" returns="_18" context="_1" location="f1:11" file="f1" line="11" mangled="[^"]+"/>
-  <Typedef id="_7" name="Int" type="_19" context="_1" location="f1:12" file="f1" line="12"/>
-  <Function id="_8" name="f" returns="_20" context="_1" location="f1:13" file="f1" line="13" mangled="[^"]+">
-    <Argument type="_7" location="f1:13" file="f1" line="13" default="\(int\)0"/>
-    <Argument type="_17" location="f1:13" file="f1" line="13" default="\(start::Base \*\)0"/>
-    <Argument type="_17" location="f1:13" file="f1" line="13" default="static_cast&lt;start::Base \*&gt;\(0\)"/>
-    <Argument type="_17" location="f1:14" file="f1" line="14" default="reinterpret_cast&lt;start::Base \*&gt;\(0\)"/>
-    <Argument type="_17" location="f1:14" file="f1" line="14" default="const_cast&lt;start::Base \*&gt;\(start::bc\(\)\)"/>
-    <Argument type="_21" location="f1:15" file="f1" line="15" default="dynamic_cast&lt;start::Derived \*&gt;\(start::b\(\)\)"/>
+  <Function id="_5" name="b" returns="_17" context="_1" location="f1:14" file="f1" line="14" mangled="[^"]+"/>
+  <Function id="_6" name="bc" returns="_18" context="_1" location="f1:15" file="f1" line="15" mangled="[^"]+"/>
+  <Typedef id="_7" name="Int" type="_19" context="_1" location="f1:16" file="f1" line="16"/>
+  <Function id="_8" name="f" returns="_20" context="_1" location="f1:17" file="f1" line="17" mangled="[^"]+">
+    <Argument type="_7" location="f1:17" file="f1" line="17" default="\(int\)0"/>
+    <Argument type="_17" location="f1:17" file="f1" line="17" default="\(start::Base \*\)0"/>
+    <Argument type="_17" location="f1:17" file="f1" line="17" default="static_cast&lt;start::Base \*&gt;\(0\)"/>
+    <Argument type="_17" location="f1:18" file="f1" line="18" default="reinterpret_cast&lt;start::Base \*&gt;\(0\)"/>
+    <Argument type="_17" location="f1:18" file="f1" line="18" default="const_cast&lt;start::Base \*&gt;\(start::bc\(\)\)"/>
+    <Argument type="_21" location="f1:19" file="f1" line="19" default="dynamic_cast&lt;start::Derived \*&gt;\(start::b\(\)\)"/>
   </Function>
   <Constructor id="_9" name="Base" context="_3" access="public" location="f1:4" file="f1" line="4"/>
   <Destructor id="_10" name="Base" context="_3" access="public" location="f1:5" file="f1" line="5" virtual="1"/>
@@ -24,14 +24,14 @@
   <Constructor id="_12" name="Base" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?>
     <Argument type="_23" location="f1:2" file="f1" line="2"/>
   </Constructor>
-  <OperatorMethod id="_13" name="=" returns="_24" context="_4" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_25" location="f1:7" file="f1" line="7"/>
-  </OperatorMethod>
-  <Destructor id="_14" name="Derived" context="_4" access="public" location="f1:7" file="f1" line="7" virtual="1" inline="1" artificial="1"( throw="")? overrides="_10"/>
-  <Constructor id="_15" name="Derived" context="_4" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_16" name="Derived" context="_4" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")?>
-    <Argument type="_25" location="f1:7" file="f1" line="7"/>
+  <Constructor id="_13" name="Derived" context="_4" access="public" location="f1:9" file="f1" line="9"/>
+  <Constructor id="_14" name="Derived" context="_4" access="public" location="f1:10" file="f1" line="10">
+    <Argument type="_24" location="f1:10" file="f1" line="10"/>
   </Constructor>
+  <OperatorMethod id="_15" name="=" returns="_25" context="_4" access="public" location="f1:11" file="f1" line="11" mangled="[^"]+">
+    <Argument type="_24" location="f1:11" file="f1" line="11"/>
+  </OperatorMethod>
+  <Destructor id="_16" name="Derived" context="_4" access="public" location="f1:12" file="f1" line="12" virtual="1" overrides="_10"/>
   <PointerType id="_17" type="_3" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_18" type="_3c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_3c" type="_3" const="1"/>
@@ -40,9 +40,9 @@
   <PointerType id="_21" type="_4" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_22" type="_3"/>
   <ReferenceType id="_23" type="_3c"/>
-  <ReferenceType id="_24" type="_4"/>
-  <ReferenceType id="_25" type="_4c"/>
+  <ReferenceType id="_24" type="_4c"/>
   <CvQualifiedType id="_4c" type="_4" const="1"/>
+  <ReferenceType id="_25" type="_4"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Function-Argument-default-cast.cxx"/>
 </CastXML>$
