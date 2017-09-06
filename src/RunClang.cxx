@@ -123,6 +123,7 @@ public:
             (m->isCopyAssignmentOperator() || m->isMoveAssignmentOperator());
         }
         if (mark) {
+          clang::DiagnosticErrorTrap Trap(sema.getDiagnostics());
           /* Ensure the member is defined.  */
           sema.MarkFunctionReferenced(clang::SourceLocation(), m);
           if (c && c->isDefaulted() && c->isDefaultConstructor() &&
@@ -131,6 +132,9 @@ public:
             /* Clang does not build the definition of trivial constructors
                until they are used.  Force semantic checking.  */
             sema.DefineImplicitDefaultConstructor(clang::SourceLocation(), c);
+          }
+          if (Trap.hasErrorOccurred()) {
+            m->setInvalidDecl();
           }
           /* Finish implicitly instantiated member.  */
           sema.PerformPendingInstantiations();
