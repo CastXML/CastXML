@@ -1,1 +1,1 @@
-^error: invalid argument '-std=c89' not allowed with 'C\+\+/ObjC\+\+'$
+^error: invalid argument '-std=c89' not allowed with 'C\+\+(/ObjC\+\+)?'$
