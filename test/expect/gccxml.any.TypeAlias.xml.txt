@@ -1,5 +1,8 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Namespace id="_1" name="start" context="_2"/>
+  <Namespace id="_1" name="start" context="_2" members="_3"/>
+  <Typedef id="_3" name="type" type="_4" context="_1" location="f1:2" file="f1" line="2"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/TypeAlias.cxx"/>
 </GCC_XML>$

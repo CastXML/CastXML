@@ -512,6 +512,7 @@ class ASTVisitor : public ASTVisitorBase
   void OutputClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
+  void OutputTypeAliasDecl(clang::TypeAliasDecl const* d, DumpNode const* dn);
   void OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn);
   void OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
@@ -670,10 +671,6 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
           }
         }
       }
-    }
-
-    if (clang::dyn_cast<clang::TypeAliasDecl>(d)) {
-      return DumpId();
     }
 
     if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
@@ -1818,6 +1815,19 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
     }
   }
 
+  this->OS << "  <Typedef";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintTypeAttribute(d->getUnderlyingType(), dn->Complete);
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+  this->PrintAttributesAttribute(d);
+  this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputTypeAliasDecl(clang::TypeAliasDecl const* d,
+                                     DumpNode const* dn)
+{
   this->OS << "  <Typedef";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
