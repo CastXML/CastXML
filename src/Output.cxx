@@ -729,6 +729,12 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       return this->AddTypeDumpNode(
         DumpType(t->getAs<clang::AttributedType>()->getEquivalentType(), c),
         complete, dq);
+    case clang::Type::Auto: {
+      clang::AutoType const* at = t->getAs<clang::AutoType>();
+      if (at->isSugared()) {
+        return this->AddTypeDumpNode(DumpType(at->desugar(), c), complete, dq);
+      }
+    } break;
     case clang::Type::Decayed:
       return this->AddTypeDumpNode(
         DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
