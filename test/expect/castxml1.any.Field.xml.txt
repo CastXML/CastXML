@@ -14,9 +14,9 @@
   <Destructor id="_9" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="unsigned int" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_12" type="_1c"/>
+  <ReferenceType id="_12" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_13" type="_1"/>
+  <ReferenceType id="_13" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Field.cxx"/>
 </CastXML>$

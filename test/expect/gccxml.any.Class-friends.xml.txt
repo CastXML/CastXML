@@ -9,9 +9,9 @@
     <Argument type="_9" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_9" type="_1c"/>
+  <ReferenceType id="_9" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_10" type="_1"/>
+  <ReferenceType id="_10" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <Function id="_7" name="f" returns="_11" context="_2" location="f1:4" file="f1" line="4" mangled="[^"]+"/>
   <Class id="_8" name="A" context="_2" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>

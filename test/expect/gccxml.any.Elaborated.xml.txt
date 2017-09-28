@@ -81,10 +81,10 @@
   <PointerType id="_57" type="_24c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_24c" type="_24" const="1"/>
   <FundamentalType id="_58" name="void" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_59" type="_17c"/>
-  <ReferenceType id="_60" type="_17"/>
-  <ReferenceType id="_61" type="_24c"/>
-  <ReferenceType id="_62" type="_24"/>
+  <ReferenceType id="_59" type="_17c" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_60" type="_17" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_61" type="_24c" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_62" type="_24" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Elaborated.cxx"/>
 </GCC_XML>$

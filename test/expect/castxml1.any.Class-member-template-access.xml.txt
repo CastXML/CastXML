@@ -20,12 +20,12 @@
     <Argument type="_16" location="f1:11" file="f1" line="11"/>
   </OperatorMethod>
   <Destructor id="_13" name="member" context="_4" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_14" type="_1c"/>
+  <ReferenceType id="_14" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_15" type="_1"/>
-  <ReferenceType id="_16" type="_4c"/>
+  <ReferenceType id="_15" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_16" type="_4c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_4c" type="_4" const="1"/>
-  <ReferenceType id="_17" type="_4"/>
+  <ReferenceType id="_17" type="_4" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-member-template-access.cxx"/>
 </CastXML>$

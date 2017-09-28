@@ -2113,6 +2113,7 @@ void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
   this->OS << "  <ReferenceType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
   this->OS << "/>\n";
 }
 
@@ -2177,14 +2178,14 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
     // Start dump with gccxml-compatible format (legacy).
     /* clang-format off */
     this->OS <<
-      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.140\">\n"
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.141\">\n"
       ;
     /* clang-format on */
   }

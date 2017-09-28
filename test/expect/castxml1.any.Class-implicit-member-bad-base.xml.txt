@@ -9,7 +9,7 @@
   </Constructor>
   <Destructor id="_5" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
   <Class id="_6" name="base&lt;const int&gt;" context="_2" location="f1:2" file="f1" line="2" members="_8 _9 _10 _11" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_7" type="_1c"/>
+  <ReferenceType id="_7" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <Field id="_8" name="data" type="_12c" context="_6" access="protected" location="f1:5" file="f1" line="5" offset="0"/>
   <Constructor id="_9" name="base" context="_6" access="protected" location="f1:6" file="f1" line="6"/>
@@ -19,7 +19,7 @@
   <Destructor id="_11" name="base" context="_6" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_12" name="int" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_12c" type="_12" const="1"/>
-  <ReferenceType id="_13" type="_6c"/>
+  <ReferenceType id="_13" type="_6c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_6c" type="_6" const="1"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-implicit-member-bad-base.cxx"/>

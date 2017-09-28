@@ -13,10 +13,10 @@
   </OperatorMethod>
   <Destructor id="_7" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_8" name="void" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_9" type="_12c"/>
-  <ReferenceType id="_10" type="_1c"/>
+  <ReferenceType id="_9" type="_12c" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_10" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_11" type="_1"/>
+  <ReferenceType id="_11" type="_1" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_12c" type="_12" const="1"/>
   <Namespace id="_2" name="::"/>
   <FundamentalType id="_12" name="int" size="[0-9]+" align="[0-9]+"/>

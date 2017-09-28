@@ -9,7 +9,7 @@
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_7" name="int" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
-  <ReferenceType id="_8" type="_1c"/>
+  <ReferenceType id="_8" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-implicit-member-const.cxx"/>

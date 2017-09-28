@@ -13,11 +13,11 @@
     <Argument type="_11" location="f1:7" file="f1" line="7"/>
   </Function>
   <FundamentalType id="_4" name="void" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_6" type="_12"/>
+  <ReferenceType id="_6" type="_12" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_7" name="short int" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_8" type="_12"/>(broken: duplicate ReferenceType)?
+  <ReferenceType id="_8" type="_12" size="[0-9]+" align="[0-9]+"/>(broken: duplicate ReferenceType)?
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_10" type="_12"/>(broken: duplicate ReferenceType)?
+  <ReferenceType id="_10" type="_12" size="[0-9]+" align="[0-9]+"/>(broken: duplicate ReferenceType)?
   <FundamentalType id="_11" name="long int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_5" name="::"/>
   <Class id="_12" name="A&lt;int&gt;" context="_5" location="f1:2" file="f1" line="2" incomplete="1"/>

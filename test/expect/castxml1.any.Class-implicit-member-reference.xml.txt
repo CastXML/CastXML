@@ -7,8 +7,8 @@
     <Argument type="_8" location="f1:1" file="f1" line="1"/>
   </Constructor>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_7" type="_9"/>
-  <ReferenceType id="_8" type="_1c"/>
+  <ReferenceType id="_7" type="_9" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_8" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <Namespace id="_2" name="::"/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>

@@ -12,9 +12,9 @@
   </OperatorMethod>
   <Destructor id="_8" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_10" type="_3c"/>
+  <ReferenceType id="_10" type="_3c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_3c" type="_3" const="1"/>
-  <ReferenceType id="_11" type="_3"/>
+  <ReferenceType id="_11" type="_3" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Namespace-Class-members.cxx"/>
 </GCC_XML>$

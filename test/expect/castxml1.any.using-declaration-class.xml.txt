@@ -20,9 +20,9 @@
   <Class id="_9" name="base" context="_2" location="f1:1" file="f1" line="1" members="_3 _14 _15 _16 _17" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="char" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_12" type="_1c"/>
+  <ReferenceType id="_12" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_13" type="_1"/>
+  <ReferenceType id="_13" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_14" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_15" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
@@ -31,9 +31,9 @@
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_17" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_18" type="_9c"/>
+  <ReferenceType id="_18" type="_9c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_9c" type="_9" const="1"/>
-  <ReferenceType id="_19" type="_9"/>
+  <ReferenceType id="_19" type="_9" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/using-declaration-class.cxx"/>
 </CastXML>$

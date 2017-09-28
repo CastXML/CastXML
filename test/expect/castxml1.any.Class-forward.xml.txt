@@ -9,9 +9,9 @@
     <Argument type="_7" location="f1:7" file="f1" line="7"/>
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:8" file="f1" line="8"/>
-  <ReferenceType id="_7" type="_1c"/>
+  <ReferenceType id="_7" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_8" type="_1"/>
+  <ReferenceType id="_8" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-forward.cxx"/>
 </CastXML>$

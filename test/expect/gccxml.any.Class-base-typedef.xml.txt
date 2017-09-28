@@ -12,9 +12,9 @@
   </OperatorMethod>
   <Destructor id="_6" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
   <Class id="_7" name="base" context="_2" location="f1:1" file="f1" line="1" members="_10 _11 _12 _13" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_8" type="_1c"/>
+  <ReferenceType id="_8" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_9" type="_1"/>
+  <ReferenceType id="_9" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_10" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_11" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_14" location="f1:1" file="f1" line="1"/>
@@ -23,9 +23,9 @@
     <Argument type="_14" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_13" name="base" context="_7" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_14" type="_7c"/>
+  <ReferenceType id="_14" type="_7c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_7c" type="_7" const="1"/>
-  <ReferenceType id="_15" type="_7"/>
+  <ReferenceType id="_15" type="_7" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-base-typedef.cxx"/>
 </GCC_XML>$

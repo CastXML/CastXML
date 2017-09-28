@@ -38,11 +38,11 @@
   <FundamentalType id="_19" name="int" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_20" name="void" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_21" type="_4" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_22" type="_3"/>
-  <ReferenceType id="_23" type="_3c"/>
-  <ReferenceType id="_24" type="_4c"/>
+  <ReferenceType id="_22" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_23" type="_3c" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_24" type="_4c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_4c" type="_4" const="1"/>
-  <ReferenceType id="_25" type="_4"/>
+  <ReferenceType id="_25" type="_4" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Function-Argument-default-cast.cxx"/>
 </GCC_XML>$

@@ -82,12 +82,12 @@
   <FundamentalType id="_58" name="void" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_59c" type="_59" const="1"/>
   <CvQualifiedType id="_60c" type="_60" const="1"/>
-  <ReferenceType id="_61" type="_17c"/>
-  <ReferenceType id="_62" type="_17"/>
+  <ReferenceType id="_61" type="_17c" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_62" type="_17" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_63c" type="_63" const="1"/>
-  <ReferenceType id="_64" type="_24c"/>
+  <ReferenceType id="_64" type="_24c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_24c" type="_24" const="1"/>
-  <ReferenceType id="_65" type="_24"/>
+  <ReferenceType id="_65" type="_24" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_66c" type="_66" const="1"/>
   <Namespace id="_2" name="::"/>
   <ElaboratedType id="_59" type="_3"/>
