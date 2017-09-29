@@ -1735,7 +1735,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
-  if (!d->isAnonymousStructOrUnion()) {
+  if (!d->isAnonymousStructOrUnion() && !d->isLambda()) {
     std::string s;
     llvm::raw_string_ostream rso(s);
     d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
@@ -1756,7 +1756,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     if (dx && dx->isAbstract()) {
       this->OS << " abstract=\"1\"";
     }
-    if (dn->Complete && !d->isInvalidDecl()) {
+    if (dn->Complete && !d->isInvalidDecl() && !d->isLambda()) {
       this->PrintMembersAttribute(d);
       doBases = dx && dx->getNumBases();
       if (doBases) {
