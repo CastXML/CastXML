@@ -1,0 +1,30 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
+  <Union id="_3" name="" context="_1" access="private" location="f1:3" file="f1" line="3" members="_9 _10 _11 _12" size="[0-9]+" align="[0-9]+"/>
+  <Field id="_4" name="u" type="_3" context="_1" access="private" location="f1:5" file="f1" line="5" offset="0"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+    <Argument type="_13" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_7" name="=" returns="_14" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_13" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_9" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_10" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?>
+    <Argument type="_15" location="f1:3" file="f1" line="3"/>
+  </Constructor>
+  <OperatorMethod id="_11" name="=" returns="_16" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_15" location="f1:3" file="f1" line="3"/>
+  </OperatorMethod>
+  <Destructor id="_12" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?/>
+  <ReferenceType id="_13" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <ReferenceType id="_14" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_15" type="_3c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_3c" type="_3" const="1"/>
+  <ReferenceType id="_16" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Class-member-Union-anonymous.cxx"/>
+</GCC_XML>$

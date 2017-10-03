@@ -1,0 +1,6 @@
+class start
+{
+  struct
+  {
+  } s;
+};
