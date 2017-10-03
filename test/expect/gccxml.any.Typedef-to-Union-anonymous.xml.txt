@@ -2,14 +2,14 @@
 <GCC_XML[^>]*>
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:3" file="f1" line="3"/>
   <Union id="_2" name="" context="_3" location="f1:1" file="f1" line="1" members="_4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_4" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_5" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_4" name="" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_5" name="" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_8" location="f1:1" file="f1" line="1"/>
   </Constructor>
   <OperatorMethod id="_6" name="=" returns="_9" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
     <Argument type="_8" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_7" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_7" name="" context="_2" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <ReferenceType id="_8" type="_2c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_2c" type="_2" const="1"/>
   <ReferenceType id="_9" type="_2" size="[0-9]+" align="[0-9]+"/>

@@ -34,6 +34,7 @@
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
+#include "llvm/ADT/Optional.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <fstream>
@@ -472,9 +473,10 @@ class ASTVisitor : public ASTVisitorBase
   /** Output a function element using the name and flags given by
       the caller.  This encompasses functionality common to all the
       function declaration output methods.  */
-  void OutputFunctionHelper(clang::FunctionDecl const* d, DumpNode const* dn,
-                            const char* tag, std::string const& name,
-                            unsigned int flags);
+  void OutputFunctionHelper(
+    clang::FunctionDecl const* d, DumpNode const* dn, const char* tag,
+    unsigned int flags,
+    llvm::Optional<std::string> const& name = llvm::Optional<std::string>());
 
   /** Output a function type element using the tag given by the caller.
       This encompasses functionality common to all the function type
@@ -1519,13 +1521,13 @@ void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
 
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn, const char* tag,
-                                      std::string const& name,
-                                      unsigned int flags)
+                                      unsigned int flags,
+                                      llvm::Optional<std::string> const& name)
 {
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
-  if (!name.empty()) {
-    this->PrintNameAttribute(name);
+  if (name) {
+    this->PrintNameAttribute(name.getValue());
   }
   if (flags & FH_Returns) {
     this->PrintReturnsAttribute(d->getReturnType(), dn->Complete);
@@ -1951,10 +1953,10 @@ void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
   }
   if (d->isOverloadedOperator()) {
     this->OutputFunctionHelper(
-      d, dn, "OperatorFunction",
-      clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+      d, dn, "OperatorFunction", flags,
+      std::string(clang::getOperatorSpelling(d->getOverloadedOperator())));
   } else if (clang::IdentifierInfo const* ii = d->getIdentifier()) {
-    this->OutputFunctionHelper(d, dn, "Function", ii->getName().str(), flags);
+    this->OutputFunctionHelper(d, dn, "Function", flags, ii->getName().str());
   } else {
     this->OutputUnimplementedDecl(d, dn);
   }
@@ -1984,10 +1986,10 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   }
   if (d->isOverloadedOperator()) {
     this->OutputFunctionHelper(
-      d, dn, "OperatorMethod",
-      clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+      d, dn, "OperatorMethod", flags,
+      std::string(clang::getOperatorSpelling(d->getOverloadedOperator())));
   } else if (clang::IdentifierInfo const* ii = d->getIdentifier()) {
-    this->OutputFunctionHelper(d, dn, "Method", ii->getName().str(), flags);
+    this->OutputFunctionHelper(d, dn, "Method", flags, ii->getName().str());
   } else {
     this->OutputUnimplementedDecl(d, dn);
   }
@@ -2012,7 +2014,7 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   if (d->isPure()) {
     flags |= FH_Pure;
   }
-  this->OutputFunctionHelper(d, dn, "Converter", "", flags);
+  this->OutputFunctionHelper(d, dn, "Converter", flags);
 }
 
 void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
@@ -2028,8 +2030,8 @@ void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
   if (d->isExplicit()) {
     flags |= FH_Explicit;
   }
-  this->OutputFunctionHelper(d, dn, "Constructor", this->GetContextName(d),
-                             flags);
+  this->OutputFunctionHelper(d, dn, "Constructor", flags,
+                             this->GetContextName(d));
 }
 
 void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
@@ -2048,8 +2050,8 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
   if (d->isPure()) {
     flags |= FH_Pure;
   }
-  this->OutputFunctionHelper(d, dn, "Destructor", this->GetContextName(d),
-                             flags);
+  this->OutputFunctionHelper(d, dn, "Destructor", flags,
+                             this->GetContextName(d));
 }
 
 void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
@@ -2186,14 +2188,14 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.2\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.3\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
     // Start dump with gccxml-compatible format (legacy).
     /* clang-format off */
     this->OS <<
-      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.142\">\n"
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.143\">\n"
       ;
     /* clang-format on */
   }
