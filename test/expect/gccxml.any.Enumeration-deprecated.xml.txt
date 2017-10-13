@@ -1,0 +1,8 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Enumeration id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+" attributes="deprecated">
+    <EnumValue name="ev0" init="0" attributes="deprecated"/>
+  </Enumeration>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Enumeration-deprecated.cxx"/>
+</GCC_XML>$
