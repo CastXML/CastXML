@@ -3,11 +3,15 @@
   <Class id="_1" name="start" context="_2" location="f1:9" file="f1" line="9" members="_3 _4 _5" bases="_6" size="[0-9]+" align="[0-9]+">
     <Base type="_6" access="public" virtual="0" offset="0"/>
   </Class>
-  <Constructor id="_3" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
+  (<Constructor id="_3" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?>
     <Argument type="_7" location="f1:9" file="f1" line="9"/>
   </Constructor>
-  <Destructor id="_5" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
+  |<Constructor id="_3" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?>
+    <Argument type="_7" location="f1:9" file="f1" line="9"/>
+  </Constructor>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
+  )<Destructor id="_5" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
   <Class id="_6" name="base&lt;const int&gt;" context="_2" location="f1:2" file="f1" line="2" members="_8 _9 _10 _11" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_7" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
