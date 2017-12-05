@@ -316,6 +316,17 @@ protected:
       }
 #endif
 
+#if LLVM_VERSION_MAJOR < 6
+      if (this->NeedHasUniqueObjectRepresentations(this->Opts.Predefines,
+                                                   CI)) {
+        // Clang 6 and above provide a __has_unique_object_representations
+        // builtin needed in C++17 mode.  Provide an approximation for older
+        // Clang versions.
+        builtins += "\n"
+                    "#define __has_unique_object_representations(x) false\n";
+      }
+#endif
+
       // Prevent glibc use of a GNU extension not implemented by Clang.
       if (this->NeedNoMathInlines(this->Opts.Predefines)) {
         builtins += "\n"
@@ -359,6 +370,14 @@ protected:
     return false;
 #endif
   }
+
+#if LLVM_VERSION_MAJOR < 6
+  bool NeedHasUniqueObjectRepresentations(
+    std::string const& pd, clang::CompilerInstance const& CI) const
+  {
+    return (this->IsActualGNU(pd) && CI.getLangOpts().CPlusPlus1z);
+  }
+#endif
 
   bool NeedNoMathInlines(std::string const& pd) const
   {

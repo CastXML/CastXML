@@ -376,6 +376,7 @@ castxml_test_cmd(cc-gnu-c-std-gnu89 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu>
 castxml_test_cmd(cc-gnu-c-std-gnu99 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> -std=199901L ")" ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-c-std-gnu11 --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> -std=201112L ")" ${empty_c} "-###")
 castxml_test_cmd(cc-gnu-c-tgt-i386-opt-E --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> --cc-define=__i386__ --cc-define=__OPTIMIZE__ ")" ${empty_c} -E -dM)
+castxml_test_cmd(cc-gnu-builtin-unique-object-representations --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> -std=201703L ")" ${input}/has_unique_object_representations.cxx)
 
 # Test --castxml-cc-msvc detection.
 add_executable(cc-msvc cc-msvc.c)
