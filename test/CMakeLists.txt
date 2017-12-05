@@ -60,10 +60,17 @@ macro(castxml_test_output_common prefix ext std test)
     set(flag --castxml-output=1)
   endif()
 
+  set(std_flag -std=${std})
+  if(LLVM_VERSION_MAJOR VERSION_LESS 5)
+    if("${std_flag}" MATCHES "^(.*)17$")
+      set(std_flag "${CMAKE_MATCH_1}1z")
+    endif()
+  endif()
+
   set(command $<TARGET_FILE:castxml>
     ${flag}
     ${_castxml_start}
-    -std=${std}
+    ${std_flag}
     ${CMAKE_CURRENT_LIST_DIR}/input/${_castxml_input}.${ext}
     -o ${prefix}.${std}.${test}.xml
     ${castxml_test_output_extra_arguments}
@@ -139,6 +146,16 @@ macro(castxml_test_output_gnuxx14 test)
   castxml_test_output_common(castxml1 cxx gnu++14 ${test})
 endmacro()
 
+macro(castxml_test_output_cxx17 test)
+  castxml_test_output_common(gccxml cxx c++17 ${test})
+  castxml_test_output_common(castxml1 cxx c++17 ${test})
+endmacro()
+
+macro(castxml_test_output_gnuxx17 test)
+  castxml_test_output_common(gccxml cxx gnu++17 ${test})
+  castxml_test_output_common(castxml1 cxx gnu++17 ${test})
+endmacro()
+
 macro(castxml_test_output_broken_cxx98 test)
   castxml_test_output_common(gccxml.broken cxx c++98 ${test})
   castxml_test_output_common(castxml1.broken cxx c++98 ${test})
@@ -169,6 +186,16 @@ macro(castxml_test_output_broken_gnuxx14 test)
   castxml_test_output_common(castxml1.broken cxx gnu++14 ${test})
 endmacro()
 
+macro(castxml_test_output_broken_cxx17 test)
+  castxml_test_output_common(gccxml.broken cxx c++17 ${test})
+  castxml_test_output_common(castxml1.broken cxx c++17 ${test})
+endmacro()
+
+macro(castxml_test_output_broken_gnuxx17 test)
+  castxml_test_output_common(gccxml.broken cxx gnu++17 ${test})
+  castxml_test_output_common(castxml1.broken cxx gnu++17 ${test})
+endmacro()
+
 macro(castxml_test_output_c test)
   castxml_test_output_c89(${test})
   castxml_test_output_gnu89(${test})
@@ -185,6 +212,8 @@ macro(castxml_test_output test)
   castxml_test_output_gnuxx11(${test})
   castxml_test_output_cxx14(${test})
   castxml_test_output_gnuxx14(${test})
+  castxml_test_output_cxx17(${test})
+  castxml_test_output_gnuxx17(${test})
 endmacro()
 
 macro(castxml_test_output_11 test)
@@ -192,9 +221,22 @@ macro(castxml_test_output_11 test)
   castxml_test_output_gnuxx11(${test})
   castxml_test_output_cxx14(${test})
   castxml_test_output_gnuxx14(${test})
+  castxml_test_output_cxx17(${test})
+  castxml_test_output_gnuxx17(${test})
 endmacro()
 
 macro(castxml_test_output_14 test)
+  castxml_test_output_cxx14(${test})
+  castxml_test_output_gnuxx14(${test})
+  castxml_test_output_cxx17(${test})
+  castxml_test_output_gnuxx17(${test})
+endmacro()
+
+macro(castxml_test_output_14below test)
+  castxml_test_output_cxx98(${test})
+  castxml_test_output_gnuxx98(${test})
+  castxml_test_output_cxx11(${test})
+  castxml_test_output_gnuxx11(${test})
   castxml_test_output_cxx14(${test})
   castxml_test_output_gnuxx14(${test})
 endmacro()
@@ -206,6 +248,8 @@ macro(castxml_test_output_broken test)
   castxml_test_output_broken_gnuxx11(${test})
   castxml_test_output_broken_cxx14(${test})
   castxml_test_output_broken_gnuxx14(${test})
+  castxml_test_output_broken_cxx17(${test})
+  castxml_test_output_broken_gnuxx17(${test})
 endmacro()
 
 set(input ${CMAKE_CURRENT_LIST_DIR}/input)
@@ -249,6 +293,14 @@ castxml_test_cmd(castxml-and-c++11 --castxml-output=1 -std=c++11 ${empty_cxx})
 
 castxml_test_cmd(gccxml-and-c++14 --castxml-gccxml -std=c++14 ${empty_cxx})
 castxml_test_cmd(castxml-and-c++14 --castxml-output=1 -std=c++14 ${empty_cxx})
+
+if(LLVM_VERSION_MAJOR VERSION_LESS 5)
+  castxml_test_cmd(gccxml-and-c++17 --castxml-gccxml -std=c++1z ${empty_cxx})
+  castxml_test_cmd(castxml-and-c++17 --castxml-output=1 -std=c++1z ${empty_cxx})
+else()
+  castxml_test_cmd(gccxml-and-c++17 --castxml-gccxml -std=c++17 ${empty_cxx})
+  castxml_test_cmd(castxml-and-c++17 --castxml-output=1 -std=c++17 ${empty_cxx})
+endif()
 
 castxml_test_cmd(gccxml-and-objc1 --castxml-gccxml ${empty_m})
 castxml_test_cmd(castxml-and-objc1 --castxml-output=1 ${empty_m})
@@ -421,7 +473,7 @@ castxml_test_output(Function-Argument-default-ns)
 castxml_test_output_11(Function-lambda)
 castxml_test_output(Function-rvalue-reference)
 castxml_test_output(Function-template)
-castxml_test_output(Function-throw)
+castxml_test_output_14below(Function-throw)
 castxml_test_output(Function-variadic)
 castxml_test_output(FunctionType)
 castxml_test_output(FunctionType-variadic)
