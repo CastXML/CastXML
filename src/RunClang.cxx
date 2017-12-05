@@ -701,7 +701,13 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
             std_date = 0;
           }
           std_flag += "++";
-          if (std_date >= 201406L) {
+          if (std_date >= 201703L) {
+#if LLVM_VERSION_MAJOR >= 5
+            std_flag += "17";
+#else
+            std_flag += "1z";
+#endif
+          } else if (std_date >= 201406L) {
             std_flag += "1z";
           } else if (std_date >= 201402L) {
             std_flag += "14";
