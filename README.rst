@@ -62,7 +62,7 @@ CMake options include:
 
 ``LLVM_DIR``
   Location of the LLVM/Clang SDK.
-  Set to ``<prefix>/share/llvm/cmake``, where ``<prefix>`` is the top
+  Set to ``<prefix>/lib/cmake/llvm``, where ``<prefix>`` is the top
   of the LLVM/Clang SDK install tree.
 
 ``SPHINX_EXECUTABLE``
