@@ -649,7 +649,22 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
               msc_ver = 1600;
             }
             if (msc_ver >= 1900) {
-              args.push_back("-std=c++14");
+              long msvc_lang = 0;
+              if (const char* l = strstr(pd.c_str(), "#define _MSVC_LANG ")) {
+                l += 19;
+                if (const char* le = strchr(l, '\n')) {
+                  if (*(le - 1) == '\r') {
+                    --le;
+                  }
+                  std::string const msvc_lang_str(l, le - l);
+                  msvc_lang = std::strtol(msvc_lang_str.c_str(), nullptr, 10);
+                }
+              }
+              if (msvc_lang >= 201703L) {
+                args.push_back("-std=c++17");
+              } else {
+                args.push_back("-std=c++14");
+              }
             } else if (msc_ver >= 1600) {
               args.push_back("-std=c++11");
             } else {
