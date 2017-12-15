@@ -55,7 +55,45 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${std_cxx11}")
 endif()
 
-find_package(LLVM REQUIRED)
+macro(hint_clang_from_llvm)
+  if(LLVM_DIR AND NOT Clang_DIR)
+    if(LLVM_DIR MATCHES "share/llvm/cmake$")
+      # LLVM/Clang 3.8 installs in <prefix>/share/{llvm,clang}/cmake
+      get_filename_component(Clang_DIR "${LLVM_DIR}/../../clang/cmake" ABSOLUTE)
+    else()
+      # LLVM/Clang 3.9+ installs in <prefix>/lib/cmake/{llvm,clang}
+      get_filename_component(Clang_DIR "${LLVM_DIR}/../clang" ABSOLUTE)
+    endif()
+  endif()
+endmacro()
+
+macro(hint_llvm_from_clang)
+  if(Clang_DIR AND NOT LLVM_DIR)
+    if(Clang_DIR MATCHES "share/clang/cmake$")
+      # LLVM/Clang 3.8 installs in <prefix>/share/{llvm,clang}/cmake
+      get_filename_component(LLVM_DIR "${Clang_DIR}/../../llvm/cmake" ABSOLUTE)
+    else()
+      # LLVM/Clang 3.9+ installs in <prefix>/lib/cmake/{llvm,clang}
+      get_filename_component(LLVM_DIR "${Clang_DIR}/../llvm" ABSOLUTE)
+    endif()
+  endif()
+endmacro()
+
+# Build scripts may set either LLVM_DIR or Clang_DIR.
+hint_llvm_from_clang()
+hint_clang_from_llvm()
+
+# Clang 3.8+ installs its own CMake package.  Try it first.
+find_package(Clang QUIET)
+
+# If Clang did not find LLVM for us, give our search below a hint.
+hint_llvm_from_clang()
+
+# Clang 3.9+ automatically searches for LLVM.  For older versions we
+# may need to search for LLVM directly.  Either way we require LLVM.
+if(NOT LLVM_FOUND)
+  find_package(LLVM REQUIRED)
+endif()
 
 if(DEFINED LLVM_BUILD_BINARY_DIR)
   message(FATAL_ERROR
