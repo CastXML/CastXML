@@ -60,10 +60,10 @@ Run CMake on the CastXML source tree to generate a build tree using
 a C++ compiler compatible with that used to build the LLVM/Clang SDK.
 CMake options include:
 
-``LLVM_DIR``
-  Location of the LLVM/Clang SDK.
-  Set to ``<prefix>/lib/cmake/llvm``, where ``<prefix>`` is the top
-  of the LLVM/Clang SDK install tree.
+``Clang_DIR``
+  Location of the LLVM/Clang SDK.  Set to ``<prefix>/lib/cmake/clang``,
+  where ``<prefix>`` is the top of the LLVM/Clang SDK install tree.
+  Alternatively, ``LLVM_DIR`` may be set to ``<prefix>/lib/cmake/llvm``.
 
 ``SPHINX_EXECUTABLE``
   Location of the ``sphinx-build`` executable.
