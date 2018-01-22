@@ -97,8 +97,9 @@ endif()
 
 if(DEFINED LLVM_BUILD_BINARY_DIR)
   message(FATAL_ERROR
-    "LLVM_DIR refers to a LLVM/Clang build directory:\n"
-    "  ${LLVM_DIR}\n"
+    "Clang_DIR or LLVM_DIR refers to a LLVM/Clang build directory:\n"
+    "  Clang_DIR=${Clang_DIR}\n"
+    "  LLVM_DIR=${LLVM_DIR}\n"
     "CastXML must be built against a LLVM/Clang install tree as "
     "specified in\n"
     "  ${CastXML_SOURCE_DIR}/README.rst")
@@ -116,8 +117,9 @@ foreach(inc ${LLVM_INCLUDE_DIRS})
 endforeach()
 if(NOT found_clang)
   message(FATAL_ERROR
-    "LLVM_DIR refers to a LLVM installation:\n"
-    "  ${LLVM_DIR}\n"
+    "Clang_DIR or LLVM_DIR refers to a LLVM/Clang installation:\n"
+    "  Clang_DIR=${Clang_DIR}\n"
+    "  LLVM_DIR=${LLVM_DIR}\n"
     "that does not have `clang/` headers in any include directory:\n"
     "${tried_clang}"
     )
