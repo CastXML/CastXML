@@ -10,9 +10,9 @@
     <Argument type="_8" location="f1:11" file="f1" line="11"/>
   </OperatorMethod>
   <Destructor id="_7" name="C" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_8" type="_2c"/>
+  <ReferenceType id="_8" type="_2c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_2c" type="_2" const="1"/>
-  <ReferenceType id="_9" type="_2"/>
+  <ReferenceType id="_9" type="_2" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/Class-template-recurse.cxx"/>
 </CastXML>$

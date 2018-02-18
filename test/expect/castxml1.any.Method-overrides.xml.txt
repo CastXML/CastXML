@@ -19,8 +19,8 @@
   <Method id="_10" name="method" returns="_9" context="_8" access="private" location="f1:3" file="f1" line="3" virtual="1" mangled="[^"]+">
     <Argument type="_9" location="f1:3" file="f1" line="3"/>
   </Method>
-  <ReferenceType id="_11" type="_1"/>
-  <ReferenceType id="_12" type="_1c"/>
+  <ReferenceType id="_11" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_12" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <OperatorMethod id="_13" name="=" returns="_17" context="_8" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
@@ -30,8 +30,8 @@
   <Constructor id="_16" name="base" context="_8" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <ReferenceType id="_17" type="_8"/>
-  <ReferenceType id="_18" type="_8c"/>
+  <ReferenceType id="_17" type="_8" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_18" type="_8c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_8c" type="_8" const="1"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Method-overrides.cxx"/>

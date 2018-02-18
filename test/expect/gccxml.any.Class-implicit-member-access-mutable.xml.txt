@@ -15,9 +15,9 @@
     <Argument type="_11" location="f1:9" file="f1" line="9"/>
   </OperatorMethod>
   <Field id="_10" name="data" type="_13" context="_5" access="private" location="f1:10" file="f1" line="10" offset="0" mutable="1"/>
-  <ReferenceType id="_11" type="_5c"/>
+  <ReferenceType id="_11" type="_5c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_5c" type="_5" const="1"/>
-  <ReferenceType id="_12" type="_5"/>
+  <ReferenceType id="_12" type="_5" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_13" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-implicit-member-access-mutable.cxx"/>

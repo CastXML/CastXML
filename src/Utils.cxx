@@ -18,6 +18,7 @@
 #include "Version.h"
 
 #include <fstream>
+#include <llvm/ADT/Optional.h>
 #include <llvm/ADT/SmallString.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Path.h>
@@ -121,7 +122,7 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   // Create a temporary directory to hold output files.
   llvm::SmallString<128> tmpDir;
   if (std::error_code e =
-      llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
+        llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
     msg = e.message();
     return false;
   }
@@ -134,26 +135,33 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   llvm::StringRef inFile; // empty means /dev/null
   llvm::StringRef outFile = tmpOut.str();
   llvm::StringRef errFile = tmpErr.str();
+#if LLVM_VERSION_MAJOR >= 6
+  llvm::Optional<llvm::StringRef> redirects[3];
+  redirects[0] = inFile;
+  redirects[1] = outFile;
+  redirects[2] = errFile;
+#else
   llvm::StringRef const* redirects[3];
   redirects[0] = &inFile;
   redirects[1] = &outFile;
   redirects[2] = &errFile;
+#endif
 
   std::vector<const char*> cmd(argv, argv + argc);
   cmd.push_back(0);
 
   // Actually run the command.
-  ret = llvm::sys::ExecuteAndWait(prog, &*cmd.begin(), nullptr, redirects,
-                                  0, 0, &msg, nullptr);
+  ret = llvm::sys::ExecuteAndWait(prog, &*cmd.begin(), nullptr, redirects, 0,
+                                  0, &msg, nullptr);
 
   // Load the output from the temporary files.
   {
-  std::ifstream fout(outFile.str());
-  std::ifstream ferr(errFile.str());
-  out.assign(std::istreambuf_iterator<char>(fout),
-             std::istreambuf_iterator<char>());
-  err.assign(std::istreambuf_iterator<char>(ferr),
-             std::istreambuf_iterator<char>());
+    std::ifstream fout(outFile.str());
+    std::ifstream ferr(errFile.str());
+    out.assign(std::istreambuf_iterator<char>(fout),
+               std::istreambuf_iterator<char>());
+    err.assign(std::istreambuf_iterator<char>(ferr),
+               std::istreambuf_iterator<char>());
   }
 
   // Remove temporary files and directory.

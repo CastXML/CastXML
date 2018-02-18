@@ -55,12 +55,51 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${std_cxx11}")
 endif()
 
-find_package(LLVM REQUIRED)
+macro(hint_clang_from_llvm)
+  if(LLVM_DIR AND NOT Clang_DIR)
+    if(LLVM_DIR MATCHES "share/llvm/cmake$")
+      # LLVM/Clang 3.8 installs in <prefix>/share/{llvm,clang}/cmake
+      get_filename_component(Clang_DIR "${LLVM_DIR}/../../clang/cmake" ABSOLUTE)
+    else()
+      # LLVM/Clang 3.9+ installs in <prefix>/lib/cmake/{llvm,clang}
+      get_filename_component(Clang_DIR "${LLVM_DIR}/../clang" ABSOLUTE)
+    endif()
+  endif()
+endmacro()
+
+macro(hint_llvm_from_clang)
+  if(Clang_DIR AND NOT LLVM_DIR)
+    if(Clang_DIR MATCHES "share/clang/cmake$")
+      # LLVM/Clang 3.8 installs in <prefix>/share/{llvm,clang}/cmake
+      get_filename_component(LLVM_DIR "${Clang_DIR}/../../llvm/cmake" ABSOLUTE)
+    else()
+      # LLVM/Clang 3.9+ installs in <prefix>/lib/cmake/{llvm,clang}
+      get_filename_component(LLVM_DIR "${Clang_DIR}/../llvm" ABSOLUTE)
+    endif()
+  endif()
+endmacro()
+
+# Build scripts may set either LLVM_DIR or Clang_DIR.
+hint_llvm_from_clang()
+hint_clang_from_llvm()
+
+# Clang 3.8+ installs its own CMake package.  Try it first.
+find_package(Clang QUIET)
+
+# If Clang did not find LLVM for us, give our search below a hint.
+hint_llvm_from_clang()
+
+# Clang 3.9+ automatically searches for LLVM.  For older versions we
+# may need to search for LLVM directly.  Either way we require LLVM.
+if(NOT LLVM_FOUND)
+  find_package(LLVM REQUIRED)
+endif()
 
 if(DEFINED LLVM_BUILD_BINARY_DIR)
   message(FATAL_ERROR
-    "LLVM_DIR refers to a LLVM/Clang build directory:\n"
-    "  ${LLVM_DIR}\n"
+    "Clang_DIR or LLVM_DIR refers to a LLVM/Clang build directory:\n"
+    "  Clang_DIR=${Clang_DIR}\n"
+    "  LLVM_DIR=${LLVM_DIR}\n"
     "CastXML must be built against a LLVM/Clang install tree as "
     "specified in\n"
     "  ${CastXML_SOURCE_DIR}/README.rst")
@@ -68,7 +107,7 @@ endif()
 
 set(found_clang 0)
 set(tried_clang)
-foreach(inc ${LLVM_INCLUDE_DIRS})
+foreach(inc ${CLANG_INCLUDE_DIRS} ${LLVM_INCLUDE_DIRS})
   if(EXISTS "${inc}/clang/AST/ASTConsumer.h")
     set(found_clang 1)
     break()
@@ -78,14 +117,16 @@ foreach(inc ${LLVM_INCLUDE_DIRS})
 endforeach()
 if(NOT found_clang)
   message(FATAL_ERROR
-    "LLVM_DIR refers to a LLVM installation:\n"
-    "  ${LLVM_DIR}\n"
+    "Clang_DIR or LLVM_DIR refers to a LLVM/Clang installation:\n"
+    "  Clang_DIR=${Clang_DIR}\n"
+    "  LLVM_DIR=${LLVM_DIR}\n"
     "that does not have `clang/` headers in any include directory:\n"
     "${tried_clang}"
     )
 endif()
 
 add_definitions(${LLVM_DEFINITIONS})
+include_directories(${CLANG_INCLUDE_DIRS})
 include_directories(${LLVM_INCLUDE_DIRS})
 link_directories(${LLVM_LIBRARY_DIRS})
 if(NOT DEFINED LLVM_VERSION_PATCH)

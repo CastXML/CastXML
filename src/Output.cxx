@@ -31,8 +31,10 @@
 #include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/Basic/Specifiers.h"
+#include "clang/Basic/TargetInfo.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
+#include "llvm/ADT/Optional.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include <fstream>
@@ -471,9 +473,10 @@ class ASTVisitor : public ASTVisitorBase
   /** Output a function element using the name and flags given by
       the caller.  This encompasses functionality common to all the
       function declaration output methods.  */
-  void OutputFunctionHelper(clang::FunctionDecl const* d, DumpNode const* dn,
-                            const char* tag, std::string const& name,
-                            unsigned int flags);
+  void OutputFunctionHelper(
+    clang::FunctionDecl const* d, DumpNode const* dn, const char* tag,
+    unsigned int flags,
+    llvm::Optional<std::string> const& name = llvm::Optional<std::string>());
 
   /** Output a function type element using the tag given by the caller.
       This encompasses functionality common to all the function type
@@ -499,6 +502,7 @@ class ASTVisitor : public ASTVisitorBase
   void PrintContextAttribute(clang::Decl const* d,
                              clang::AccessSpecifier alt = clang::AS_none);
 
+  bool HaveFloat128Type() const;
   void PrintFloat128Type(DumpNode const* dn);
 
   // Decl node output methods.
@@ -510,6 +514,7 @@ class ASTVisitor : public ASTVisitorBase
   void OutputClassTemplateSpecializationDecl(
     clang::ClassTemplateSpecializationDecl const* d, DumpNode const* dn);
   void OutputTypedefDecl(clang::TypedefDecl const* d, DumpNode const* dn);
+  void OutputTypeAliasDecl(clang::TypeAliasDecl const* d, DumpNode const* dn);
   void OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn);
   void OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn);
   void OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn);
@@ -540,7 +545,8 @@ class ASTVisitor : public ASTVisitorBase
   void OutputOffsetType(clang::QualType t, clang::Type const* c,
                         DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
-  void OutputElaboratedType(clang::ElaboratedType const* t, DumpNode const* dn);
+  void OutputElaboratedType(clang::ElaboratedType const* t,
+                            DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -669,10 +675,6 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
       }
     }
 
-    if (clang::dyn_cast<clang::TypeAliasDecl>(d)) {
-      return DumpId();
-    }
-
     if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
       return DumpId();
     }
@@ -729,17 +731,23 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       return this->AddTypeDumpNode(
         DumpType(t->getAs<clang::AttributedType>()->getEquivalentType(), c),
         complete, dq);
+    case clang::Type::Auto: {
+      clang::AutoType const* at = t->getAs<clang::AutoType>();
+      if (at->isSugared()) {
+        return this->AddTypeDumpNode(DumpType(at->desugar(), c), complete, dq);
+      }
+    } break;
     case clang::Type::Decayed:
       return this->AddTypeDumpNode(
         DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
         complete, dq);
     case clang::Type::Elaborated:
-        if (this->Opts.GccXml || !t->isElaboratedTypeSpecifier()) {
-          return this->AddTypeDumpNode(
-            DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
-            complete, dq);
-        }
-        break;
+      if (this->Opts.GccXml || !t->isElaboratedTypeSpecifier()) {
+        return this->AddTypeDumpNode(
+          DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
+          complete, dq);
+      }
+      break;
     case clang::Type::Enum:
       return this->AddDeclDumpNodeForType(
         t->getAs<clang::EnumType>()->getDecl(), complete, dq);
@@ -1174,10 +1182,12 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
     this->MangleContext->mangleName(d, rso);
   }
 
-  // We cannot mangle __float128 correctly because Clang does not have
-  // it as an internal type, so skip mangled attributes involving it.
-  if (s.find("__float128") != s.npos) {
-    s = "";
+  if (!this->HaveFloat128Type()) {
+    // We cannot mangle __float128 correctly because Clang does not have
+    // it as an internal type, so skip mangled attributes involving it.
+    if (s.find("__float128") != s.npos) {
+      s = "";
+    }
   }
 
   // Strip a leading 1 byte in MS mangling.
@@ -1437,6 +1447,18 @@ void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
   for (auto const* a : d->specific_attrs<clang::AnnotateAttr>()) {
     attrs.push_back("annotate(" + a->getAnnotation().str() + ")");
   }
+
+  if (d->hasAttr<clang::DeprecatedAttr>()) {
+    attrs.push_back("deprecated");
+  }
+
+  if (d->hasAttr<clang::DLLExportAttr>()) {
+    attrs.push_back("dllexport");
+  }
+
+  if (d->hasAttr<clang::DLLImportAttr>()) {
+    attrs.push_back("dllimport");
+  }
 }
 
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
@@ -1485,6 +1507,15 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
   }
 }
 
+bool ASTVisitor::HaveFloat128Type() const
+{
+#if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR > 8
+  return this->CI.getTarget().hasFloat128Type();
+#else
+  return false;
+#endif
+}
+
 void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
 {
   this->OS << "  <FundamentalType";
@@ -1494,13 +1525,13 @@ void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
 
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn, const char* tag,
-                                      std::string const& name,
-                                      unsigned int flags)
+                                      unsigned int flags,
+                                      llvm::Optional<std::string> const& name)
 {
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
-  if (!name.empty()) {
-    this->PrintNameAttribute(name);
+  if (name) {
+    this->PrintNameAttribute(name.getValue());
   }
   if (flags & FH_Returns) {
     this->PrintReturnsAttribute(d->getReturnType(), dn->Complete);
@@ -1710,7 +1741,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
-  if (!d->isAnonymousStructOrUnion()) {
+  if (!d->isAnonymousStructOrUnion() && !d->isLambda()) {
     std::string s;
     llvm::raw_string_ostream rso(s);
     d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
@@ -1731,7 +1762,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     if (dx && dx->isAbstract()) {
       this->OS << " abstract=\"1\"";
     }
-    if (dn->Complete && !d->isInvalidDecl()) {
+    if (dn->Complete && !d->isInvalidDecl() && !d->isLambda()) {
       this->PrintMembersAttribute(d);
       doBases = dx && dx->getNumBases();
       if (doBases) {
@@ -1804,6 +1835,19 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
     }
   }
 
+  this->OS << "  <Typedef";
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getName().str());
+  this->PrintTypeAttribute(d->getUnderlyingType(), dn->Complete);
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+  this->PrintAttributesAttribute(d);
+  this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputTypeAliasDecl(clang::TypeAliasDecl const* d,
+                                     DumpNode const* dn)
+{
   this->OS << "  <Typedef";
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
@@ -1913,10 +1957,10 @@ void ASTVisitor::OutputFunctionDecl(clang::FunctionDecl const* d,
   }
   if (d->isOverloadedOperator()) {
     this->OutputFunctionHelper(
-      d, dn, "OperatorFunction",
-      clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+      d, dn, "OperatorFunction", flags,
+      std::string(clang::getOperatorSpelling(d->getOverloadedOperator())));
   } else if (clang::IdentifierInfo const* ii = d->getIdentifier()) {
-    this->OutputFunctionHelper(d, dn, "Function", ii->getName().str(), flags);
+    this->OutputFunctionHelper(d, dn, "Function", flags, ii->getName().str());
   } else {
     this->OutputUnimplementedDecl(d, dn);
   }
@@ -1946,10 +1990,10 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   }
   if (d->isOverloadedOperator()) {
     this->OutputFunctionHelper(
-      d, dn, "OperatorMethod",
-      clang::getOperatorSpelling(d->getOverloadedOperator()), flags);
+      d, dn, "OperatorMethod", flags,
+      std::string(clang::getOperatorSpelling(d->getOverloadedOperator())));
   } else if (clang::IdentifierInfo const* ii = d->getIdentifier()) {
-    this->OutputFunctionHelper(d, dn, "Method", ii->getName().str(), flags);
+    this->OutputFunctionHelper(d, dn, "Method", flags, ii->getName().str());
   } else {
     this->OutputUnimplementedDecl(d, dn);
   }
@@ -1974,7 +2018,7 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   if (d->isPure()) {
     flags |= FH_Pure;
   }
-  this->OutputFunctionHelper(d, dn, "Converter", "", flags);
+  this->OutputFunctionHelper(d, dn, "Converter", flags);
 }
 
 void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
@@ -1990,8 +2034,8 @@ void ASTVisitor::OutputCXXConstructorDecl(clang::CXXConstructorDecl const* d,
   if (d->isExplicit()) {
     flags |= FH_Explicit;
   }
-  this->OutputFunctionHelper(d, dn, "Constructor", this->GetContextName(d),
-                             flags);
+  this->OutputFunctionHelper(d, dn, "Constructor", flags,
+                             this->GetContextName(d));
 }
 
 void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
@@ -2010,8 +2054,8 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
   if (d->isPure()) {
     flags |= FH_Pure;
   }
-  this->OutputFunctionHelper(d, dn, "Destructor", this->GetContextName(d),
-                             flags);
+  this->OutputFunctionHelper(d, dn, "Destructor", flags,
+                             this->GetContextName(d));
 }
 
 void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
@@ -2083,6 +2127,7 @@ void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
   this->OS << "  <ReferenceType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
   this->OS << "/>\n";
 }
 
@@ -2147,14 +2192,14 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.4\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
     // Start dump with gccxml-compatible format (legacy).
     /* clang-format off */
     this->OS <<
-      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.140\">\n"
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.144\">\n"
       ;
     /* clang-format on */
   }

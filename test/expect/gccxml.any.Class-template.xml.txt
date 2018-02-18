@@ -19,12 +19,12 @@
     <Argument type="_15" location="f1:12" file="f1" line="12"/>
   </OperatorMethod>
   <Destructor id="_12" name="start" context="_3" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_13" type="_2c"/>
+  <ReferenceType id="_13" type="_2c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_2c" type="_2" const="1"/>
-  <ReferenceType id="_14" type="_2"/>
-  <ReferenceType id="_15" type="_3c"/>
+  <ReferenceType id="_14" type="_2" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_15" type="_3c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_3c" type="_3" const="1"/>
-  <ReferenceType id="_16" type="_3"/>
+  <ReferenceType id="_16" type="_3" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_4" name="::"/>
   <File id="f1" name=".*/test/input/Class-template.cxx"/>
 </GCC_XML>$

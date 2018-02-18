@@ -1,0 +1,21 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
+  <OperatorMethod id="_3" name="&lt;&lt;" returns="_8" context="_1" access="private" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="dllimport">
+    <Argument type="_9" location="f1:3" file="f1" line="3"/>
+  </OperatorMethod>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+    <Argument type="_10" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_6" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_10" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <ReferenceType id="_8" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_10" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/OperatorMethod-ms-dllimport.cxx"/>
+</GCC_XML>$

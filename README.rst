@@ -46,7 +46,9 @@ To build CastXML from source, first obtain the prerequisites:
 * `LLVM/Clang`_ compiler SDK install tree built using the C++ compiler.
   This version of CastXML has been tested with LLVM/Clang
 
-  - SVN revision ``280011``
+  - SVN revision ``319768`` (trunk)
+  - Release ``5.0``
+  - Release ``4.0``
   - Release ``3.9``
   - Release ``3.8``
   - Release ``3.7``
@@ -58,10 +60,10 @@ Run CMake on the CastXML source tree to generate a build tree using
 a C++ compiler compatible with that used to build the LLVM/Clang SDK.
 CMake options include:
 
-``LLVM_DIR``
-  Location of the LLVM/Clang SDK.
-  Set to ``<prefix>/share/llvm/cmake``, where ``<prefix>`` is the top
-  of the LLVM/Clang SDK install tree.
+``Clang_DIR``
+  Location of the LLVM/Clang SDK.  Set to ``<prefix>/lib/cmake/clang``,
+  where ``<prefix>`` is the top of the LLVM/Clang SDK install tree.
+  Alternatively, ``LLVM_DIR`` may be set to ``<prefix>/lib/cmake/llvm``.
 
 ``SPHINX_EXECUTABLE``
   Location of the ``sphinx-build`` executable.

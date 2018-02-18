@@ -65,6 +65,9 @@
 #ifdef _MSC_VER
 # pragma message(TO_DEFINE(_MSC_VER))
 #endif
+#ifdef _MSVC_LANG
+# pragma message(TO_DEFINE(_MSVC_LANG))
+#endif
 #ifdef _MT
 # pragma message(TO_DEFINE(_MT))
 #endif

@@ -6,6 +6,10 @@ struct Base
 };
 struct Derived : public Base
 {
+  Derived();
+  Derived(Derived const&);
+  Derived& operator=(Derived const&);
+  virtual ~Derived();
 };
 Base* b();
 Base const* bc();

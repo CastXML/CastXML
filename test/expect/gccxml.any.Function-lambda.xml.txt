@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:2" file="f1" line="2" mangled="[^"]+">
+    <Argument name="f" type="_2" location="f1:2" file="f1" line="2"/>
+  </Function>
+  <Class id="_2" context="_4" location="f1:9" file="f1" line="9" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <Function id="_4" name="instantiate_start_with_lambda" returns="_5" context="_3" location="f1:7" file="f1" line="7" mangled="[^"]+"/>
+  <FundamentalType id="_5" name="void" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Function-lambda.cxx"/>
+</GCC_XML>$

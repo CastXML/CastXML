@@ -1,0 +1,26 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Function id="_1" name="start" returns="_5" context="_6" location="f1:1" file="f1" line="1" mangled="[^"]+" attributes="deprecated">
+    <Argument type="_7" location="f1:1" file="f1" line="1"/>
+  </Function>
+  <Function id="_2" name="start" returns="_5" context="_6" location="f1:2" file="f1" line="2" mangled="[^"]+" attributes="__stdcall__ deprecated">
+    <Argument type="_8" location="f1:2" file="f1" line="2"/>
+  </Function>
+  <Function id="_3" name="start" returns="_5" context="_6" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="__fastcall__ deprecated">
+    <Argument type="_9" location="f1:3" file="f1" line="3"/>
+  </Function>
+  <Function id="_4" name="start" returns="_5" context="_6" location="f1:4" file="f1" line="4" mangled="[^"]+" attributes="__thiscall__ deprecated">
+    <Argument type="_10" location="f1:4" file="f1" line="4"/>
+  </Function>
+  <FundamentalType id="_5" name="void" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_7" type="_11" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_8" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_9" type="_13" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_10" type="_14" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_6" name="::"/>
+  <FunctionType id="_11" returns="_5"/>
+  <FunctionType id="_12" returns="_5" attributes="__stdcall__"/>
+  <FunctionType id="_13" returns="_5" attributes="__fastcall__"/>
+  <FunctionType id="_14" returns="_5" attributes="__thiscall__"/>
+  <File id="f1" name=".*/test/input/Function-calling-convention-ms-deprecated.cxx"/>
+</CastXML>$

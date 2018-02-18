@@ -1,0 +1,10 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="[^"]+" attributes="dllimport">
+    <Argument type="_4" location="f1:1" file="f1" line="1"/>
+  </Function>
+  <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/Function-ms-dllimport.cxx"/>
+</GCC_XML>$

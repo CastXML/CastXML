@@ -1,10 +1,10 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3 _4 _5"/>
-  <Function id="_3" name="f" returns="_6" context="_1" location="f1:4" file="f1" line="4" mangled="">
+  <Function id="_3" name="f" returns="_6" context="_1" location="f1:4" file="f1" line="4" mangled="[^"]*">
     <Argument type="_6" location="f1:4" file="f1" line="4"/>
   </Function>
-  <Variable id="_4" name="v" type="_6" init="" context="_1" location="f1:5" file="f1" line="5" mangled="[^"]*"/>
+  <Variable id="_4" name="v" type="_6"( init="")? context="_1" location="f1:5" file="f1" line="5" mangled="[^"]*"/>
   <Variable id="_5" name="pa" type="_7" context="_1" location="f1:6" file="f1" line="6" mangled="[^"]*"/>
   <FundamentalType id="_6" name="__float128" size="128" align="128"/>
   <PointerType id="_7" type="_8" size="[0-9]+" align="[0-9]+"/>

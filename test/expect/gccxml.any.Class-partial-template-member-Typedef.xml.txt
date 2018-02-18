@@ -14,9 +14,9 @@
   </OperatorMethod>
   <Destructor id="_8" name="start" context="_1" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
-  <ReferenceType id="_10" type="_1c"/>
+  <ReferenceType id="_10" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_11" type="_1"/>
+  <ReferenceType id="_11" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-partial-template-member-Typedef.cxx"/>
 </GCC_XML>$

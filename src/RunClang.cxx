@@ -24,6 +24,7 @@
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
+#include "clang/Basic/TargetInfo.h"
 #include "clang/Basic/Version.h"
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
@@ -122,6 +123,7 @@ public:
             (m->isCopyAssignmentOperator() || m->isMoveAssignmentOperator());
         }
         if (mark) {
+          clang::DiagnosticErrorTrap Trap(sema.getDiagnostics());
           /* Ensure the member is defined.  */
           sema.MarkFunctionReferenced(clang::SourceLocation(), m);
           if (c && c->isDefaulted() && c->isDefaultConstructor() &&
@@ -130,6 +132,9 @@ public:
             /* Clang does not build the definition of trivial constructors
                until they are used.  Force semantic checking.  */
             sema.DefineImplicitDefaultConstructor(clang::SourceLocation(), c);
+          }
+          if (Trap.hasErrorOccurred()) {
+            m->setInvalidDecl();
           }
           /* Finish implicitly instantiated member.  */
           sema.PerformPendingInstantiations();
@@ -246,7 +251,8 @@ protected:
       }
 
       // Provide __float128 if simulating the actual GNU compiler.
-      if (this->NeedFloat128(this->Opts.Predefines)) {
+      if (!this->HaveFloat128(CI) &&
+          this->NeedFloat128(this->Opts.Predefines)) {
         // Clang provides its own (fake) builtin in gnu++11 mode but issues
         // diagnostics when it is used in some contexts.  Provide our own
         // approximation of the builtin instead.
@@ -310,6 +316,17 @@ protected:
       }
 #endif
 
+#if LLVM_VERSION_MAJOR < 6
+      if (this->NeedHasUniqueObjectRepresentations(this->Opts.Predefines,
+                                                   CI)) {
+        // Clang 6 and above provide a __has_unique_object_representations
+        // builtin needed in C++17 mode.  Provide an approximation for older
+        // Clang versions.
+        builtins += "\n"
+                    "#define __has_unique_object_representations(x) false\n";
+      }
+#endif
+
       // Prevent glibc use of a GNU extension not implemented by Clang.
       if (this->NeedNoMathInlines(this->Opts.Predefines)) {
         builtins += "\n"
@@ -344,6 +361,24 @@ protected:
              pd.find("#define __ia64__ ") != pd.npos));
   }
 
+  bool HaveFloat128(clang::CompilerInstance const& CI) const
+  {
+#if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR > 8
+    return CI.getTarget().hasFloat128Type();
+#else
+    static_cast<void>(CI);
+    return false;
+#endif
+  }
+
+#if LLVM_VERSION_MAJOR < 6
+  bool NeedHasUniqueObjectRepresentations(
+    std::string const& pd, clang::CompilerInstance const& CI) const
+  {
+    return (this->IsActualGNU(pd) && CI.getLangOpts().CPlusPlus1z);
+  }
+#endif
+
   bool NeedNoMathInlines(std::string const& pd) const
   {
     return (this->IsActualGNU(pd) &&
@@ -352,8 +387,12 @@ protected:
              pd.find("#define __NO_MATH_INLINES ") == pd.npos));
   }
 
-  bool BeginSourceFileAction(clang::CompilerInstance& CI,
-                             llvm::StringRef /*Filename*/)
+  bool BeginSourceFileAction(clang::CompilerInstance& CI
+#if LLVM_VERSION_MAJOR < 5
+                             ,
+                             llvm::StringRef /*Filename*/
+#endif
+                             ) override
   {
     CI.getPreprocessor().setPredefines(this->UpdatePredefines(CI));
 
@@ -629,7 +668,22 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
               msc_ver = 1600;
             }
             if (msc_ver >= 1900) {
-              args.push_back("-std=c++14");
+              long msvc_lang = 0;
+              if (const char* l = strstr(pd.c_str(), "#define _MSVC_LANG ")) {
+                l += 19;
+                if (const char* le = strchr(l, '\n')) {
+                  if (*(le - 1) == '\r') {
+                    --le;
+                  }
+                  std::string const msvc_lang_str(l, le - l);
+                  msvc_lang = std::strtol(msvc_lang_str.c_str(), nullptr, 10);
+                }
+              }
+              if (msvc_lang >= 201703L) {
+                args.push_back("-std=c++17");
+              } else {
+                args.push_back("-std=c++14");
+              }
             } else if (msc_ver >= 1600) {
               args.push_back("-std=c++11");
             } else {
@@ -666,7 +720,13 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
             std_date = 0;
           }
           std_flag += "++";
-          if (std_date >= 201406L) {
+          if (std_date >= 201703L) {
+#if LLVM_VERSION_MAJOR >= 5
+            std_flag += "17";
+#else
+            std_flag += "1z";
+#endif
+          } else if (std_date >= 201406L) {
             std_flag += "1z";
           } else if (std_date >= 201402L) {
             std_flag += "14";

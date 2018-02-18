@@ -1,1 +1,1 @@
-^error: invalid argument '-std=c\+\+98' not allowed with 'C/ObjC'$
+^error: invalid argument '-std=c\+\+98' not allowed with 'C(/ObjC)?'$

@@ -15,9 +15,9 @@
   <Destructor id="_8" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"( throw="")?/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_9c" type="_9" const="1"/>
-  <ReferenceType id="_10" type="_1c"/>
+  <ReferenceType id="_10" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_11" type="_1"/>
+  <ReferenceType id="_11" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-template-member-Typedef-const.cxx"/>
 </GCC_XML>$
