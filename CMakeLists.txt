@@ -143,6 +143,19 @@ if(NOT CLANG_RESOURCE_DIR)
       break()
     endif()
     set(tried "${tried}\n  ${d}/clang/${v}")
+    
+    # On Gentoo clang resources are installed side-by-side with llvm: 
+    #   /usr/lib64/llvm/...
+    #   /usr/lib64/clang/... 
+    # Extract the base library directory from the LLVM library directory
+    # and check whether the clang resources are there
+    string(REGEX REPLACE  "llvm.*" "" dd ${d})
+    if(IS_DIRECTORY "${dd}/clang/${v}/include")
+      set(CLANG_RESOURCE_DIR ${dd}/clang/${v})
+      break()
+    endif()
+    set(tried "${tried}\n  ${dd}/clang/${v}")
+
   endforeach()
   if(NOT CLANG_RESOURCE_DIR)
     if(tried)
