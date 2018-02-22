@@ -137,7 +137,19 @@ set(CLANG_RESOURCE_DIR "" CACHE PATH "Clang resource directory")
 if(NOT CLANG_RESOURCE_DIR)
   set(v ${LLVM_VERSION_MAJOR}.${LLVM_VERSION_MINOR}.${LLVM_VERSION_PATCH})
   set(tried "")
+  set(dirs "")
   foreach(d ${LLVM_LIBRARY_DIRS})
+    # Clang resources are typically inside LLVM's library directory.
+    list(APPEND dirs ${d})
+    # Some distros use a layout of the form
+    #     <prefix>/lib/llvm/<major-version>/lib
+    #     <prefix>/lib/clang/<full-version>/include
+    if("${d}" MATCHES "^(.*)/llvm/.*$")
+      list(APPEND dirs "${CMAKE_MATCH_1}")
+    endif()
+  endforeach()
+  # Look in each candidate directory for Clang resources.
+  foreach(d ${dirs})
     if(IS_DIRECTORY "${d}/clang/${v}/include")
       set(CLANG_RESOURCE_DIR ${d}/clang/${v})
       break()
