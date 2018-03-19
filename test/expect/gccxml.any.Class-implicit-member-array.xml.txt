@@ -10,7 +10,9 @@
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
   <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <ArrayType id="_8" min="0" max="1" type="_11"/>
+  <ArrayType id="_8" min="0" max="1" type="_11">
+    <Size>2</Size>
+  </ArrayType>
   <ReferenceType id="_9" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_10" type="_1" size="[0-9]+" align="[0-9]+"/>
