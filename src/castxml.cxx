@@ -276,7 +276,23 @@ int main(int argc_in, const char** argv_in)
         /* clang-format on */
         return 1;
       }
-    } else if (strcmp(argv[i], "-help") == 0 ||
+    } 
+    else if (strcmp(argv[i], "--castxml-skip-system-headers") == 0) {
+      if (!opts.SkipSystemHeaderOutput) {
+        opts.SkipSystemHeaderOutput = true;
+      }
+      else {
+        /* clang-format off */
+        std::cerr <<
+          "error: '--castxml-skip-system-headers' may be given at most once!\n"
+          "\n" <<
+          usage
+          ;
+        /* clang-format on */
+        return 1;
+      }
+    }
+    else if (strcmp(argv[i], "-help") == 0 ||
                strcmp(argv[i], "--help") == 0) {
       /* clang-format off */
       std::cout <<

@@ -28,6 +28,7 @@ struct Options
     , HaveCC(false)
     , HaveStd(false)
     , HaveTarget(false)
+    , SkipSystemHeaderOutput(false)
     , CastXmlEpicFormatVersion(1)
   {
   }
@@ -37,6 +38,7 @@ struct Options
   bool HaveCC;
   bool HaveStd;
   bool HaveTarget;
+  bool SkipSystemHeaderOutput;
   unsigned int CastXmlEpicFormatVersion;
   struct Include
   {

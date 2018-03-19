@@ -50,12 +50,14 @@ protected:
   clang::CompilerInstance& CI;
   clang::ASTContext const& CTX;
   llvm::raw_ostream& OS;
+  clang::SourceManager const& Manager;
 
   ASTVisitorBase(clang::CompilerInstance& ci, clang::ASTContext const& ctx,
                  llvm::raw_ostream& os)
     : CI(ci)
     , CTX(ctx)
     , OS(os)
+    , Manager(ctx.getSourceManager())
   {
   }
 
@@ -904,6 +906,16 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
     // Skip declarations that are not really members of this context.
     if (d->getDeclContext() != dc) {
       continue;
+    }
+
+    //Skip system header files
+    if (Opts.SkipSystemHeaderOutput)
+    {
+      clang::SourceLocation location = d->getLocation();
+      if (this->Manager.isInExternCSystemHeader(location) || this->Manager.isInSystemHeader(location))
+      {
+        continue;
+      }
     }
 
     // Skip declarations that we use internally as builtins.
