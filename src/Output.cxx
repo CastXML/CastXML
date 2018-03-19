@@ -438,6 +438,9 @@ class ASTVisitor : public ASTVisitorBase
       declaration's attributes.  */
   void PrintAttributesAttribute(clang::Decl const* d);
 
+  /** Print an array tag.  */
+  void PrintArrayType(clang::ArrayType const* t, DumpNode const* dn, uint64_t const size = 0);
+
   /** Get the attributes of the given function type.  */
   void GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
                                  std::vector<std::string>& attrs);
@@ -1670,7 +1673,17 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
   if (!name.empty()) {
     this->PrintNameAttribute(name);
   }
-  this->PrintTypeAttribute(a->getType(), complete);
+
+  clang::QualType originalType = a->getOriginalType();
+  if (originalType.getTypePtr()->isArrayType())
+  {
+    this->PrintTypeAttribute(originalType, complete);
+  }
+  else
+  {
+    this->PrintTypeAttribute(a->getType(), complete);
+  }
+
   this->PrintLocationAttribute(a);
   if (def) {
     this->OS << " default=\"";
@@ -2095,24 +2108,45 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
   this->OS << "/>\n";
 }
 
-void ASTVisitor::OutputConstantArrayType(clang::ConstantArrayType const* t,
-                                         DumpNode const* dn)
+void ASTVisitor::PrintArrayType(clang::ArrayType const* t, DumpNode const* dn, uint64_t const size)
 {
   this->OS << "  <ArrayType";
   this->PrintIdAttribute(dn);
-  this->OS << " min=\"0\" max=\"" << (t->getSize() - 1) << "\"";
-  this->PrintTypeAttribute(t->getElementType(), dn->Complete);
+  this->OS << " min=\"0\" max=\"";
+  if (size > 0) {
+    this->OS << (size - 1);
+  }
+  this->OS << "\"";
+  clang::QualType elementType = t->getElementType();
+
+  //collect multi-dimensional array sizes
+  std::vector<int> dimensions;
+  dimensions.push_back(size);
+
+  clang::Type const *subType = elementType.getTypePtr();
+  while (subType->isArrayType())
+  {
+    clang::ConstantArrayType const* cat = clang::dyn_cast<clang::ConstantArrayType>(subType);
+    dimensions.push_back(cat->getSize().getLimitedValue());
+
+    elementType = clang::dyn_cast<clang::ArrayType>(subType)->getElementType();
+    subType = elementType.getTypePtr();
+  } 
+
+  this->PrintTypeAttribute(elementType, dn->Complete);
   this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputConstantArrayType(clang::ConstantArrayType const* t,
+                                         DumpNode const* dn)
+{
+  PrintArrayType(t, dn, t->getSize().getLimitedValue());
 }
 
 void ASTVisitor::OutputIncompleteArrayType(clang::IncompleteArrayType const* t,
                                            DumpNode const* dn)
 {
-  this->OS << "  <ArrayType";
-  this->PrintIdAttribute(dn);
-  this->OS << " min=\"0\" max=\"\"";
-  this->PrintTypeAttribute(t->getElementType(), dn->Complete);
-  this->OS << "/>\n";
+  PrintArrayType(t, dn);
 }
 
 void ASTVisitor::OutputFunctionProtoType(clang::FunctionProtoType const* t,
