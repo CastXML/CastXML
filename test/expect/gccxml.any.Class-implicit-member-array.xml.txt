@@ -1,22 +1,27 @@
 ^<\?xml version="1.0"\?>
 <GCC_XML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
-  <Field id="_3" name="data" type="_8" context="_1" access="private" location="f1:3" file="f1" line="3" offset="0"/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
-    <Argument type="_9" location="f1:1" file="f1" line="1"/>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
+  <Field id="_3" name="data" type="_9" context="_1" access="private" location="f1:3" file="f1" line="3" offset="0"/>
+  <Field id="_4" name="data2D" type="_10" context="_1" access="private" location="f1:4" file="f1" line="4" offset="64"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+    <Argument type="_11" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_6" name="=" returns="_10" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_9" location="f1:1" file="f1" line="1"/>
+  <OperatorMethod id="_7" name="=" returns="_12" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_11" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <ArrayType id="_8" min="0" max="1" type="_11">
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <ArrayType id="_9" min="0" max="1" type="_13">
     <Size>2</Size>
   </ArrayType>
-  <ReferenceType id="_9" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <ArrayType id="_10" min="0" max="" type="_13">
+    <Size></Size>
+    <Size>6</Size>
+  </ArrayType>
+  <ReferenceType id="_11" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
-  <ReferenceType id="_10" type="_1" size="[0-9]+" align="[0-9]+"/>
-  <FundamentalType id="_11" name="int" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_13" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Class-implicit-member-array.cxx"/>
 </GCC_XML>$
