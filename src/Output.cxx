@@ -906,6 +906,14 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       continue;
     }
 
+    clang::AccessSpecifier visibility = d->getAccess();
+    if (visibility != clang::AS_none) {
+      if (Opts.ExcludedVisibility.find(visibility) != Opts.ExcludedVisibility.end()) {
+        //the visibility of this declaration is in the exclusion set
+        continue;
+      }
+    }
+
     // Skip declarations that we use internally as builtins.
     if (isTranslationUnit) {
       if (clang::NamedDecl const* nd = clang::dyn_cast<clang::NamedDecl>(d)) {
