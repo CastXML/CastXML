@@ -1671,6 +1671,13 @@ void ASTVisitor::OutputFunctionArgument(clang::ParmVarDecl const* a,
     this->PrintNameAttribute(name);
   }
   this->PrintTypeAttribute(a->getType(), complete);
+
+  if (a->getOriginalType() != a->getType()) {
+    this->OS << " original_type=\"";
+    this->PrintTypeIdRef(a->getOriginalType(), complete);
+    this->OS << "\"";
+  }
+
   this->PrintLocationAttribute(a);
   if (def) {
     this->OS << " default=\"";
@@ -2192,14 +2199,14 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.4\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.5\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
     // Start dump with gccxml-compatible format (legacy).
     /* clang-format off */
     this->OS <<
-      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.144\">\n"
+      "<GCC_XML version=\"0.9.0\" cvs_revision=\"1.145\">\n"
       ;
     /* clang-format on */
   }

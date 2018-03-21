@@ -1,20 +1,23 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="[^"]+">
-    <Argument type="_4" location="f1:1" file="f1" line="1"/>
-    <Argument type="_5" location="f1:1" file="f1" line="1"/>
-    <Argument type="_5" location="f1:1" file="f1" line="1"/>
-    <Argument type="_6" location="f1:1" file="f1" line="1"/>
+    <Argument type="_4" original_type="_5" location="f1:1" file="f1" line="1"/>
+    <Argument type="_6" original_type="_7" location="f1:1" file="f1" line="1"/>
+    <Argument type="_6" original_type="_8" location="f1:1" file="f1" line="1"/>
+    <Argument type="_9" original_type="_10" location="f1:1" file="f1" line="1"/>
   </Function>
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_4" type="_7" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_5" type="_8" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_6" type="_9" size="[0-9]+" align="[0-9]+"/>
-  <Namespace id="_3" name="::"/>
-  <ArrayType id="_7" min="0" max="2" type="_8"/>
-  <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
-  <FunctionType id="_9" returns="_8">
-    <Argument type="_8"/>
+  <PointerType id="_4" type="_11" size="[0-9]+" align="[0-9]+"/>
+  <ArrayType id="_5" min="0" max="3" type="_11"/>
+  <PointerType id="_6" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <ArrayType id="_7" min="0" max="1" type="_12"/>
+  <ArrayType id="_8" min="0" max="" type="_12"/>
+  <PointerType id="_9" type="_10" size="[0-9]+" align="[0-9]+"/>
+  <FunctionType id="_10" returns="_12">
+    <Argument type="_12"/>
   </FunctionType>
+  <ArrayType id="_11" min="0" max="2" type="_12"/>
+  <FundamentalType id="_12" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/Function-Argument-decay.cxx"/>
 </CastXML>$
