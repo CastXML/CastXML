@@ -2,16 +2,19 @@
 <GCC_XML[^>]*>
   <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="[^"]+">
     <Argument type="_4" location="f1:1" file="f1" line="1"/>
-    <Argument type="_4" location="f1:1" file="f1" line="1"/>
     <Argument type="_5" location="f1:1" file="f1" line="1"/>
+    <Argument type="_5" location="f1:1" file="f1" line="1"/>
+    <Argument type="_6" location="f1:1" file="f1" line="1"/>
   </Function>
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_4" type="_6" size="[0-9]+" align="[0-9]+"/>
-  <PointerType id="_5" type="_7" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_4" type="_7" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_5" type="_8" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_6" type="_9" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
-  <FundamentalType id="_6" name="int" size="[0-9]+" align="[0-9]+"/>
-  <FunctionType id="_7" returns="_6">
-    <Argument type="_6"/>
+  <ArrayType id="_7" min="0" max="2" type="_8"/>
+  <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FunctionType id="_9" returns="_8">
+    <Argument type="_8"/>
   </FunctionType>
   <File id="f1" name=".*/test/input/Function-Argument-decay.cxx"/>
 </GCC_XML>$
