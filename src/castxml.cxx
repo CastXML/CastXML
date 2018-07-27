@@ -55,11 +55,6 @@ int main(int argc_in, const char** argv_in)
 {
   suppressInteractiveErrors();
 
-  llvm::InitializeAllTargets();
-  llvm::InitializeAllTargetMCs();
-  llvm::InitializeAllAsmPrinters();
-  llvm::InitializeAllAsmParsers();
-
   llvm::SmallVector<const char*, 64> argv;
   llvm::SpecificBumpPtrAllocator<char> argAlloc;
   if (std::error_code e = llvm::sys::Process::GetArgumentVector(
@@ -70,6 +65,11 @@ int main(int argc_in, const char** argv_in)
     llvm::errs() << "error: no argv[0]?!\n";
     return 1;
   }
+
+  llvm::InitializeAllTargets();
+  llvm::InitializeAllTargetMCs();
+  llvm::InitializeAllAsmPrinters();
+  llvm::InitializeAllAsmParsers();
 
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 8
