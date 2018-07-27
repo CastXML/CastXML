@@ -28,6 +28,10 @@
 #include "llvm/Support/TargetSelect.h"
 #include "llvm/Support/raw_ostream.h"
 
+#if LLVM_VERSION_MAJOR >= 7
+#include "llvm/Support/InitLLVM.h"
+#endif
+
 #include <iostream>
 #include <set>
 #include <sstream>
@@ -55,13 +59,20 @@ int main(int argc_in, const char** argv_in)
 {
   suppressInteractiveErrors();
 
+#if LLVM_VERSION_MAJOR >= 7
+  llvm::InitLLVM initLLVM(argc_in, argv_in);
+  llvm::SmallVector<const char*, 64> argv(argv_in, argv_in + argc_in);
+#else
   llvm::SmallVector<const char*, 64> argv;
   llvm::SpecificBumpPtrAllocator<char> argAlloc;
   if (std::error_code e = llvm::sys::Process::GetArgumentVector(
         argv, llvm::ArrayRef<const char*>(argv_in, argc_in), argAlloc)) {
     llvm::errs() << "error: could not get arguments: " << e.message() << "\n";
     return 1;
-  } else if (argv.empty()) {
+  }
+#endif
+
+  if (argv.empty()) {
     llvm::errs() << "error: no argv[0]?!\n";
     return 1;
   }

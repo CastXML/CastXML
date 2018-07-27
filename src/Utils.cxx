@@ -147,12 +147,20 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   redirects[2] = &errFile;
 #endif
 
+#if LLVM_VERSION_MAJOR >= 7
+  llvm::SmallVector<llvm::StringRef, 64> cmd(argv, argv + argc);
+  llvm::ArrayRef<llvm::StringRef> args = cmd;
+  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
+#else
   std::vector<const char*> cmd(argv, argv + argc);
   cmd.push_back(0);
+  const char** args = &*cmd.begin();
+  const char** env = nullptr;
+#endif
 
   // Actually run the command.
-  ret = llvm::sys::ExecuteAndWait(prog, &*cmd.begin(), nullptr, redirects, 0,
-                                  0, &msg, nullptr);
+  ret =
+    llvm::sys::ExecuteAndWait(prog, args, env, redirects, 0, 0, &msg, nullptr);
 
   // Load the output from the temporary files.
   {
