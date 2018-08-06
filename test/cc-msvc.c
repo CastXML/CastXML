@@ -6,14 +6,17 @@ int main(int argc, const char* argv[])
   int cpp = 0;
   const char* msc_ver = "1600";
   const char* msvc_lang = 0;
+  const char* stdcpp_default_new_alignment = 0;
   int i;
   for (i = 1; i < argc; ++i) {
     if (strncmp(argv[i], "--cc-define=", 12) == 0) {
       fprintf(stdout, "\n#define %s 1", argv[i]+12);
     } else if (strncmp(argv[i], "-msc=", 5) == 0) {
       msc_ver = argv[i]+5;
-    } else if (strncmp(argv[i], "-msvc_lang=", 8) == 0) {
+    } else if (strncmp(argv[i], "-msvc_lang=", 11) == 0) {
       msvc_lang = argv[i]+11;
+    } else if (strncmp(argv[i], "-stdcpp_default_new_alignment=", 30) == 0) {
+      stdcpp_default_new_alignment = argv[i]+30;
     } else if (strstr(argv[i], ".cpp")) {
       cpp = 1;
     }
@@ -33,6 +36,11 @@ int main(int argc, const char* argv[])
     fprintf(stdout,
       "#define _MSVC_LANG %s\n", msvc_lang
       );
+  }
+  if(stdcpp_default_new_alignment) {
+    fprintf(stdout,
+      "#define __STDCPP_DEFAULT_NEW_ALIGNMENT__ %s\n",
+      stdcpp_default_new_alignment);
   }
   fprintf(stdout,
     "#define __has_include(x) x\n"

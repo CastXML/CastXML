@@ -176,6 +176,12 @@
 #ifdef __MSVC_RUNTIME_CHECKS
 # pragma message(TO_DEFINE(__MSVC_RUNTIME_CHECKS))
 #endif
+#ifdef __STDCPP_DEFAULT_NEW_ALIGNMENT__
+# pragma message(TO_DEFINE(__STDCPP_DEFAULT_NEW_ALIGNMENT__))
+#endif
+#ifdef __STDCPP_STRICT_POINTER_SAFETY__
+# pragma message(TO_DEFINE(__STDCPP_STRICT_POINTER_SAFETY__))
+#endif
 #ifdef __STDCPP_THREADS__
 # pragma message(TO_DEFINE(__STDCPP_THREADS__))
 #endif
