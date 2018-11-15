@@ -459,6 +459,15 @@ static clang::FrontendAction* CreateFrontendAction(clang::CompilerInstance* CI,
   }
 }
 
+static bool isObjC(clang::CompilerInstance* CI)
+{
+#if LLVM_VERSION_MAJOR >= 8
+  return CI->getLangOpts().ObjC;
+#else
+  return CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2;
+#endif
+}
+
 static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 {
   // Create a diagnostics engine for this compiler instance.
@@ -472,7 +481,7 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 
   if (opts.GccXml) {
 #define MSG(x) "error: '--castxml-gccxml' does not work with " x "\n"
-    if (CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
+    if (isObjC(CI)) {
       std::cerr << MSG("Objective C");
       return false;
     }
@@ -481,7 +490,7 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 
   if (opts.CastXml) {
 #define MSG(x) "error: '--castxml-output=<v>' does not work with " x "\n"
-    if (CI->getLangOpts().ObjC1 || CI->getLangOpts().ObjC2) {
+    if (isObjC(CI)) {
       std::cerr << MSG("Objective C");
       return false;
     }
