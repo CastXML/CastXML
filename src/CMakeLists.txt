@@ -45,7 +45,7 @@ set(clang_libs
   clangBasic
   )
 
-llvm_map_components_to_libnames(llvm_libs
+set(llvm_libs
   native
   option
   bitreader
@@ -65,10 +65,12 @@ add_executable(castxml
   RunClang.cxx RunClang.h
   Utils.cxx Utils.h
   )
-target_link_libraries(castxml
-  ${clang_libs}
-  ${llvm_libs}
-  )
+if(LLVM_LINK_LLVM_DYLIB)
+  set(USE_SHARED USE_SHARED)
+endif()
+llvm_config(castxml ${USE_SHARED} ${llvm_libs})
+target_link_libraries(castxml PRIVATE ${clang_libs})
+
 set_property(SOURCE Utils.cxx APPEND PROPERTY COMPILE_DEFINITIONS
   "CASTXML_INSTALL_DATA_DIR=\"${CastXML_INSTALL_DATA_DIR}\"")
 install(TARGETS castxml DESTINATION ${CastXML_INSTALL_RUNTIME_DIR})
