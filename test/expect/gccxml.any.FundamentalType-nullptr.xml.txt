@@ -1,0 +1,10 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
+  <Typedef id="_3" name="t_NullPtr" type="_5" context="_1" location="f1:2" file="f1" line="2"/>
+  <Typedef id="_4" name="t_ParenNullPtr" type="_6" context="_1" location="f1:3" file="f1" line="3"/>
+  <Unimplemented id="_5" type_class="Decltype"/>
+  <Unimplemented id="_6" type_class="Decltype"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/FundamentalType-nullptr.cxx"/>
+</GCC_XML>$

@@ -743,6 +743,17 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       return this->AddTypeDumpNode(
         DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
         complete, dq);
+    case clang::Type::Decltype:
+      if (this->Opts.CastXml && t->isNullPtrType()) {
+        clang::DecltypeType const* dtt = t->getAs<clang::DecltypeType>();
+        if (dtt->getUnderlyingExpr()->getStmtClass() ==
+            clang::Stmt::CXXNullPtrLiteralExprClass) {
+          // Treat literal 'decltype(nullptr)' as a FundamentalType.
+          return this->AddTypeDumpNode(DumpType(dtt->getUnderlyingType(), c),
+                                       complete, dq);
+        }
+      }
+      break;
     case clang::Type::Elaborated:
       if (this->Opts.GccXml || !t->isElaboratedTypeSpecifier()) {
         return this->AddTypeDumpNode(
@@ -2093,6 +2104,9 @@ void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
       break;
     case clang::BuiltinType::ULongLong:
       name = "long long unsigned int";
+      break;
+    case clang::BuiltinType::NullPtr:
+      name = "decltype(nullptr)";
       break;
     default:
       name = t->getName(this->PrintingPolicy).str();
