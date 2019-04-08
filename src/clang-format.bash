@@ -78,8 +78,8 @@ test "$#" = 0 || die "$usage"
 
 # Find a default tool.
 tools='
+  clang-format-6.0
   clang-format
-  clang-format-3.8
 '
 if test "x$clang_format" = "x"; then
     for tool in $tools; do

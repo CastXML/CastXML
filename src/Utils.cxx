@@ -230,7 +230,7 @@ std::string stringReplace(std::string str, std::string const& in,
 }
 
 #if defined(_WIN32)
-#include <windows.h>
+#  include <windows.h>
 #endif
 
 void suppressInteractiveErrors()

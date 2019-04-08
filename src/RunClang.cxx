@@ -53,7 +53,7 @@
 
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9
-#define CASTXML_OWNS_OSTREAM
+#  define CASTXML_OWNS_OSTREAM
 #endif
 
 class ASTConsumer : public clang::ASTConsumer

@@ -10,6 +10,9 @@ class base_3
 {
   char b3;
 };
-class start : public base_1, public base_2, public base_3
+class start
+  : public base_1
+  , public base_2
+  , public base_3
 {
 };
