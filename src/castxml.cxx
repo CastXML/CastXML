@@ -29,7 +29,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #if LLVM_VERSION_MAJOR >= 7
-#include "llvm/Support/InitLLVM.h"
+#  include "llvm/Support/InitLLVM.h"
 #endif
 
 #include <iostream>
@@ -41,7 +41,7 @@
 
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
-#include "llvm/Support/StringSaver.h"
+#  include "llvm/Support/StringSaver.h"
 #else
 class StringSaver : public llvm::cl::StringSaver
 {

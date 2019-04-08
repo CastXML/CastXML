@@ -65,6 +65,7 @@ protected:
   private:
     typedef void (DumpQual::*bool_type)() const;
     void bool_true() const {}
+
   public:
     bool IsConst;
     bool IsVolatile;
@@ -113,6 +114,7 @@ protected:
   private:
     typedef void (DumpId::*bool_type)() const;
     void bool_true() const {}
+
   public:
     unsigned int Id;
     DumpQual Qual;

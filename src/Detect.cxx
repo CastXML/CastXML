@@ -40,8 +40,8 @@ static bool failedCC(const char* id, std::vector<const char*> const& args,
 {
   std::cerr << "error: '--castxml-cc-" << id
             << "' compiler command failed:\n\n";
-  for (std::vector<const char *>::const_iterator i = args.begin(),
-                                                 e = args.end();
+  for (std::vector<const char*>::const_iterator i = args.begin(),
+                                                e = args.end();
        i != e; ++i) {
     std::cerr << " '" << *i << "'";
   }
