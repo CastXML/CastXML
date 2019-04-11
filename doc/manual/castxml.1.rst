@@ -79,6 +79,21 @@ Remaining options are given to the internal Clang compiler.
 ``--version``
   Print ``castxml`` and internal Clang compiler version information.
 
+  Release versions of CastXML use the format::
+
+    <major>.<minor>.<patch>[-rc<n>][-<id>]
+
+  where the ``<patch>`` component is less than ``20000000``, ``<n>``
+  is an optional release candidate number, and ``<id>`` may contain
+  arbitrary text (in case of development between patch versions).
+
+  Development versions of CastXML use the format::
+
+    <major>.<minor>.<date>[-<id>]
+
+  where the ``<date>`` component is of format ``CCYYMMDD`` and ``<id>``
+  may contain arbitrary text.  This represents development as of a
+  particular date following the ``<major>.<minor>`` feature release.
 
 Output Format Versions
 ======================

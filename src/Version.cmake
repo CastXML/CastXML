@@ -1,7 +1,19 @@
-set(CastXML_VERSION "0.1")
+# CastXML version number components.
+set(CastXML_VERSION_MAJOR 0)
+set(CastXML_VERSION_MINOR 1)
+set(CastXML_VERSION_PATCH 20190411)
+set(CastXML_VERSION_RC 0)
+set(CastXML_VERSION_IS_DIRTY 0)
+
+# Start with the full version number used in tags.  It has no dev info.
+set(CastXML_VERSION
+  "${CastXML_VERSION_MAJOR}.${CastXML_VERSION_MINOR}.${CastXML_VERSION_PATCH}")
+if(CastXML_VERSION_RC)
+  set(CastXML_VERSION "${CastXML_VERSION}-rc${CastXML_VERSION_RC}")
+endif()
 
 if(EXISTS ${CastXML_SOURCE_DIR}/.git)
-  find_package(Git)
+  find_package(Git QUIET)
   if(GIT_FOUND)
     macro(_git)
       execute_process(
@@ -15,46 +27,43 @@ if(EXISTS ${CastXML_SOURCE_DIR}/.git)
   endif()
 endif()
 
-if(EXISTS ${CastXML_SOURCE_DIR}/VERSION)
-  # Read version provided in file with source tarball.
-  file(STRINGS ${CastXML_SOURCE_DIR}/VERSION CastXML_VERSION
-       LIMIT_COUNT 1 LIMIT_INPUT 1024)
-elseif(COMMAND _git)
-  # Compute version relative to annotated version tags, if any.
-  _git(describe --match "v[0-9]*" --dirty)
-  if(_git_out MATCHES "^v([0-9].*)$")
-    # Use version computed by 'git describe'.
-    set(CastXML_VERSION "${CMAKE_MATCH_1}")
-  else()
-    # Compute version currently checked out, possibly dirty.
-    _git(rev-parse --verify -q --short=7 HEAD)
-    if(_git_out MATCHES "^([0-9a-f]+)$")
-      set(CastXML_VERSION "${CastXML_VERSION}-g${CMAKE_MATCH_1}")
-      _git(update-index -q --refresh)
-      _git(diff-index --name-only HEAD --)
-      if(_git_out)
-        set(CastXML_VERSION "${CastXML_VERSION}-dirty")
-      endif()
-    else()
-      set(CastXML_VERSION "${CastXML_VERSION}-git")
-    endif()
-  endif()
-elseif("$Format:%h$" MATCHES "^([0-9a-f]+)$")
-  # Use version exported by 'git archive'.
-  set(CastXML_VERSION "${CastXML_VERSION}-g${CMAKE_MATCH_1}")
+# Try to identify the current development source version.
+if(COMMAND _git)
+  # Get the commit checked out in this work tree.
+  _git(log -n 1 HEAD "--pretty=format:%h %s" --)
+  set(git_info "${_git_out}")
 else()
-  # Generic development version.
-  set(CastXML_VERSION "${CastXML_VERSION}-git")
+  # Get the commit exported by 'git archive'.
+  set(git_info "$Format:%h %s$")
 endif()
 
-if(CastXML_VERSION MATCHES "^([0-9]+)\\.([0-9]+)(\\.([0-9]+))?")
-  set(CastXML_VERSION_MAJOR "${CMAKE_MATCH_1}")
-  set(CastXML_VERSION_MINOR "${CMAKE_MATCH_2}")
-  if(CMAKE_MATCH_4)
-    set(CastXML_VERSION_PATCH "${CMAKE_MATCH_4}")
-  else()
-    set(CastXML_VERSION_PATCH 0)
+# Extract commit information if available.
+if(git_info MATCHES "^([0-9a-f]+) (.*)$")
+  set(git_hash "${CMAKE_MATCH_1}")
+  set(git_subject "${CMAKE_MATCH_2}")
+
+  # If this is not the exact commit of a release, add dev info.
+  if(NOT "${git_subject}" MATCHES "^[Cc]ast[Xx][Mm][Ll] ${CastXML_VERSION}$")
+    set(git_suffix "-g${git_hash}")
+    if(COMMAND _git)
+      # Use version suffix computed by 'git describe' if this version has been tagged.
+      _git(describe --tags --match "v${CastXML_VERSION}" HEAD)
+      if(_git_out MATCHES "^v${CastXML_VERSION}(-[0-9]+-g[0-9a-f]+)?$")
+        set(git_suffix "${CMAKE_MATCH_1}")
+      endif()
+    endif()
+    set(CastXML_VERSION "${CastXML_VERSION}${git_suffix}")
   endif()
-else()
-  message(FATAL_ERROR "Failed to extract version components from '${CastXML_VERSION}'")
+
+  # If this is a work tree, check whether it is dirty.
+  if(COMMAND _git)
+    _git(update-index -q --refresh)
+    _git(diff-index --name-only HEAD --)
+    if(_git_out)
+      set(CastXML_VERSION "${CastXML_VERSION}-dirty")
+    endif()
+  endif()
+elseif(NOT "${CastXML_VERSION_PATCH}" VERSION_LESS 20000000)
+  # Generic development version.
+  set(CastXML_VERSION "${CastXML_VERSION}-git")
 endif()
