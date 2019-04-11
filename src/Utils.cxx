@@ -102,10 +102,19 @@ std::string getVersionString()
   return CASTXML_VERSION_STRING;
 }
 
-unsigned int getVersionValue()
+unsigned int getVersionMajor()
 {
-  return (CASTXML_VERSION_MAJOR * 1000000 + CASTXML_VERSION_MINOR * 1000 +
-          CASTXML_VERSION_PATCH * 1);
+  return CASTXML_VERSION_MAJOR;
+}
+
+unsigned int getVersionMinor()
+{
+  return CASTXML_VERSION_MINOR;
+}
+
+unsigned int getVersionPatch()
+{
+  return CASTXML_VERSION_PATCH;
 }
 
 bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,

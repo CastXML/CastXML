@@ -327,13 +327,14 @@ castxml_test_cmd(rsp-missing @${input}/does-not-exist.rsp)
 castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
 
 # Test predefined macros when not using --castxml-cc-<id>.
-math(EXPR __castxml__ "1000000*${CastXML_VERSION_MAJOR} + 1000*${CastXML_VERSION_MINOR} + ${CastXML_VERSION_PATCH}")
 configure_file(expect/cmd.predefined-macros.stdout.txt.in
                expect/cmd.predefined-macros.stdout.txt @ONLY)
 set(castxml_test_cmd_expect ${CMAKE_CURRENT_BINARY_DIR}/expect/cmd.predefined-macros)
 castxml_test_cmd(gccxml-predefined-macros --castxml-gccxml ${empty_cxx} -E -dM)
 castxml_test_cmd(castxml-predefined-macros --castxml-output=1 ${empty_cxx} -E -dM)
 unset(castxml_test_cmd_expect)
+castxml_test_cmd(castxml-predefined-c ${input}/predefined.c)
+castxml_test_cmd(castxml-predefined-cxx ${input}/predefined.cxx)
 
 # Test --castxml-cc-gnu detection.
 add_executable(cc-gnu cc-gnu.c)

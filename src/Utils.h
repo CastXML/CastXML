@@ -32,8 +32,14 @@ std::string getClangResourceDir();
 /// getVersionString - Get the CastXML version string
 std::string getVersionString();
 
-/// getVersionValue - Get CastXML version encoded as %d%03d%03d
-unsigned int getVersionValue();
+/// getVersionMajor - Get CastXML major version.
+unsigned int getVersionMajor();
+
+/// getVersionMinor - Get CastXML minor version.
+unsigned int getVersionMinor();
+
+/// getVersionPatch - Get CastXML patch version.
+unsigned int getVersionPatch();
 
 /// runCommand - Run a given command line and capture the output.
 bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,

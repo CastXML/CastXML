@@ -211,10 +211,28 @@ protected:
 
     std::string builtins;
 
-    // Add a builtin to identify CastXML itself.
-    char castxml_version[64];
-    sprintf(castxml_version, "#define __castxml__ %u\n", getVersionValue());
-    builtins += castxml_version;
+    // Add builtins to identify CastXML itself.
+    {
+      char castxml_version[64];
+      sprintf(castxml_version, "#define __castxml_major__ %u\n",
+              getVersionMajor());
+      builtins += castxml_version;
+      sprintf(castxml_version, "#define __castxml_minor__ %u\n",
+              getVersionMinor());
+      builtins += castxml_version;
+      sprintf(castxml_version, "#define __castxml_patch__ %u\n",
+              getVersionPatch());
+      builtins += castxml_version;
+    }
+    // Encode the version number components to allow a date as the patch
+    // level and up to 1000 minor releases for each major release.
+    // These values can exceed a 32-bit unsigned integer, but we know
+    // that they will only be evaluated by our builtin clang.
+    builtins += "#define __castxml_check(major,minor,patch) "
+                "(10000000000*major + 100000000*minor + patch)\n";
+    builtins += "#define __castxml__ "
+                "__castxml_check(__castxml_major__,__castxml_minor__,"
+                "__castxml_patch__)\n";
 
     // Add builtins to identify the internal Clang compiler.
     builtins +=

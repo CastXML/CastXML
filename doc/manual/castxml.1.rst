@@ -125,9 +125,23 @@ The ``--castxml-cc-<id>`` option switches the predefined macros
 to match those detected from the given compiler command.  In either
 case, CastXML always adds the following predefined macros:
 
+``__castxml_major__``
+  Defined to the CastXML major version number in decimal.
+
+``__castxml_minor__``
+  Defined to the CastXML minor version number in decimal.
+
+``__castxml_patch__``
+  Defined to the CastXML patch version number in decimal.
+
+``__castxml_check(major,minor,patch)``
+  Defined to a constant expression encoding the three version components for
+  comparison with ``__castxml__``.  The actual encoding is unspecified.
+
 ``__castxml__``
-  Defined to an integer encoding the CastXML version number as
-  ``printf("%d%03d%03d",major,minor,patch)``.
+  Defined to a constant expression encoding the CastXML version components::
+
+    __castxml_check(__castxml_major__,__castxml_minor__,__castxml_patch__)
 
 ``__castxml_clang_major__``
   Defined to the value of  ``__clang_major__`` from the internal Clang.

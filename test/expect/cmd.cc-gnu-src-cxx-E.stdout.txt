@@ -2,8 +2,14 @@
 #define __GNUC__ 1
 #define __builtin_va_arg_pack\(\) 0
 #define __builtin_va_arg_pack_len\(\) 1
-#define __castxml__ [0-9]+
+#define __castxml__ [^
+]*
+#define __castxml_check[^
+]*
 #define __castxml_clang_major__ [0-9]+
 #define __castxml_clang_minor__ [0-9]+
 #define __castxml_clang_patchlevel__ [0-9]+
+#define __castxml_major__ [0-9]+
+#define __castxml_minor__ [0-9]+
+#define __castxml_patch__ [0-9]+
 #define __cplusplus 199711L$
