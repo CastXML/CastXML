@@ -135,7 +135,11 @@ static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
                      fwImplicitSuffix));
             }
             // Replace the compiler builtin include directory with ours.
-            if (!fw && llvm::sys::fs::exists(inc + "/emmintrin.h")) {
+            if (!fw &&
+                // FIXME: Intrinsics headers are platform-specific.
+                // Is there a better way to detect this directory?
+                (llvm::sys::fs::exists(inc + "/emmintrin.h") ||
+                 llvm::sys::fs::exists(inc + "/altivec.h"))) {
               inc = getClangBuiltinIncludeDir();
             }
             opts.Includes.push_back(Options::Include(inc, fw));
