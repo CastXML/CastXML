@@ -31,6 +31,10 @@ int main(int argc, const char* argv[])
     "#define __has_include(x) x\n"
     "#define __has_include_next(x) x\n"
     "#define __GNUC_MINOR__ 1\n"
+    "#define __bool __bool\n"
+    "#define __builtin_vsx_foo __builtin_vsx_foo\n"
+    "#define __pixel __pixel\n"
+    "#define __vector __vector\n"
     "#define __has_last(x) x"
     );
   fprintf(stderr,

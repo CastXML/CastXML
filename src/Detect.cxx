@@ -55,12 +55,10 @@ static bool failedCC(const char* id, std::vector<const char*> const& args,
   return false;
 }
 
-static void fixPredefines(Options& opts)
+static void fixPredefines(std::string& pd, std::string const& rm)
 {
-  // Remove any detected conflicting definition of a Clang builtin macro.
-  std::string& pd = opts.Predefines;
   std::string::size_type beg = 0;
-  while ((beg = pd.find("#define __has", beg), beg != std::string::npos)) {
+  while ((beg = pd.find(rm, beg), beg != std::string::npos)) {
     std::string::size_type end = pd.find('\n', beg);
     if (end != std::string::npos) {
       pd.erase(beg, end + 1 - beg);
@@ -68,6 +66,16 @@ static void fixPredefines(Options& opts)
       pd.erase(beg);
     }
   }
+}
+
+static void fixPredefines(Options& opts)
+{
+  // Remove any detected conflicting definition of a Clang builtin macro.
+  fixPredefines(opts.Predefines, "#define __bool ");
+  fixPredefines(opts.Predefines, "#define __builtin_vsx_");
+  fixPredefines(opts.Predefines, "#define __has_");
+  fixPredefines(opts.Predefines, "#define __pixel ");
+  fixPredefines(opts.Predefines, "#define __vector ");
 }
 
 static void setTriple(Options& opts)
@@ -135,7 +143,11 @@ static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
                      fwImplicitSuffix));
             }
             // Replace the compiler builtin include directory with ours.
-            if (!fw && llvm::sys::fs::exists(inc + "/emmintrin.h")) {
+            if (!fw &&
+                // FIXME: Intrinsics headers are platform-specific.
+                // Is there a better way to detect this directory?
+                (llvm::sys::fs::exists(inc + "/emmintrin.h") ||
+                 llvm::sys::fs::exists(inc + "/altivec.h"))) {
               inc = getClangBuiltinIncludeDir();
             }
             opts.Includes.push_back(Options::Include(inc, fw));
