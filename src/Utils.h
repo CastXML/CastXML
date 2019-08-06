@@ -18,7 +18,7 @@
 
 #include <string>
 
-/// findResources - Call from main() to find resources
+/// findResourceDir - Call from main() to find resources
 /// relative to the executable.  On success returns true.
 /// On failure returns false and stores a message in the stream.
 bool findResourceDir(const char* argv0, std::ostream& error);
