@@ -1891,6 +1891,9 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
   this->PrintNameAttribute(name);
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
+  if (this->Opts.CastXml && d->isScoped()) {
+    this->OS << " scoped=\"1\"";
+  }
   this->PrintABIAttributes(d);
   this->PrintAttributesAttribute(d);
   clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
@@ -2215,7 +2218,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.5\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.6\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
