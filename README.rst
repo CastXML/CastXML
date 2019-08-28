@@ -47,6 +47,7 @@ To build CastXML from source, first obtain the prerequisites:
   This version of CastXML has been tested with LLVM/Clang
 
   - SVN revision ``356914`` (trunk)
+  - Release ``9.0``
   - Release ``8.0``
   - Release ``7.0``
   - Release ``6.0``
