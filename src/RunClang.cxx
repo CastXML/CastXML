@@ -56,6 +56,12 @@
 #  define CASTXML_OWNS_OSTREAM
 #endif
 
+#if LLVM_VERSION_MAJOR > 9
+#  define CASTXML_MAKE_UNIQUE std::make_unique
+#else
+#  define CASTXML_MAKE_UNIQUE llvm::make_unique
+#endif
+
 class ASTConsumer : public clang::ASTConsumer
 {
   clang::CompilerInstance& CI;
@@ -443,11 +449,11 @@ class CastXMLSyntaxOnlyAction
 #ifdef CASTXML_OWNS_OSTREAM
     } else if (std::unique_ptr<llvm::raw_ostream> OS =
                  CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
-      return llvm::make_unique<ASTConsumer>(CI, std::move(OS), this->Opts);
+      return CASTXML_MAKE_UNIQUE<ASTConsumer>(CI, std::move(OS), this->Opts);
 #else
     } else if (llvm::raw_ostream* OS =
                  CI.createDefaultOutputFile(false, filename(InFile), "xml")) {
-      return llvm::make_unique<ASTConsumer>(CI, *OS, this->Opts);
+      return CASTXML_MAKE_UNIQUE<ASTConsumer>(CI, *OS, this->Opts);
 #endif
     } else {
       return nullptr;
@@ -612,7 +618,13 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       const char* const* cmdArgBeg = cmd->getArguments().data();
       const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
       if (clang::CompilerInvocation::CreateFromArgs(
-            CI->getInvocation(), cmdArgBeg, cmdArgEnd, *diags)) {
+            CI->getInvocation(),
+#if LLVM_VERSION_MAJOR > 9
+            llvm::makeArrayRef(cmdArgBeg, cmdArgEnd),
+#else
+            cmdArgBeg, cmdArgEnd,
+#endif
+            *diags)) {
         if (diags->hasErrorOccurred()) {
           return 1;
         }
