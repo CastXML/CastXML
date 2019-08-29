@@ -66,7 +66,12 @@ if(LLVM_LINK_LLVM_DYLIB)
   set(USE_SHARED USE_SHARED)
 endif()
 llvm_config(castxml ${USE_SHARED} ${llvm_libs})
-target_link_libraries(castxml PRIVATE ${clang_libs})
+if(LLVM_VERSION_MAJOR GREATER 5)
+  set(maybe_PRIVATE "PRIVATE")
+else()
+  set(maybe_PRIVATE "")
+endif()
+target_link_libraries(castxml ${maybe_PRIVATE} ${clang_libs})
 
 set_property(SOURCE Utils.cxx APPEND PROPERTY COMPILE_DEFINITIONS
   "CASTXML_INSTALL_DATA_DIR=\"${CastXML_INSTALL_DATA_DIR}\"")
