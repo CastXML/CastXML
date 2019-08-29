@@ -83,6 +83,10 @@ endmacro()
 hint_llvm_from_clang()
 hint_clang_from_llvm()
 
+# If several LLVM versions provide CMake packages, try to use the latest one.
+set(CMAKE_FIND_PACKAGE_SORT_ORDER NATURAL)
+set(CMAKE_FIND_PACKAGE_SORT_DIRECTION DEC)
+
 # Clang 3.8+ installs its own CMake package.  Try it first.
 find_package(Clang QUIET)
 
