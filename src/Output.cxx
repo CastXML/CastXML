@@ -189,7 +189,11 @@ protected:
   {                                                                           \
     this->OutputUnimplementedType(t, dn);                                     \
   }
-#include "clang/AST/TypeNodes.def"
+#if LLVM_VERSION_MAJOR >= 10
+#  include "clang/AST/TypeNodes.inc"
+#else
+#  include "clang/AST/TypeNodes.def"
+#endif
 
   void OutputUnimplementedType(clang::Type const* t, DumpNode const* dn)
   {
@@ -1115,7 +1119,11 @@ void ASTVisitor::OutputType(DumpType dt, DumpNode const* dn)
     this->Output##CLASS##Type(                                                \
       static_cast<clang::CLASS##Type const*>(t.getTypePtr()), dn);            \
     break;
-#include "clang/AST/TypeNodes.def"
+#if LLVM_VERSION_MAJOR >= 10
+#  include "clang/AST/TypeNodes.inc"
+#else
+#  include "clang/AST/TypeNodes.def"
+#endif
     }
   }
 }

@@ -540,8 +540,12 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
     new clang::DiagnosticOptions);
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
     new clang::DiagnosticIDs());
+#if LLVM_VERSION_MAJOR >= 10
+  llvm::opt::OptTable const* opts = &clang::driver::getDriverOptTable();
+#else
   std::unique_ptr<llvm::opt::OptTable> opts(
     clang::driver::createDriverOptTable());
+#endif
   unsigned missingArgIndex, missingArgCount;
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
