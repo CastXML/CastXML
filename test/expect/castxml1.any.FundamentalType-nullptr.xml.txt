@@ -2,9 +2,8 @@
 <CastXML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
   <Typedef id="_3" name="t_NullPtr" type="_5" context="_1" location="f1:2" file="f1" line="2"/>
-  <Typedef id="_4" name="t_ParenNullPtr" type="_6" context="_1" location="f1:3" file="f1" line="3"/>
+  <Typedef id="_4" name="t_ParenNullPtr" type="_5" context="_1" location="f1:3" file="f1" line="3"/>
   <FundamentalType id="_5" name="decltype\(nullptr\)" size="[0-9]+" align="[0-9]+"/>
-  <Unimplemented id="_6" type_class="Decltype"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/FundamentalType-nullptr.cxx"/>
 </CastXML>$

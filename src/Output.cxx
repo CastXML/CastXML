@@ -748,14 +748,10 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
         DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
         complete, dq);
     case clang::Type::Decltype:
-      if (this->Opts.CastXml && t->isNullPtrType()) {
+      if (this->Opts.CastXml) {
         clang::DecltypeType const* dtt = t->getAs<clang::DecltypeType>();
-        if (dtt->getUnderlyingExpr()->getStmtClass() ==
-            clang::Stmt::CXXNullPtrLiteralExprClass) {
-          // Treat literal 'decltype(nullptr)' as a FundamentalType.
-          return this->AddTypeDumpNode(DumpType(dtt->getUnderlyingType(), c),
-                                       complete, dq);
-        }
+        return this->AddTypeDumpNode(DumpType(dtt->getUnderlyingType(), c),
+                                     complete, dq);
       }
       break;
     case clang::Type::Elaborated:
