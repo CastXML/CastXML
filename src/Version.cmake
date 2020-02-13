@@ -12,7 +12,12 @@ if(CastXML_VERSION_RC)
   set(CastXML_VERSION "${CastXML_VERSION}-rc${CastXML_VERSION_RC}")
 endif()
 
-if(EXISTS ${CastXML_SOURCE_DIR}/.git)
+# If this source was exported by 'git archive', use its commit info.
+set(git_info "$Format:%h %s$")
+
+# Otherwise, try to identify the current development source version.
+if(NOT git_info MATCHES "^([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]?[0-9a-f]?)[0-9a-f]* "
+    AND EXISTS ${CastXML_SOURCE_DIR}/.git)
   find_package(Git QUIET)
   if(GIT_FOUND)
     macro(_git)
@@ -25,20 +30,17 @@ if(EXISTS ${CastXML_SOURCE_DIR}/.git)
         )
     endmacro()
   endif()
-endif()
 
-# Try to identify the current development source version.
-if(COMMAND _git)
-  # Get the commit checked out in this work tree.
-  _git(log -n 1 HEAD "--pretty=format:%h %s" --)
-  set(git_info "${_git_out}")
-else()
-  # Get the commit exported by 'git archive'.
-  set(git_info "$Format:%h %s$")
+  # Try to identify the current development source version.
+  if(COMMAND _git)
+    # Get the commit checked out in this work tree.
+    _git(log -n 1 HEAD "--pretty=format:%h %s" --)
+    set(git_info "${_git_out}")
+  endif()
 endif()
 
 # Extract commit information if available.
-if(git_info MATCHES "^([0-9a-f]+) (.*)$")
+if(git_info MATCHES "^([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]?[0-9a-f]?)[0-9a-f]* (.*)$")
   set(git_hash "${CMAKE_MATCH_1}")
   set(git_subject "${CMAKE_MATCH_2}")
 
