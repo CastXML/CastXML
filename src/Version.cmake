@@ -46,15 +46,7 @@ if(git_info MATCHES "^([0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]?[0-9a-f]
 
   # If this is not the exact commit of a release, add dev info.
   if(NOT "${git_subject}" MATCHES "^[Cc]ast[Xx][Mm][Ll] ${CastXML_VERSION}$")
-    set(git_suffix "-g${git_hash}")
-    if(COMMAND _git)
-      # Use version suffix computed by 'git describe' if this version has been tagged.
-      _git(describe --tags --match "v${CastXML_VERSION}" HEAD)
-      if(_git_out MATCHES "^v${CastXML_VERSION}(-[0-9]+-g[0-9a-f]+)?$")
-        set(git_suffix "${CMAKE_MATCH_1}")
-      endif()
-    endif()
-    set(CastXML_VERSION "${CastXML_VERSION}${git_suffix}")
+    set(CastXML_VERSION "${CastXML_VERSION}-g${git_hash}")
   endif()
 
   # If this is a work tree, check whether it is dirty.
