@@ -78,7 +78,8 @@ bool findResourceDir(const char* argv0, std::ostream& error)
     llvm::sys::path::remove_filename(dir2);
     // Build tree has
     //   <build>/bin[/<config>]/castxml
-    if (!tryBuildDir(dir.str()) && !tryBuildDir(dir2.str())) {
+    if (!tryBuildDir(std::string(dir.str())) &&
+        !tryBuildDir(std::string(dir2.str()))) {
       error << "Unable to locate resources for " << exe << "\n";
       return false;
     }

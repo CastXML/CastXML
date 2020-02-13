@@ -19,6 +19,7 @@
 #include "Utils.h"
 
 #include "clang/AST/ASTContext.h"
+#include "clang/AST/Attr.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
 #include "clang/AST/DeclFriend.h"
@@ -397,6 +398,7 @@ class ASTVisitor : public ASTVisitorBase
 
   /** Print a name="..." attribute.  */
   void PrintNameAttribute(std::string const& name);
+  void PrintNameAttribute(llvm::StringRef name);
 
   /** Print a mangled="..." attribute.  */
   void PrintMangledAttribute(clang::NamedDecl const* d);
@@ -1078,7 +1080,7 @@ void ASTVisitor::ProcessFileQueue()
     this->OS <<
       "  <File"
       " id=\"f" << this->FileNodes[f] << "\""
-      " name=\"" << encodeXML(f->getName()) << "\""
+      " name=\"" << encodeXML(std::string(f->getName())) << "\""
       "/>\n"
       ;
     /* clang-format on */
@@ -1188,6 +1190,11 @@ void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
   std::string n = stringReplace(name, "__castxml__float128_s", "__float128");
   this->OS << " name=\"" << encodeXML(n) << "\"";
+}
+
+void ASTVisitor::PrintNameAttribute(llvm::StringRef name)
+{
+  this->PrintNameAttribute(std::string(name));
 }
 
 void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
@@ -1714,7 +1721,7 @@ void ASTVisitor::OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
 {
   this->OS << "  <Namespace";
   this->PrintIdAttribute(dn);
-  this->PrintNameAttribute("::");
+  this->PrintNameAttribute(std::string("::"));
   if (dn->Complete) {
     this->PrintMembersAttribute(d);
   }

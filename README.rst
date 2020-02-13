@@ -46,8 +46,8 @@ To build CastXML from source, first obtain the prerequisites:
 * `LLVM/Clang`_ compiler SDK install tree built using the C++ compiler.
   This version of CastXML has been tested with LLVM/Clang
 
+  - Git master as of 2020-02-13 (``6c73246179``)
   - Release ``10.0``
-  - SVN revision ``375505`` (trunk)
   - Release ``9.0``
   - Release ``8.0``
   - Release ``7.0``

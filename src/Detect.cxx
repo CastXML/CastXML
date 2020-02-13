@@ -186,7 +186,7 @@ static bool detectCC_MSVC(const char* const* argBeg, const char* const* argEnd,
       includes_ref.split(includes, ";", -1, false);
       for (llvm::StringRef i : includes) {
         if (!i.empty()) {
-          std::string inc = i;
+          std::string inc(i);
           std::replace(inc.begin(), inc.end(), '\\', '/');
           opts.Includes.push_back(inc);
         }
