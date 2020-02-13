@@ -20,7 +20,7 @@ Source files are parsed as complete translation units using an
 internal `Clang`_ compiler.  XML output is enabled by the
 ``--castxml-output=<v>`` or ``--castxml-gccxml`` option.
 
-.. _`Clang`: http://clang.llvm.org/
+.. _`Clang`: https://clang.llvm.org/
 .. _`gccxml`: http://gccxml.org
 
 Options

@@ -9,8 +9,8 @@ CastXML is a C-family abstract syntax tree XML output tool.
 This project is maintained by `Kitware`_ in support of `ITK`_,
 the Insight Segmentation and Registration Toolkit.
 
-.. _`Kitware`: http://www.kitware.com
-.. _`ITK`: http://www.itk.org
+.. _`Kitware`: https://www.kitware.com/
+.. _`ITK`: https://itk.org/
 
 Manual
 ======
@@ -25,14 +25,14 @@ License
 CastXML is licensed under the `Apache License, Version 2.0`_.
 See the `<LICENSE>`__ and `<NOTICE>`__ files for details.
 
-.. _`Apache License, Version 2.0`: http://www.apache.org/licenses/LICENSE-2.0
+.. _`Apache License, Version 2.0`: https://www.apache.org/licenses/LICENSE-2.0
 
 Community
 =========
 
 Subscribe and post to the `CastXML Mailing List`_ for discussion of CastXML.
 
-.. _`CastXML Mailing List`: http://public.kitware.com/mailman/listinfo/castxml
+.. _`CastXML Mailing List`: https://public.kitware.com/mailman/listinfo/castxml
 
 Build
 =====
@@ -85,6 +85,6 @@ build tree, and optionally build the ``install`` target.  The ``castxml``
 command-line tool may be used either from the build tree or the install tree.
 The install tree is relocatable.
 
-.. _`CMake`: http://www.cmake.org/
-.. _`LLVM/Clang`: http://clang.llvm.org/
-.. _`Sphinx`: http://sphinx-doc.org/
+.. _`CMake`: https://cmake.org/
+.. _`LLVM/Clang`: https://clang.llvm.org/
+.. _`Sphinx`: https://www.sphinx-doc.org/
