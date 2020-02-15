@@ -32,18 +32,28 @@ configure_file(
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-set(clang_libs
-  clangFrontend
-  clangDriver
-  clangSerialization
-  clangParse
-  clangSema
-  clangAnalysis
-  clangEdit
-  clangAST
-  clangLex
-  clangBasic
-  )
+if(CLANG_LINK_CLANG_DYLIB)
+  if(NOT TARGET clang-cpp)
+    message(FATAL_ERROR "CLANG_LINK_CLANG_DYLIB requires a LLVM/Clang providing clang-cpp")
+  endif()
+  if(NOT LLVM_LINK_LLVM_DYLIB)
+    message(FATAL_ERROR "CLANG_LINK_CLANG_DYLIB requires a LLVM/Clang built with LLVM_LINK_LLVM_DYLIB")
+  endif()
+  set(clang_libs clang-cpp)
+else()
+  set(clang_libs
+    clangFrontend
+    clangDriver
+    clangSerialization
+    clangParse
+    clangSema
+    clangAnalysis
+    clangEdit
+    clangAST
+    clangLex
+    clangBasic
+    )
+endif()
 
 set(llvm_libs
   native
