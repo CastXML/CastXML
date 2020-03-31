@@ -287,6 +287,17 @@ protected:
                     "#define __float128 __castxml__float128\n";
       }
 
+      if (CI.getLangOpts().MSCompatibilityVersion >= 192300000) {
+        // MSVC tools 14.23 and above declare __builtin_assume_aligned
+        // in "intrin0.h" with a signature incompatible with Clang's
+        // builtin.  It is guarded by '!defined(__clang__)' but that
+        // breaks when we simulate MSVC's preprocessor.  Rename the
+        // builtin via preprocessing to avoid the conflict.
+        builtins += "\n"
+                    "#define __builtin_assume_aligned"
+                    " __castxml__builtin_assume_aligned\n";
+      }
+
       // Provide __is_assignable builtin if simulating MSVC.
       // When a future Clang version supports the builtin then
       // we can skip this when built against such a Clang.
