@@ -400,6 +400,7 @@ castxml_test_cmd(cc-msvc-std-explicit --castxml-cc-msvc "(" $<TARGET_FILE:cc-msv
 castxml_test_cmd(cc-msvc-builtin-1800-E --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> -msc=1800 ")" ${empty_cxx} -E -dM)
 castxml_test_cmd(cc-msvc-builtin-1900-E --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> -msc=1900 ")" ${empty_cxx} -E -dM)
 castxml_test_cmd(cc-msvc-builtin-1900 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> -msc=1900 ")" ${input}/make_integer_seq.cxx)
+castxml_test_cmd(cc-msvc-builtin-1923 --castxml-cc-msvc "(" $<TARGET_FILE:cc-msvc> -msc=1923 ")" ${input}/assume_aligned.cxx)
 castxml_test_cmd(cc-msvc-c-bad-cmd --castxml-cc-msvc-c "(" cc-msvc-c-bad-cmd ")" ${empty_c})
 castxml_test_cmd(cc-msvc-c-src-c-E --castxml-cc-msvc-c $<TARGET_FILE:cc-msvc> ${empty_c} -E -dM)
 castxml_test_cmd(cc-msvc-c-src-c-cmd --castxml-cc-msvc-c $<TARGET_FILE:cc-msvc> ${empty_c} "-###")
