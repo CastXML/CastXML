@@ -27,6 +27,10 @@ int main(int argc, const char* argv[])
       );
   }
   fprintf(stdout,
+#ifdef _WIN32
+    "#define _WIN32 1\n"
+    "#define __MINGW32__ 1\n"
+#endif
     "#define __GNUC__ 1\n"
     "#define __has_include(x) x\n"
     "#define __has_include_next(x) x\n"
