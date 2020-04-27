@@ -1,4 +1,4 @@
 Target: [^
--]+-pc-windows[^
+-]+-pc-windows-msvc[^
 ]*
 .
