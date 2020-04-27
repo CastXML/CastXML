@@ -96,6 +96,9 @@ static void setTriple(Options& opts)
     triple.setVendorName("pc");
     triple.setOSName("windows");
   }
+  if (pd.find("#define _MSC_VER ") != pd.npos) {
+    triple.setEnvironmentName("msvc");
+  }
   if (pd.find("#define __MINGW32__ 1") != pd.npos) {
     triple.setEnvironmentName("gnu");
   }
