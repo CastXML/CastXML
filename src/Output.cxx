@@ -1714,7 +1714,8 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
         d->getType()->getAs<clang::FunctionProtoType>()) {
     this->PrintThrowsAttribute(fpt, dn->Complete);
     if (!clang::isa<clang::CXXConstructorDecl>(d) &&
-        !clang::isa<clang::CXXDestructorDecl>(d)) {
+        !clang::isa<clang::CXXDestructorDecl>(d) &&
+        d->getLanguageLinkage() == clang::CXXLanguageLinkage) {
       this->PrintMangledAttribute(d);
     }
     this->GetFunctionTypeAttributes(fpt, attributes);
