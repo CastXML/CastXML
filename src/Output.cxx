@@ -2083,7 +2083,12 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   if (d->getStorageClass() == clang::SC_Extern) {
     this->OS << " extern=\"1\"";
   }
-  this->PrintMangledAttribute(d);
+
+  bool const isTranslationUnit = clang::isa<clang::TranslationUnitDecl>(d->getDeclContext());
+  if (!isTranslationUnit)
+  {
+    this->PrintMangledAttribute(d);
+  }
   this->PrintAttributesAttribute(d);
   this->PrintCommentAttribute(d, dn);
 
