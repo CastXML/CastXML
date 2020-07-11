@@ -34,6 +34,14 @@ Subscribe and post to the `CastXML Mailing List`_ for discussion of CastXML.
 
 .. _`CastXML Mailing List`: https://public.kitware.com/mailman/listinfo/castxml
 
+Superbuild
+==========
+
+If you are looking for pre-built binaries, or a compact way to build this
+project, please see `CastXMLSuperbuild`_.
+
+.. _`CastXMLSuperbuild`: https://github.com/CastXML/CastXMLSuperbuild
+
 Build
 =====
 
