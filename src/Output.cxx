@@ -295,6 +295,13 @@ class ASTVisitor : public ASTVisitorBase
     }
   };
 
+  struct CommentEntry
+  {
+    unsigned int Index;
+    clang::RawComment const* Comment;
+    DumpNode const* Attached;
+  };
+
   class PrinterHelper : public clang::PrinterHelper
   {
     ASTVisitor& Visitor;
@@ -362,6 +369,7 @@ class ASTVisitor : public ASTVisitorBase
 
   /** Traverse AST nodes until the queue is empty.  */
   void ProcessQueue();
+  void ProcessCommentQueue();
   void ProcessFileQueue();
 
   /** Output start tags on top of xml file. */
@@ -467,6 +475,9 @@ class ASTVisitor : public ASTVisitorBase
       output.  */
   void PrintBefriendingAttribute(clang::CXXRecordDecl const* dx);
 
+  /** Print a comment="..." attribute showing the declaration's comment.  */
+  void PrintCommentAttribute(clang::Decl const* d, DumpNode const* dn);
+
   /** Flags used by function output methods to pass information
       to the OutputFunctionHelper method.  */
   enum FunctionHelperFlags
@@ -568,6 +579,9 @@ private:
   // Total number of nodes to be dumped.
   unsigned int NodeCount;
 
+  // Total number of comments to be referenced.
+  unsigned int CommentCount = 0;
+
   // Total number of source files to be referenced.
   unsigned int FileCount;
 
@@ -601,6 +615,9 @@ private:
 
   // Node traversal queue.
   std::set<QueueEntry> Queue;
+
+  // Comment traversal queue.
+  std::queue<CommentEntry> CommentQueue;
 
   // File traversal queue.
   std::queue<clang::FileEntry const*> FileQueue;
@@ -1063,6 +1080,47 @@ void ASTVisitor::ProcessQueue()
         this->OutputType(qe.Type, qe.DN);
         break;
     }
+  }
+}
+
+void ASTVisitor::ProcessCommentQueue()
+{
+  while (!this->CommentQueue.empty()) {
+    CommentEntry c = this->CommentQueue.front();
+    this->CommentQueue.pop();
+
+    this->OS << "  <Comment id=\"c" << c.Index << "\"";
+    if (c.Attached) {
+      this->OS << " attached=\"_" << c.Attached->Index << "\"";
+    }
+    clang::SourceLocation bl = c.Comment->getSourceRange().getBegin();
+    clang::SourceLocation el = c.Comment->getSourceRange().getEnd();
+    if (bl.isValid() && el.isValid()) {
+      clang::FullSourceLoc bfl = this->CTX.getFullLoc(bl).getExpansionLoc();
+      clang::FullSourceLoc efl = this->CTX.getFullLoc(el).getExpansionLoc();
+      clang::SourceManager const& sm = this->CI.getSourceManager();
+      clang::FileID bid = bfl.getFileID();
+      clang::FileID eid = efl.getFileID();
+      clang::FileEntry const* bf = sm.getFileEntryForID(bid);
+      clang::FileEntry const* ef = sm.getFileEntryForID(eid);
+      if (bf && bf == ef) {
+        unsigned int fi = this->AddDumpFile(bf);
+        unsigned int boff = sm.getFileOffset(bfl);
+        unsigned int eoff = sm.getFileOffset(efl);
+        /* clang-format off */
+        this->OS <<
+         " file=\"f" << fi << "\""
+         " begin_line=\"" << sm.getLineNumber(bid, boff) << "\""
+         " begin_column=\"" << sm.getColumnNumber(bid, boff) << "\""
+         " begin_offset=\"" << boff << "\""
+         " end_line=\"" << sm.getLineNumber(eid, eoff) << "\""
+         " end_column=\"" << sm.getColumnNumber(eid, eoff) << "\""
+         " end_offset=\"" << eoff << "\""
+         ;
+        /* clang-format on */
+      }
+    }
+    this->OS << "/>\n";
   }
 }
 
@@ -1533,6 +1591,20 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
   }
 }
 
+void ASTVisitor::PrintCommentAttribute(clang::Decl const* d,
+                                       DumpNode const* dn)
+{
+  if (!this->Opts.CastXml) {
+    return;
+  }
+  if (clang::RawComment const* rc = this->CTX.getRawCommentForDeclNoCache(d)) {
+    unsigned int index = ++this->CommentCount;
+    CommentEntry e = { index, rc, dn };
+    this->CommentQueue.push(e);
+    this->OS << " comment=\"c" << index << "\"";
+  }
+}
+
 bool ASTVisitor::HaveFloat128Type() const
 {
 #if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR > 8
@@ -1622,6 +1694,7 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 
   this->GetDeclAttributes(d, attributes);
   this->PrintAttributesAttribute(attributes);
+  this->PrintCommentAttribute(d, dn);
 
   if (unsigned np = d->getNumParams()) {
     this->OS << ">\n";
@@ -1747,6 +1820,7 @@ void ASTVisitor::OutputNamespaceDecl(clang::NamespaceDecl const* d,
     }
     this->PrintMembersAttribute(emitted);
   }
+  this->PrintCommentAttribute(d, dn);
   this->OS << "/>\n";
 }
 
@@ -1808,6 +1882,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   }
   this->PrintABIAttributes(d);
   this->PrintAttributesAttribute(d);
+  this->PrintCommentAttribute(d, dn);
   if (doBases) {
     this->OS << ">\n";
     clang::ASTRecordLayout const& layout = this->CTX.getASTRecordLayout(dx);
@@ -1875,6 +1950,7 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->PrintAttributesAttribute(d);
+  this->PrintCommentAttribute(d, dn);
   this->OS << "/>\n";
 }
 
@@ -1888,6 +1964,7 @@ void ASTVisitor::OutputTypeAliasDecl(clang::TypeAliasDecl const* d,
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->PrintAttributesAttribute(d);
+  this->PrintCommentAttribute(d, dn);
   this->OS << "/>\n";
 }
 
@@ -1909,6 +1986,7 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
   }
   this->PrintABIAttributes(d);
   this->PrintAttributesAttribute(d);
+  this->PrintCommentAttribute(d, dn);
   clang::EnumDecl::enumerator_iterator enum_begin = d->enumerator_begin();
   clang::EnumDecl::enumerator_iterator enum_end = d->enumerator_end();
   if (enum_begin != enum_end) {
@@ -1945,6 +2023,7 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
     this->OS << " mutable=\"1\"";
   }
   this->PrintAttributesAttribute(d);
+  this->PrintCommentAttribute(d, dn);
 
   this->OS << "/>\n";
 }
@@ -1974,6 +2053,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   }
   this->PrintMangledAttribute(d);
   this->PrintAttributesAttribute(d);
+  this->PrintCommentAttribute(d, dn);
 
   this->OS << "/>\n";
 }
@@ -2231,7 +2311,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".1.6\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".2.0\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
@@ -2317,6 +2397,9 @@ void ASTVisitor::HandleTranslationUnit(clang::TranslationUnitDecl const* tu)
 
   // Dump the incomplete nodes.
   this->ProcessQueue();
+
+  // Dump the comment queue.
+  this->ProcessCommentQueue();
 
   // Dump the filename queue.
   this->ProcessFileQueue();

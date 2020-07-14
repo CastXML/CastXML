@@ -1,0 +1,2 @@
+/** class comment */
+class start;

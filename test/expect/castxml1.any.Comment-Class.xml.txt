@@ -1,0 +1,7 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:2" file="f1" line="2" incomplete="1" comment="c1"/>
+  <Namespace id="_2" name="::"/>
+  <Comment id="c1" attached="_1" file="f1" begin_line="1" begin_column="1" begin_offset="0" end_line="1" end_column="21" end_offset="20"/>
+  <File id="f1" name=".*/test/input/Comment-Class.cxx"/>
+</CastXML>$

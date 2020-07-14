@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:3" file="f1" line="3" mangled="[^"]+" comment="c1">
+    <Argument type="_4" location="f1:3" file="f1" line="3"/>
+  </Function>
+  <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <Comment id="c1" attached="_1" file="f1" begin_line="1" begin_column="17" begin_offset="16" end_line="1" end_column="40" end_offset="39"/>
+  <File id="f1" name=".*/test/input/Comment-Function-expansion.cxx"/>
+</CastXML>$

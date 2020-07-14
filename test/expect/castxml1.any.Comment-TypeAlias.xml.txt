@@ -1,0 +1,9 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3"/>
+  <Typedef id="_3" name="type" type="_4" context="_1" location="f1:3" file="f1" line="3" comment="c1"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <Comment id="c1" attached="_3" file="f1" begin_line="2" begin_column="1" begin_offset="18" end_line="2" end_column="26" end_offset="43"/>
+  <File id="f1" name=".*/test/input/Comment-TypeAlias.cxx"/>
+</CastXML>$

@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:4" file="f1" line="4" mangled="[^"]+" comment="c1">
+    <Argument type="_4" location="f1:4" file="f1" line="4"/>
+  </Function>
+  <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <Comment id="c1" attached="_1" file="f1" begin_line="2" begin_column="1" begin_offset="27" end_line="2" end_column="19" end_offset="45"/>
+  <File id="f1" name=".*/test/input/Comment-Function-separated.cxx"/>
+</CastXML>$
