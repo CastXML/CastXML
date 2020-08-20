@@ -91,6 +91,9 @@ static void setTriple(Options& opts)
   } else if (pd.find("#define __i386__ 1") != pd.npos ||
              pd.find("#define _M_IX86 ") != pd.npos) {
     triple.setArchName("i386");
+  } else if (pd.find("#define __aarch64__ 1") != pd.npos ||
+             pd.find("#define _M_ARM64 ") != pd.npos) {
+    triple.setArchName("aarch64");
   }
   if (pd.find("#define _WIN32 1") != pd.npos) {
     triple.setVendorName("pc");
