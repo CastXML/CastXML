@@ -112,8 +112,9 @@ static bool isBuiltinIncludeDir(std::string const& inc)
 {
   // FIXME: Intrinsics headers are platform-specific.
   // Is there a better way to detect this directory?
-  return (llvm::sys::fs::exists(inc + "/emmintrin.h")  // x86_64
-          || llvm::sys::fs::exists(inc + "/altivec.h") // ppc64
+  return (llvm::sys::fs::exists(inc + "/emmintrin.h")   // x86_64
+          || llvm::sys::fs::exists(inc + "/altivec.h")  // ppc64
+          || llvm::sys::fs::exists(inc + "/arm_neon.h") // aarch64
   );
 }
 
