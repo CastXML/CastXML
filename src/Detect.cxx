@@ -108,6 +108,16 @@ static void setTriple(Options& opts)
   opts.Triple = triple.getTriple();
 }
 
+static bool isBuiltinIncludeDir(std::string const& inc)
+{
+  // FIXME: Intrinsics headers are platform-specific.
+  // Is there a better way to detect this directory?
+  return (llvm::sys::fs::exists(inc + "/emmintrin.h")   // x86_64
+          || llvm::sys::fs::exists(inc + "/altivec.h")  // ppc64
+          || llvm::sys::fs::exists(inc + "/arm_neon.h") // aarch64
+  );
+}
+
 static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
                          Options& opts, const char* id, const char* ext)
 {
@@ -149,11 +159,7 @@ static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
                      fwImplicitSuffix));
             }
             // Replace the compiler builtin include directory with ours.
-            if (!fw &&
-                // FIXME: Intrinsics headers are platform-specific.
-                // Is there a better way to detect this directory?
-                (llvm::sys::fs::exists(inc + "/emmintrin.h") ||
-                 llvm::sys::fs::exists(inc + "/altivec.h"))) {
+            if (!fw && isBuiltinIncludeDir(inc)) {
               inc = getClangBuiltinIncludeDir();
             }
             opts.Includes.push_back(Options::Include(inc, fw));
