@@ -1543,6 +1543,14 @@ void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
   if (d->hasAttr<clang::DLLImportAttr>()) {
     attrs.push_back("dllimport");
   }
+
+  if (d->hasAttr<clang::FinalAttr>()) {
+    attrs.push_back("final");
+  }
+
+  if (d->hasAttr<clang::OverrideAttr>()) {
+    attrs.push_back("override");
+  }
 }
 
 void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
