@@ -67,6 +67,8 @@ macro(castxml_test_output_common prefix ext std test)
     endif()
   endif()
 
+  set(_schema "${CastXML_SOURCE_DIR}/doc/manual/castxml.xsd")
+
   set(command $<TARGET_FILE:castxml>
     ${flag}
     ${_castxml_start}
@@ -82,6 +84,7 @@ macro(castxml_test_output_common prefix ext std test)
     "-Dexpect=${_castxml_expect}"
     "-Dxml=${prefix}.${std}.${test}.xml"
     "-Dxmllint=${LIBXML2_XMLLINT_EXECUTABLE}"
+    "-Dschema=${_schema}"
     -P ${CMAKE_CURRENT_SOURCE_DIR}/run.cmake
     )
 endmacro()

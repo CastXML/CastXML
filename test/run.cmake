@@ -122,7 +122,7 @@ endif()
 
 if(xmllint AND xml AND EXISTS "${xml}")
   execute_process(
-    COMMAND ${xmllint} --noout --nonet "${xml}"
+    COMMAND ${xmllint} --noout --nonet --schema "${schema}" "${xml}"
     OUTPUT_VARIABLE xmllint_stdout
     ERROR_VARIABLE xmllint_stderr
     RESULT_VARIABLE xmllint_result

@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:simpleType name="bool">
+    <xs:restriction base="xs:int">
+      <xs:enumeration value="0" />
+      <xs:enumeration value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Entity name, might include spaces and punctuation. -->
+  <xs:simpleType name="name">
+    <xs:restriction base="xs:token">
+      <xs:minLength value="1" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Possibly empty entity name. -->
+  <xs:simpleType name="nameOrEmpty">
+    <xs:restriction base="xs:token" />
+  </xs:simpleType>
+
+  <xs:simpleType name="empty">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <!-- Arbitrary C++ expression. Might be empty in some corner cases. -->
+  <xs:simpleType name="expression">
+    <xs:restriction base="xs:token" />
+  </xs:simpleType>
+
+  <!--
+    A space separated list of declaration attributes, inlcuding:
+    deprecated, dllexport, dllimport, final, override, __stdcall__,
+    __fastcall__, __thiscall__ annotate(...).
+    Note that it isn't a valid XML list, because annotate(...) might contain
+    spaces.
+  -->
+  <xs:simpleType name="attributes">
+    <xs:restriction base="xs:token" />
+  </xs:simpleType>
+
+  <xs:simpleType name="access">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="public" />
+      <xs:enumeration value="protected" />
+      <xs:enumeration value="private" />
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:attributeGroup name="abi">
+    <xs:attribute name="size" type="xs:unsignedLong" />
+    <xs:attribute name="align" type="xs:unsignedLong" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="optionalAbi">
+    <xs:attribute name="size" type="xs:unsignedLong" use="optional" />
+    <xs:attribute name="align" type="xs:unsignedLong" use="optional" />
+  </xs:attributeGroup>
+
+  <xs:attributeGroup name="location">
+    <xs:attribute name="location" use="optional">
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:pattern value="f[0-9]+:[0-9]+" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="file" type="xs:IDREF" use="optional" />
+    <xs:attribute name="line" type="xs:unsignedLong" use="optional" />
+  </xs:attributeGroup>
+
+  <xs:complexType name="Function">
+    <xs:sequence>
+      <xs:element name="Argument" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="name" type="name" use="optional" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="original_type" type="xs:IDREF" use="optional" />
+          <xs:attributeGroup ref="location" />
+          <xs:attribute name="default" type="expression" use="optional" />
+          <xs:attribute name="attributes" type="attributes" use="optional" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Ellipsis" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" />
+    <!-- Artificial members or anonymous structs (like ctor) might have an empty name. -->
+    <xs:attribute name="name" type="nameOrEmpty" />
+    <!-- Only constructors lack returns attribute. -->
+    <xs:attribute name="returns" type="xs:IDREF" use="optional" />
+    <xs:attribute name="context" type="xs:IDREF" use="optional" />
+    <xs:attribute name="static" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="inline" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="extern" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="artificial" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="throw" type="xs:IDREFS" use="optional" />
+    <xs:attribute name="mangled" type="name" />
+    <xs:attribute name="attributes" type="attributes" use="optional" />
+    <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+    <xs:attributeGroup ref="location" />
+  </xs:complexType>
+
+  <xs:complexType name="Method">
+    <xs:complexContent>
+      <xs:extension base="Function">
+        <xs:attribute name="access" type="access" />
+        <xs:attribute name="explicit" type="xs:int" use="optional" fixed="1" />
+        <xs:attribute name="const" type="xs:int" use="optional" fixed="1" />
+        <xs:attribute name="virtual" type="xs:int" use="optional" fixed="1" />
+        <xs:attribute name="pure_virtual" type="xs:int" use="optional" fixed="1" />
+        <xs:attribute name="overrides" type="xs:IDREFS" use="optional" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+
+  <xs:complexType name="FunctionType">
+    <xs:sequence>
+      <xs:element name="Argument" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="type" type="xs:IDREF" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Ellipsis" minOccurs="0" />
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" />
+    <xs:attribute name="returns" type="xs:IDREF" />
+    <xs:attribute name="const" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="volatile" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="restrict" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="attributes" type="attributes" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="Record">
+    <xs:sequence>
+      <xs:element name="Base" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="access" type="access" />
+          <xs:attribute name="virtual" type="bool" />
+          <xs:attribute name="offset" type="xs:unsignedLong" use="optional" />
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" />
+    <!-- Anonymous records might have an empty name. -->
+    <xs:attribute name="name" type="nameOrEmpty" use="optional" />
+    <xs:attribute name="context" type="xs:IDREF" use="optional" />
+    <xs:attribute name="access" type="access" use="optional" />
+    <xs:attributeGroup ref="location" />
+    <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+    <xs:attribute name="incomplete" type="xs:int" use="optional" fixed="1" />
+    <!-- All of the following attributes are for complete declarations only. -->
+    <xs:attribute name="abstract" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="members" type="xs:IDREFS" use="optional" />
+    <xs:attribute name="bases" use="optional">
+      <xs:simpleType>
+        <xs:list>
+          <xs:simpleType>
+            <xs:restriction base="xs:token">
+              <xs:pattern value="(private:|protected:)?_[0-9]+" />
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:list>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="befriending" type="xs:IDREFS" use="optional" />
+    <xs:attributeGroup ref="optionalAbi" />
+    <xs:attribute name="attributes" type="attributes" use="optional" />
+  </xs:complexType>
+
+  <xs:complexType name="Items">
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
+
+      <xs:element name="File">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <!-- Name can be a "/"-delimited path or the string "<builtin>". -->
+          <xs:attribute name="name" type="name" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Namespace">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <!-- Global namespace is named "::". -->
+          <xs:attribute name="name" type="name" use="optional" />
+          <xs:attribute name="context" type="xs:IDREF" use="optional" />
+          <xs:attribute name="members" type="xs:IDREFS" use="optional" />
+          <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Comment">
+        <xs:complexType>
+          <!-- Note that the actual comment text isn't present. -->
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="attached" type="xs:IDREF" />
+          <xs:attribute name="file" type="xs:IDREF" />
+          <xs:attribute name="begin_line" type="xs:unsignedInt" />
+          <xs:attribute name="begin_column" type="xs:unsignedInt" />
+          <xs:attribute name="begin_offset" type="xs:unsignedInt" />
+          <xs:attribute name="end_line" type="xs:unsignedInt" />
+          <xs:attribute name="end_column" type="xs:unsignedInt" />
+          <xs:attribute name="end_offset" type="xs:unsignedInt" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Struct" type="Record" />
+
+      <xs:element name="Union" type="Record" />
+
+      <xs:element name="Class" type="Record" />
+
+      <xs:element name="Enumeration">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="EnumValue" minOccurs="0" maxOccurs="unbounded">
+              <xs:complexType>
+                <xs:attribute name="name" type="name" />
+                <xs:attribute name="init" type="xs:long" />
+                <xs:attribute name="attributes" type="attributes" use="optional" />
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+          <xs:attribute name="id" type="xs:ID" />
+          <!-- Anonymous enums might have an empty name. -->
+          <xs:attribute name="name" type="nameOrEmpty" />
+          <xs:attribute name="context" type="xs:IDREF" use="optional" />
+          <!-- Access is available for enums in class context. -->
+          <xs:attribute name="access" type="access" use="optional" />
+          <xs:attributeGroup ref="location" />
+          <xs:attribute name="scoped" type="xs:int" use="optional" fixed="1" />
+          <xs:attributeGroup ref="abi" />
+          <xs:attribute name="attributes" type="attributes" use="optional" />
+          <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Variable">
+        <!-- Includes static variables in records. -->
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="name" type="name" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="init" type="expression" use="optional" />
+          <xs:attribute name="context" type="xs:IDREF" use="optional" />
+          <xs:attribute name="access" type="access" use="optional" />
+          <xs:attributeGroup ref="location" />
+          <xs:attribute name="static" type="xs:int" use="optional" fixed="1" />
+          <xs:attribute name="extern" type="xs:int" use="optional" fixed="1" />
+          <xs:attribute name="mangled" type="name" />
+          <xs:attribute name="attributes" type="attributes" use="optional" />
+          <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Field">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <!-- Fields of anonymous record types might have an empty name.  -->
+          <xs:attribute name="name" type="nameOrEmpty" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="bits" type="xs:unsignedInt" use="optional" />
+          <xs:attribute name="context" type="xs:IDREF" />
+          <xs:attribute name="access" type="access" />
+          <xs:attributeGroup ref="location" />
+          <xs:attribute name="offset" type="xs:unsignedLong" />
+          <xs:attribute name="mutable" type="xs:int" use="optional" fixed="1" />
+          <xs:attribute name="attributes" type="attributes" use="optional" />
+          <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Function" type="Function" />
+
+      <xs:element name="OperatorFunction" type="Function" />
+
+      <xs:element name="Constructor" type="Method" />
+
+      <xs:element name="Destructor" type="Method" />
+
+      <xs:element name="Method" type="Method" />
+
+      <xs:element name="OperatorMethod" type="Method" />
+
+      <xs:element name="Converter" type="Method" />
+
+      <xs:element name="Typedef">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="name" type="name" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="context" type="xs:IDREF" use="optional" />
+          <!-- Access is available for typedefs in class context. -->
+          <xs:attribute name="access" type="access" use="optional" />
+          <xs:attributeGroup ref="location" />
+          <xs:attribute name="attributes" type="attributes" use="optional" />
+          <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="FundamentalType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="name" type="name" />
+          <xs:attributeGroup ref="abi" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="CvQualifiedType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="const" type="xs:int" use="optional" fixed="1" />
+          <xs:attribute name="volatile" type="xs:int" use="optional" fixed="1" />
+          <xs:attribute name="restrict" type="xs:int" use="optional" fixed="1" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="PointerType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <!-- Member function pointers lack ABI information. -->
+          <xs:attributeGroup ref="optionalAbi" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="OffsetType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="basetype" type="xs:IDREF" />
+          <xs:attribute name="type" type="xs:IDREF" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="ReferenceType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attributeGroup ref="abi" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="ArrayType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="min" type="xs:unsignedLong" fixed="0" />
+          <!--
+            For unbounded arrays, max is an empty string.
+            For explicitly zero length arrays, max is -1.
+          -->
+          <xs:attribute name="max">
+            <xs:simpleType>
+              <xs:union memberTypes="xs:long empty" />
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="ElaboratedType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="FunctionType" type="FunctionType" />
+
+      <xs:element name="MethodType">
+        <xs:complexType>
+          <xs:complexContent>
+            <xs:extension base="FunctionType">
+              <xs:attribute name="basetype" type="xs:IDREF" />
+            </xs:extension>
+          </xs:complexContent>
+        </xs:complexType>
+      </xs:element>
+
+      <xs:element name="Unimplemented">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <!-- kind is set for unimplemented declarations, type_class for types. -->
+          <xs:attribute name="kind" type="name" use="optional" />
+          <xs:attribute name="type_class" type="name" use="optional" />
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
+  </xs:complexType>
+
+  <!-- castxml-output=1 output root. -->
+  <xs:element name="CastXML">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="Items">
+          <xs:attribute name="format">
+            <xs:simpleType>
+              <xs:restriction base="xs:token">
+                <xs:pattern value="1(\.[0-9]+)*" />
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <!-- castxml-gccxml output root. -->
+  <xs:element name="GCC_XML">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="Items">
+          <xs:attribute name="version" type="xs:token" fixed="0.9.0" />
+          <xs:attribute name="cvs_revision" type="xs:token" fixed="1.145" />
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

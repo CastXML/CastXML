@@ -131,6 +131,12 @@ ever released (for backward compatibility).  The ``cvs_revision`` number is
 a running number that is incremented for each minor change in the xml format.
 
 
+Schema
+======
+
+XML Schema that describes both output formats is available:
+:download:`castxml.xsd`.
+
 Preprocessing
 =============
 
@@ -179,10 +185,6 @@ Why are C++ function bodies not dumped in XML?
 This feature has not been implemented because the driving project for which
 CastXML was written had no need for function bodies.
 
-Is there a DTD specifying the XML format dumped?
-------------------------------------------------
-
-No.
 
 Why don't I see templates in the output?
 ----------------------------------------
