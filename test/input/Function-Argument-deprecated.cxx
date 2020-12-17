@@ -1,1 +1,1 @@
-void start(__attribute__((deprecated)) int);
+void start(__attribute__((deprecated("Function Argument Deprecated"))) int);

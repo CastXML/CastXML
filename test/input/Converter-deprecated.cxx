@@ -1,4 +1,4 @@
 class start
 {
-  __attribute__((deprecated)) operator int();
+  __attribute__((deprecated("Converter Deprecated"))) operator int();
 };

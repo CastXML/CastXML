@@ -1,3 +1,3 @@
-class __attribute__((deprecated)) start
+class __attribute__((deprecated("Class Deprecated"))) start
 {
 };

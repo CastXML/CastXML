@@ -1539,6 +1539,13 @@ void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
 
   if (d->hasAttr<clang::DeprecatedAttr>()) {
     attrs.push_back("deprecated");
+    if (this->Opts.CastXml) {
+      clang::DeprecatedAttr* depAttr = d->getAttr<clang::DeprecatedAttr>();
+      if (!depAttr->getMessage().empty()) {
+        std::string depMsgText = std::string(depAttr->getMessage());
+        this->OS << " deprecation=\"" << encodeXML(depMsgText) << "\"";
+      }
+    }
   }
 
   if (d->hasAttr<clang::DLLExportAttr>()) {

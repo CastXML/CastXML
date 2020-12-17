@@ -1,4 +1,4 @@
 class start
 {
-  __attribute__((deprecated)) int field;
+  __attribute__((deprecated("Field Deprecated"))) int field;
 };

@@ -1,1 +1,1 @@
-__attribute__((deprecated)) int start;
+__attribute__((deprecated("Variable Deprecated"))) int start;

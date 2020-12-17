@@ -81,6 +81,7 @@
           <xs:attributeGroup ref="location" />
           <xs:attribute name="default" type="expression" use="optional" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
+          <xs:attribute name="deprecation" type="name" use="optional"/>
           <xs:attribute name="annotation" type="name" use="optional"/>
         </xs:complexType>
       </xs:element>
@@ -98,6 +99,7 @@
     <xs:attribute name="artificial" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="throw" type="xs:IDREFS" use="optional" />
     <xs:attribute name="mangled" type="name" />
+    <xs:attribute name="deprecation" type="name" use="optional"/>
     <xs:attribute name="annotation" type="name" use="optional"/>
     <xs:attribute name="attributes" type="attributes" use="optional" />
     <xs:attribute name="comment" type="xs:IDREF" use="optional" />
@@ -132,6 +134,7 @@
     <xs:attribute name="volatile" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="restrict" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="attributes" type="attributes" use="optional" />
+    <xs:attribute name="deprecation" type="name" use="optional"/>
     <xs:attribute name="annotation" type="name" use="optional"/>
   </xs:complexType>
 
@@ -171,6 +174,7 @@
     <xs:attribute name="befriending" type="xs:IDREFS" use="optional" />
     <xs:attributeGroup ref="optionalAbi" />
     <xs:attribute name="attributes" type="attributes" use="optional" />
+    <xs:attribute name="deprecation" type="name" use="optional"/>
     <xs:attribute name="annotation" type="name" use="optional"/>
   </xs:complexType>
 
@@ -225,6 +229,7 @@
                 <xs:attribute name="name" type="name" />
                 <xs:attribute name="init" type="xs:long" />
                 <xs:attribute name="attributes" type="attributes" use="optional" />
+                <xs:attribute name="deprecation" type="name" use="optional"/>
                 <xs:attribute name="annotation" type="name" use="optional"/>
               </xs:complexType>
             </xs:element>
@@ -239,6 +244,7 @@
           <xs:attribute name="scoped" type="xs:int" use="optional" fixed="1" />
           <xs:attributeGroup ref="abi" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
+          <xs:attribute name="deprecation" type="name" use="optional"/>
           <xs:attribute name="annotation" type="name" use="optional"/>
           <xs:attribute name="comment" type="xs:IDREF" use="optional" />
         </xs:complexType>
@@ -259,6 +265,7 @@
           <xs:attribute name="mangled" type="name" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
           <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+          <xs:attribute name="deprecation" type="name" use="optional"/>
           <xs:attribute name="annotation" type="name" use="optional"/>
         </xs:complexType>
       </xs:element>
@@ -277,6 +284,7 @@
           <xs:attribute name="mutable" type="xs:int" use="optional" fixed="1" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
           <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+          <xs:attribute name="deprecation" type="name" use="optional"/>
           <xs:attribute name="annotation" type="name" use="optional"/>
         </xs:complexType>
       </xs:element>
@@ -306,6 +314,7 @@
           <xs:attributeGroup ref="location" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
           <xs:attribute name="comment" type="xs:IDREF" use="optional" />
+          <xs:attribute name="deprecation" type="name" use="optional"/>
           <xs:attribute name="annotation" type="name" use="optional"/>
         </xs:complexType>
       </xs:element>

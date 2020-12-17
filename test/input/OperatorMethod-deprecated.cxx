@@ -1,4 +1,5 @@
 class start
 {
-  __attribute__((deprecated)) start& operator<<(int);
+  __attribute__((deprecated("OperatorMethod Deprecated"))) start& operator<<(
+    int);
 };

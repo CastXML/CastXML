@@ -1,4 +1,4 @@
 class start
 {
-  __attribute__((deprecated)) ~start();
+  __attribute__((deprecated("Destructor Deprecated"))) ~start();
 };

@@ -1,1 +1,1 @@
-__attribute__((deprecated)) void start(int);
+__attribute__((deprecated("Function Deprecated"))) void start(int);

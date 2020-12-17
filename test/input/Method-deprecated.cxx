@@ -1,4 +1,4 @@
 class start
 {
-  __attribute__((deprecated)) int method(int);
+  __attribute__((deprecated("Method Deprecated"))) int method(int);
 };
