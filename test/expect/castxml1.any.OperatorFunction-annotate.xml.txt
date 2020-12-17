@@ -1,7 +1,7 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3"/>
-  <OperatorFunction id="_3" name="&lt;&lt;" returns="_4" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="annotate\(an annotation\)">
+  <OperatorFunction id="_3" name="&lt;&lt;" returns="_4" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+" annotation="an annotation" attributes="annotate\(an annotation\)">
     <Argument type="_4" location="f1:3" file="f1" line="3"/>
     <Argument type="_5" location="f1:3" file="f1" line="3"/>
   </OperatorFunction>

@@ -1,7 +1,7 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="[^"]+">
-    <Argument type="_4" location="f1:1" file="f1" line="1" attributes="annotate\(an annotation\)"/>
+    <Argument type="_4" location="f1:1" file="f1" line="1" annotation="an annotation" attributes="annotate\(an annotation\)"/>
   </Function>
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>

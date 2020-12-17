@@ -41,6 +41,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <queue>
 #include <set>
@@ -1530,6 +1531,10 @@ void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
 {
   for (auto const* a : d->specific_attrs<clang::AnnotateAttr>()) {
     attrs.push_back("annotate(" + a->getAnnotation().str() + ")");
+    if (this->Opts.CastXml) {
+      this->OS << " annotation=\"" << encodeXML(a->getAnnotation().str())
+               << "\"";
+    }
   }
 
   if (d->hasAttr<clang::DeprecatedAttr>()) {
@@ -2319,7 +2324,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".2.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".2.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
