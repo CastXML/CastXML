@@ -237,6 +237,7 @@
           <xs:attribute name="id" type="xs:ID" />
           <!-- Anonymous enums might have an empty name. -->
           <xs:attribute name="name" type="nameOrEmpty" />
+          <xs:attribute name="type" type="xs:IDREF" />
           <xs:attribute name="context" type="xs:IDREF" use="optional" />
           <!-- Access is available for enums in class context. -->
           <xs:attribute name="access" type="access" use="optional" />
