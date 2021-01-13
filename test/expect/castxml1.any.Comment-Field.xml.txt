@@ -18,8 +18,8 @@
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_13" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
-  <Comment id="c1" attached="_3" file="f1" begin_line="3" begin_column="3" begin_offset="16" end_line="3" end_column="23" end_offset="36"/>
-  <Comment id="c2" attached="_4" file="f1" begin_line="5" begin_column="3" begin_offset="52" end_line="5" end_column="24" end_offset="73"/>
-  <Comment id="c3" attached="_5" file="f1" begin_line="7" begin_column="3" begin_offset="102" end_line="7" end_column="28" end_offset="127"/>
+  <Comment id="c1" attached="_3" file="f1" begin_line="3" begin_column="3" begin_offset="[0-9]+" end_line="3" end_column="23" end_offset="[0-9]+"/>
+  <Comment id="c2" attached="_4" file="f1" begin_line="5" begin_column="3" begin_offset="[0-9]+" end_line="5" end_column="24" end_offset="[0-9]+"/>
+  <Comment id="c3" attached="_5" file="f1" begin_line="7" begin_column="3" begin_offset="[0-9]+" end_line="7" end_column="28" end_offset="[0-9]+"/>
   <File id="f1" name=".*/test/input/Comment-Field.cxx"/>
 </CastXML>$

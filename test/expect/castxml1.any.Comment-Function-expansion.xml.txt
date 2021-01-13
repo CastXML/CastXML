@@ -6,6 +6,6 @@
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
-  <Comment id="c1" attached="_1" file="f1" begin_line="1" begin_column="17" begin_offset="16" end_line="1" end_column="40" end_offset="39"/>
+  <Comment id="c1" attached="_1" file="f1" begin_line="1" begin_column="17" begin_offset="[0-9]+" end_line="1" end_column="40" end_offset="[0-9]+"/>
   <File id="f1" name=".*/test/input/Comment-Function-expansion.cxx"/>
 </CastXML>$

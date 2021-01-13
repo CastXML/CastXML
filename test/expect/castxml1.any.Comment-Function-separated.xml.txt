@@ -6,6 +6,6 @@
   <FundamentalType id="_2" name="void" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
-  <Comment id="c1" attached="_1" file="f1" begin_line="2" begin_column="1" begin_offset="27" end_line="2" end_column="19" end_offset="45"/>
+  <Comment id="c1" attached="_1" file="f1" begin_line="2" begin_column="1" begin_offset="[0-9]+" end_line="2" end_column="19" end_offset="[0-9]+"/>
   <File id="f1" name=".*/test/input/Comment-Function-separated.cxx"/>
 </CastXML>$

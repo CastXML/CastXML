@@ -17,6 +17,6 @@
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_10" type="_1" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
-  <Comment id="c1" attached="_3" file="f1" begin_line="3" begin_column="3" begin_offset="16" end_line="3" end_column="24" end_offset="37"/>
+  <Comment id="c1" attached="_3" file="f1" begin_line="3" begin_column="3" begin_offset="[0-9]+" end_line="3" end_column="24" end_offset="[0-9]+"/>
   <File id="f1" name=".*/test/input/Comment-Method.cxx"/>
 </CastXML>$

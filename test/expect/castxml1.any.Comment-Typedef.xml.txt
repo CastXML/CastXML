@@ -3,6 +3,6 @@
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:2" file="f1" line="2" comment="c1"/>
   <FundamentalType id="_2" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
-  <Comment id="c1" attached="_1" file="f1" begin_line="1" begin_column="1" begin_offset="0" end_line="1" end_column="23" end_offset="22"/>
+  <Comment id="c1" attached="_1" file="f1" begin_line="1" begin_column="1" begin_offset="[0-9]+" end_line="1" end_column="23" end_offset="[0-9]+"/>
   <File id="f1" name=".*/test/input/Comment-Typedef.cxx"/>
 </CastXML>$
