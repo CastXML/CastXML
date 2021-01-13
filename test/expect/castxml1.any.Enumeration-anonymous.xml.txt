@@ -1,10 +1,11 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3"/>
-  <Enumeration id="_3" name="" context="_1" location="f1:2" file="f1" line="2" size="[0-9]+" align="[0-9]+">
+  <Enumeration id="_3" name="" type="_4" context="_1" location="f1:2" file="f1" line="2" size="[0-9]+" align="[0-9]+">
     <EnumValue name="ev0" init="0"/>
     <EnumValue name="ev1" init="1"/>
   </Enumeration>
+  <FundamentalType id="_4" name="(unsigned )?int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <File id="f1" name=".*/test/input/Enumeration-anonymous.cxx"/>
 </CastXML>$
