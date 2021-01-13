@@ -1999,6 +1999,9 @@ void ASTVisitor::OutputEnumDecl(clang::EnumDecl const* d, DumpNode const* dn)
     }
   }
   this->PrintNameAttribute(name);
+  if (this->Opts.CastXml) {
+    this->PrintTypeAttribute(d->getIntegerType(), dn->Complete);
+  }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   if (this->Opts.CastXml && d->isScoped()) {
