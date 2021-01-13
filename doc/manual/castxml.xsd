@@ -98,7 +98,7 @@
     <xs:attribute name="extern" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="artificial" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="throw" type="xs:IDREFS" use="optional" />
-    <xs:attribute name="mangled" type="name" />
+    <xs:attribute name="mangled" type="xs:string" />
     <xs:attribute name="deprecation" type="name" use="optional"/>
     <xs:attribute name="annotation" type="name" use="optional"/>
     <xs:attribute name="attributes" type="attributes" use="optional" />
@@ -262,7 +262,7 @@
           <xs:attributeGroup ref="location" />
           <xs:attribute name="static" type="xs:int" use="optional" fixed="1" />
           <xs:attribute name="extern" type="xs:int" use="optional" fixed="1" />
-          <xs:attribute name="mangled" type="name" />
+          <xs:attribute name="mangled" type="xs:string" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
           <xs:attribute name="comment" type="xs:IDREF" use="optional" />
           <xs:attribute name="deprecation" type="name" use="optional"/>
