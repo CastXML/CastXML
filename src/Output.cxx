@@ -1529,11 +1529,18 @@ void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
 void ASTVisitor::GetDeclAttributes(clang::Decl const* d,
                                    std::vector<std::string>& attrs)
 {
+  std::string annotationXML;
   for (auto const* a : d->specific_attrs<clang::AnnotateAttr>()) {
     attrs.push_back("annotate(" + a->getAnnotation().str() + ")");
+    if (!annotationXML.empty()) {
+      // Separate annotations by a newline.
+      annotationXML += "&#xA;"; // LF
+    }
+    annotationXML += encodeXML(a->getAnnotation().str());
+  }
+  if (d->hasAttr<clang::AnnotateAttr>()) {
     if (this->Opts.CastXml) {
-      this->OS << " annotation=\"" << encodeXML(a->getAnnotation().str())
-               << "\"";
+      this->OS << " annotation=\"" << annotationXML << "\"";
     }
   }
 

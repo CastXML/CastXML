@@ -1,0 +1,9 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Enumeration id="_1" name="start" type="_2" context="_3" location="f1:2" file="f1" line="2" size="[0-9]+" align="[0-9]+" annotation="an annotation&#xA;second annotation" attributes="annotate\(an annotation\) annotate\(second annotation\)">
+    <EnumValue name="ev0" init="0" annotation="an annotation" attributes="annotate\(an annotation\)"/>
+  </Enumeration>
+  <FundamentalType id="_2" name="(unsigned )?int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/Enumeration-annotate-multi.cxx"/>
+</CastXML>$
