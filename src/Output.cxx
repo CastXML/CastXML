@@ -551,6 +551,7 @@ class ASTVisitor : public ASTVisitorBase
                                DumpNode const* dn);
 
   // Type node output methods.
+  void OutputAtomicType(clang::AtomicType const* t, DumpNode const* dn);
   void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
   void OutputConstantArrayType(clang::ConstantArrayType const* t,
                                DumpNode const* dn);
@@ -2204,6 +2205,20 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
                              this->GetContextName(d));
 }
 
+void ASTVisitor::OutputAtomicType(clang::AtomicType const* t,
+                                  DumpNode const* dn)
+{
+  if (this->Opts.GccXml) {
+    this->OutputUnimplementedType(t, dn);
+    return;
+  }
+  this->OS << "  <AtomicType";
+  this->PrintIdAttribute(dn);
+  this->PrintTypeAttribute(t->getValueType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
+  this->OS << "/>\n";
+}
+
 void ASTVisitor::OutputBuiltinType(clang::BuiltinType const* t,
                                    DumpNode const* dn)
 {
@@ -2341,7 +2356,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".2.1\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.0\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {

@@ -1,0 +1,9 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Typedef id="_1" name="start" type="_2" context="_3" location="f1:1" file="f1" line="1"/>
+  <AtomicType id="_2" type="_4" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <PointerType id="_4" type="_5" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Atomic-ptr.cxx"/>
+</CastXML>$

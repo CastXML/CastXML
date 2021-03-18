@@ -338,6 +338,14 @@
         </xs:complexType>
       </xs:element>
 
+      <xs:element name="AtomicType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attributeGroup ref="abi" />
+        </xs:complexType>
+      </xs:element>
+
       <xs:element name="PointerType">
         <xs:complexType>
           <xs:attribute name="id" type="xs:ID" />
