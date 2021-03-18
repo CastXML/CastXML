@@ -107,7 +107,7 @@ case "$mode" in
 esac
 
 # Filter sources to which our style should apply.
-$git_ls -z -- '*.h' '*.cxx' |
+$git_ls -z -- '*.h' '*.c' '*.cxx' |
 
   egrep -z -v '^share/castxml/' |
   egrep -z -v '^src/kwsys/' |

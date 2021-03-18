@@ -10,43 +10,33 @@ int main(int argc, const char* argv[])
   int i;
   for (i = 1; i < argc; ++i) {
     if (strncmp(argv[i], "--cc-define=", 12) == 0) {
-      fprintf(stdout, "\n#define %s 1", argv[i]+12);
+      fprintf(stdout, "\n#define %s 1", argv[i] + 12);
     } else if (strncmp(argv[i], "-msc=", 5) == 0) {
-      msc_ver = argv[i]+5;
+      msc_ver = argv[i] + 5;
     } else if (strncmp(argv[i], "-msvc_lang=", 11) == 0) {
-      msvc_lang = argv[i]+11;
+      msvc_lang = argv[i] + 11;
     } else if (strncmp(argv[i], "-stdcpp_default_new_alignment=", 30) == 0) {
-      stdcpp_default_new_alignment = argv[i]+30;
+      stdcpp_default_new_alignment = argv[i] + 30;
     } else if (strstr(argv[i], ".cpp")) {
       cpp = 1;
     }
   }
-  fprintf(stdout,
-    "\n"
-    );
+  fprintf(stdout, "\n");
   if (cpp) {
-    fprintf(stdout,
-      "#define __cplusplus 199711L\n"
-      );
+    fprintf(stdout, "#define __cplusplus 199711L\n");
+  }
+  fprintf(stdout, "#define _MSC_VER %s\n", msc_ver);
+  if (msvc_lang) {
+    fprintf(stdout, "#define _MSVC_LANG %s\n", msvc_lang);
+  }
+  if (stdcpp_default_new_alignment) {
+    fprintf(stdout, "#define __STDCPP_DEFAULT_NEW_ALIGNMENT__ %s\n",
+            stdcpp_default_new_alignment);
   }
   fprintf(stdout,
-    "#define _MSC_VER %s\n", msc_ver
-    );
-  if(msvc_lang) {
-    fprintf(stdout,
-      "#define _MSVC_LANG %s\n", msvc_lang
-      );
-  }
-  if(stdcpp_default_new_alignment) {
-    fprintf(stdout,
-      "#define __STDCPP_DEFAULT_NEW_ALIGNMENT__ %s\n",
-      stdcpp_default_new_alignment);
-  }
-  fprintf(stdout,
-    "#define __has_include(x) x\n"
-    "#define __has_include_next(x) x\n"
-    "#define _WIN32 1\n"
-    "#define __has_last(x) x"
-    );
+          "#define __has_include(x) x\n"
+          "#define __has_include_next(x) x\n"
+          "#define _WIN32 1\n"
+          "#define __has_last(x) x");
   return 0;
 }
