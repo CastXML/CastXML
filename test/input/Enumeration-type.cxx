@@ -1,4 +1,4 @@
-enum class start: short
+enum class start : short
 {
   value = 1
 };
