@@ -2085,8 +2085,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   }
 
   bool const isTranslationUnit = clang::isa<clang::TranslationUnitDecl>(d->getDeclContext());
-  if (!isTranslationUnit)
-  {
+  if (!isTranslationUnit) {
     this->PrintMangledAttribute(d);
   }
   this->PrintAttributesAttribute(d);
