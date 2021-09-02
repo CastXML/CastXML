@@ -1,6 +1,7 @@
 ^#define _MSC_VER 1600
 #define _WIN32 1
-#define __castxml__ [^
+(#define __GCC_HAVE_DWARF2_CFI_ASM 1
+)?#define __castxml__ [^
 ]*
 #define __castxml_check[^
 ]*
