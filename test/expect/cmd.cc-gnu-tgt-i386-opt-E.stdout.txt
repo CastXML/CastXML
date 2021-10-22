@@ -19,4 +19,5 @@
 #define __castxml_patch__ [0-9]+
 #define __cplusplus 199711L(
 #define __float128 __castxml__float128)?
-#define __i386__ 1$
+#define __i386__ 1(
+#define __malloc__\(\.\.\.\) __malloc__)?$
