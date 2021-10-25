@@ -368,6 +368,14 @@ protected:
                     "#define __NO_MATH_INLINES 1\n";
       }
 
+      // Tolerate glibc use of a GNU extension not implemented by Clang.
+      if (this->NeedAttributeMallocArgs(this->Opts.Predefines)) {
+        // Clang does not support '__attribute__((__malloc__(args...)))'
+        // used in glibc 2.34+ headers.
+        builtins += "\n"
+                    "#define __malloc__(...) __malloc__\n";
+      }
+
     } else {
       builtins += predefines.substr(start, end - start);
     }
@@ -384,6 +392,11 @@ protected:
   }
 
   bool NeedBuiltinVarArgPack(std::string const& pd)
+  {
+    return this->IsActualGNU(pd);
+  }
+
+  bool NeedAttributeMallocArgs(std::string const& pd)
   {
     return this->IsActualGNU(pd);
   }

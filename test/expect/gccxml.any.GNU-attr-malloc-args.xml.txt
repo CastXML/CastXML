@@ -1,0 +1,8 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:7" file="f1" line="7" mangled="[^"]+"/>
+  <PointerType id="_2" type="_4" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
+  <Struct id="_4" name="foo" context="_3" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/GNU-attr-malloc-args.cxx"/>
+</GCC_XML>$

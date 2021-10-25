@@ -15,4 +15,5 @@
 #define __castxml_major__ [0-9]+
 #define __castxml_minor__ [0-9]+
 #define __castxml_patch__ [0-9]+
-#define __cplusplus 199711L$
+#define __cplusplus 199711L(
+#define __malloc__\(\.\.\.\) __malloc__)?$
