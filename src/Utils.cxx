@@ -119,7 +119,7 @@ unsigned int getVersionPatch()
 }
 
 bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
-                std::string& err, std::string& msg)
+                std::string& err, std::string& msg, std::string* maybeTmpDir)
 {
   // Find the program to run.
   llvm::ErrorOr<std::string> maybeProg = llvm::sys::findProgramByName(argv[0]);
@@ -131,8 +131,10 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
 
   // Create a temporary directory to hold output files.
   llvm::SmallString<128> tmpDir;
-  if (std::error_code e =
-        llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
+  if (maybeTmpDir) {
+    tmpDir = *maybeTmpDir;
+  } else if (std::error_code e =
+               llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
     msg = e.message();
     return false;
   }
@@ -185,7 +187,9 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   // Remove temporary files and directory.
   llvm::sys::fs::remove(llvm::Twine(tmpOut));
   llvm::sys::fs::remove(llvm::Twine(tmpErr));
-  llvm::sys::fs::remove(llvm::Twine(tmpDir));
+  if (!maybeTmpDir) {
+    llvm::sys::fs::remove(llvm::Twine(tmpDir));
+  }
 
   return ret >= 0;
 }
