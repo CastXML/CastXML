@@ -137,9 +137,9 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
     return false;
   }
   llvm::SmallString<128> tmpOut = tmpDir;
-  tmpOut.append("out");
+  tmpOut.append("/out");
   llvm::SmallString<128> tmpErr = tmpDir;
-  tmpErr.append("err");
+  tmpErr.append("/err");
 
   // Construct file redirects.
   llvm::StringRef inFile; // empty means /dev/null
