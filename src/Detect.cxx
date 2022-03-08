@@ -18,6 +18,7 @@
 #include "Options.h"
 #include "Utils.h"
 
+#include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/Triple.h"
@@ -184,11 +185,38 @@ static bool detectCC_MSVC(const char* const* argBeg, const char* const* argEnd,
   std::string out;
   std::string err;
   std::string msg;
+
+  // Create a temporary directory to hold some temporary files.
+  llvm::SmallString<128> tmpDir;
+  if (std::error_code e =
+        llvm::sys::fs::createUniqueDirectory("castxml", tmpDir)) {
+    msg = e.message();
+    return failedCC(id, cc_args, out, err, msg);
+  }
+
+  // Tell MSVC to put the object file in the temporary directory.
+  // We previously used '-FoNUL' but this does not work on Windows 11.
+  llvm::SmallString<128> tmpObj = tmpDir;
+  tmpObj.append("/detect_vs.obj");
+  llvm::SmallString<128> argFo("-Fo");
+  argFo.append(tmpObj);
+
+  // Extend the original command line with our source and object.
   cc_args.push_back("-c");
-  cc_args.push_back("-FoNUL");
   cc_args.push_back(detect_vs_cpp.c_str());
-  if (runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
-      ret == 0) {
+  cc_args.push_back(argFo.c_str());
+
+  // Run the compiler.
+  bool success =
+    runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
+    ret == 0;
+
+  // Remove temporary object file and directory.
+  llvm::sys::fs::remove(llvm::Twine(tmpObj));
+  llvm::sys::fs::remove(llvm::Twine(tmpDir));
+
+  // Check results.
+  if (success) {
     if (const char* predefs = strstr(out.c_str(), "\n#define")) {
       opts.Predefines = predefs + 1;
     }
