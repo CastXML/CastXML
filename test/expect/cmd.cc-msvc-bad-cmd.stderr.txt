@@ -1,3 +1,3 @@
 ^error: '--castxml-cc-msvc' compiler command failed:
 
- 'cc-msvc-bad-cmd' '-c' '-FoNUL' '.*/share/castxml/detect_vs.cpp'
+ 'cc-msvc-bad-cmd' '-c' '[^']*/share/castxml/detect_vs.cpp' '-Fo[^']*/detect_vs.obj'

@@ -43,7 +43,8 @@ unsigned int getVersionPatch();
 
 /// runCommand - Run a given command line and capture the output.
 bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
-                std::string& err, std::string& msg);
+                std::string& err, std::string& msg,
+                std::string* maybeTmpDir = nullptr);
 
 /// suppressInteractiveErrors - Disable Windows error dialog popups
 void suppressInteractiveErrors();
