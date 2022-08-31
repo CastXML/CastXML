@@ -133,6 +133,11 @@ else()
   set(CMAKE_CXX_STANDARD 11)
 endif()
 
+# Reserve ~10MB stack size on Windows, as LLVM upstream does.
+if(MSVC)
+  string(APPEND CMAKE_EXE_LINKER_FLAGS " -STACK:10000000")
+endif()
+
 add_definitions(${LLVM_DEFINITIONS})
 include_directories(${CLANG_INCLUDE_DIRS})
 include_directories(${LLVM_INCLUDE_DIRS})

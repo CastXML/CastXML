@@ -328,6 +328,7 @@ castxml_test_cmd(start-missing --castxml-start)
 castxml_test_cmd(rsp-empty @${input}/empty.rsp)
 castxml_test_cmd(rsp-missing @${input}/does-not-exist.rsp)
 castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
+castxml_test_cmd(fbracket-depth -fbracket-depth=300 -std=c11 -c ${input}/fbracket-depth.c)
 
 # Test predefined macros when not using --castxml-cc-<id>.
 configure_file(expect/cmd.predefined-macros.stdout.txt.in
