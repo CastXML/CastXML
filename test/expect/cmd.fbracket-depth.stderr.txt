@@ -1,0 +1,2 @@
+[^
+]*/test/input/fbracket-depth.c:[0-9:]+: fatal error: bracket nesting level exceeded maximum of 300
