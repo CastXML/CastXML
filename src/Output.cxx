@@ -833,6 +833,12 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       }
       return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
     } break;
+#if LLVM_VERSION_MAJOR >= 14
+    case clang::Type::Using: {
+      clang::UsingType const* ut = t->getAs<clang::UsingType>();
+      return this->AddTypeDumpNode(DumpType(ut->desugar(), c), complete, dq);
+    } break;
+#endif
     default:
       break;
   }
