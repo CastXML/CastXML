@@ -13,6 +13,9 @@ int main(int argc, const char* argv[])
       std_date = argv[i]+5;
     } else if (strcmp(argv[i], "-ansi") == 0) {
       fprintf(stdout, "#define __STRICT_ANSI__ 1\n");
+    } else if (strcmp(argv[i], "-tgt-arm64v8") == 0) {
+      fprintf(stdout, "#define __aarch64__ 1\n");
+      fprintf(stdout, "#define __ARM_ARCH 8\n");
     } else if (strstr(argv[i], ".cpp")) {
       cpp = 1;
     }

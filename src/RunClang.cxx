@@ -376,6 +376,12 @@ protected:
                     "#define __malloc__(...) __malloc__\n";
       }
 
+      // Clang's arm_neon.h checks for a feature macro not defined by GCC.
+      if (this->NeedARMv8Intrinsics(this->Opts.Predefines)) {
+        builtins += "\n"
+                    "#define __ARM_FEATURE_DIRECTED_ROUNDING 1\n";
+      }
+
     } else {
       builtins += predefines.substr(start, end - start);
     }
@@ -433,6 +439,28 @@ protected:
             (pd.find("#define __i386__ ") != pd.npos &&
              pd.find("#define __OPTIMIZE__ ") != pd.npos &&
              pd.find("#define __NO_MATH_INLINES ") == pd.npos));
+  }
+
+  bool NeedARMv8Intrinsics(std::string const& pd)
+  {
+    if (const char* d = strstr(pd.c_str(), "#define __ARM_ARCH ")) {
+      d += 19;
+      if (pd.find("#define __ARM_FEATURE_DIRECTED_ROUNDING ") != pd.npos) {
+        return false;
+      }
+      if (const char* e = strchr(d, '\n')) {
+        if (*(e - 1) == '\r') {
+          --e;
+        }
+        std::string const arm_arch_str(d, e - d);
+        errno = 0;
+        long arm_arch = std::strtol(arm_arch_str.c_str(), nullptr, 10);
+        if (errno == 0 && arm_arch >= 8) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   bool BeginSourceFileAction(clang::CompilerInstance& CI
