@@ -95,6 +95,9 @@ static void setTriple(Options& opts)
   } else if (pd.find("#define __aarch64__ 1") != pd.npos ||
              pd.find("#define _M_ARM64 ") != pd.npos) {
     triple.setArchName("aarch64");
+  } else if (pd.find("#define __arm__ 1") != pd.npos ||
+             pd.find("#define _M_ARM ") != pd.npos) {
+    triple.setArchName("arm");
   }
   if (pd.find("#define _WIN32 1") != pd.npos) {
     triple.setVendorName("pc");
