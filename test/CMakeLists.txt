@@ -345,6 +345,7 @@ add_executable(cc-gnu cc-gnu.c)
 set_property(SOURCE cc-gnu.c APPEND PROPERTY COMPILE_DEFINITIONS
   "TEST_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\"")
 castxml_test_cmd(cc-gnu-bad-cmd --castxml-cc-gnu cc-gnu-bad-cmd ${empty_cxx})
+castxml_test_cmd(cc-gnu-intrinsics-arm64v8 --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> -tgt-arm64v8 ")" -v ${input}/intrinsics-arm64v8.cxx)
 castxml_test_cmd(cc-gnu-src-c-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_c} -E -dM)
 castxml_test_cmd(cc-gnu-src-cxx-E --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} -E -dM)
 castxml_test_cmd(cc-gnu-src-cxx-cmd --castxml-cc-gnu $<TARGET_FILE:cc-gnu> ${empty_cxx} "-###")
