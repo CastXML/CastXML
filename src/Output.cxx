@@ -2071,6 +2071,9 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
     unsigned bits = d->getBitWidthValue(this->CTX);
     this->OS << " bits=\"" << bits << "\"";
   }
+  if (this->Opts.CastXml) {
+    this->PrintInitAttribute(d->getInClassInitializer());
+  }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->PrintOffsetAttribute(this->CTX.getFieldOffset(d));
@@ -2378,7 +2381,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
