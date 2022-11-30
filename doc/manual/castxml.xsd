@@ -277,6 +277,7 @@
           <!-- Fields of anonymous record types might have an empty name.  -->
           <xs:attribute name="name" type="nameOrEmpty" />
           <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="init" type="expression" use="optional" />
           <xs:attribute name="bits" type="xs:unsignedInt" use="optional" />
           <xs:attribute name="context" type="xs:IDREF" />
           <xs:attribute name="access" type="access" />

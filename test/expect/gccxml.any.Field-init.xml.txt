@@ -1,0 +1,23 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
+  <Field id="_3" name="field_int" type="_9" context="_1" access="private" location="f1:3" file="f1" line="3" offset="0"/>
+  <Field id="_4" name="field_str" type="_10" context="_1" access="private" location="f1:4" file="f1" line="4" offset="64"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+    <Argument type="_11" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_7" name="=" returns="_12" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_11" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_10" type="_13c" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_11" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <ReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_13c" type="_13" const="1"/>
+  <Namespace id="_2" name="::"/>
+  <FundamentalType id="_13" name="char" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Field-init.cxx"/>
+</GCC_XML>$

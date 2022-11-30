@@ -421,6 +421,9 @@ class ASTVisitor : public ASTVisitorBase
   void PrintABIAttributes(clang::TypeInfo const& t);
   void PrintABIAttributes(clang::TypeDecl const* d);
 
+  /** Print init="..." attribute. */
+  void PrintInitAttribute(clang::Expr const* init);
+
   /** Print a basetype="..." attribute with the XML IDREF for
       the given type.  Also queues the given type for later output.  */
   void PrintBaseTypeAttribute(clang::Type const* c, bool complete);
@@ -1311,6 +1314,20 @@ void ASTVisitor::PrintABIAttributes(clang::TypeInfo const& t)
   this->OS << " align=\"" << t.Align << "\"";
 }
 
+void ASTVisitor::PrintInitAttribute(clang::Expr const* init)
+{
+  if (!init) {
+    return;
+  }
+  this->OS << " init=\"";
+  std::string s;
+  llvm::raw_string_ostream rso(s);
+  PrinterHelper ph(*this);
+  init->printPretty(rso, &ph, this->PrintingPolicy);
+  this->OS << encodeXML(rso.str());
+  this->OS << "\"";
+}
+
 void ASTVisitor::PrintBaseTypeAttribute(clang::Type const* c, bool complete)
 {
   this->OS << " basetype=\"";
@@ -2054,6 +2071,9 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
     unsigned bits = d->getBitWidthValue(this->CTX);
     this->OS << " bits=\"" << bits << "\"";
   }
+  if (this->Opts.CastXml) {
+    this->PrintInitAttribute(d->getInClassInitializer());
+  }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   this->PrintOffsetAttribute(this->CTX.getFieldOffset(d));
@@ -2072,15 +2092,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
   this->PrintTypeAttribute(d->getType(), dn->Complete);
-  if (clang::Expr const* init = d->getInit()) {
-    this->OS << " init=\"";
-    std::string s;
-    llvm::raw_string_ostream rso(s);
-    PrinterHelper ph(*this);
-    init->printPretty(rso, &ph, this->PrintingPolicy);
-    this->OS << encodeXML(rso.str());
-    this->OS << "\"";
-  }
+  this->PrintInitAttribute(d->getInit());
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   if (d->getStorageClass() == clang::SC_Static) {
@@ -2369,7 +2381,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
