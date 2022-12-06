@@ -2,13 +2,13 @@
 set(CastXML_VERSION_MAJOR 0)
 set(CastXML_VERSION_MINOR 4)
 set(CastXML_VERSION_PATCH 20221130)
-set(CastXML_VERSION_RC 0)
+#set(CastXML_VERSION_RC 0)
 set(CastXML_VERSION_IS_DIRTY 0)
 
 # Start with the full version number used in tags.  It has no dev info.
 set(CastXML_VERSION
   "${CastXML_VERSION_MAJOR}.${CastXML_VERSION_MINOR}.${CastXML_VERSION_PATCH}")
-if(CastXML_VERSION_RC)
+if(DEFINED CastXML_VERSION_RC)
   set(CastXML_VERSION "${CastXML_VERSION}-rc${CastXML_VERSION_RC}")
 endif()
 
