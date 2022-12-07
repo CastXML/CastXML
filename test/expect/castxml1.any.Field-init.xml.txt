@@ -2,7 +2,7 @@
 <CastXML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
   <Field id="_3" name="field_int" type="_9" init="123" context="_1" access="private" location="f1:3" file="f1" line="3" offset="0"/>
-  <Field id="_4" name="field_str" type="_10" init="&quot;abc&quot;" context="_1" access="private" location="f1:4" file="f1" line="4" offset="64"/>
+  <Field id="_4" name="field_str" type="_10" init="&quot;abc&quot;" context="_1" access="private" location="f1:4" file="f1" line="4" offset="[0-9]+"/>
   <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
     <Argument type="_11" location="f1:1" file="f1" line="1"/>

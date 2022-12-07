@@ -97,6 +97,7 @@ if(msg)
     string(REGEX REPLACE "artificial=\"1\"( throw=\"\")?" "artificial=\"1\"( throw=\"\")?" update_xml "${update_xml}")
     string(REGEX REPLACE "size=\"[0-9]+\" align=\"[0-9]+\"" "size=\"[0-9]+\" align=\"[0-9]+\"" update_xml "${update_xml}")
     string(REGEX REPLACE "<File id=\"(f[0-9]+)\" name=\"[^\"]*/test/input/([^\"]*)\"/>" "<File id=\"\\1\" name=\".*/test/input/\\2\"/>" update_xml "${update_xml}")
+    string(REGEX REPLACE "<Field([^>]*) offset=\"[1-9][0-9]*\"/>" "<Field\\1 offset=\"[0-9]+\"/>" update_xml "${update_xml}")
     if(update_xml MATCHES "<Base.*<Base") # multiple inheritance has ABI-specific offsets
       string(REGEX REPLACE "<Base type=\"([^\"]*)\" access=\"([^\"]*)\" virtual=\"0\" offset=\"[0-9]+\"/>" "<Base type=\"\\1\" access=\"\\2\" virtual=\"0\" offset=\"[0-9]+\"/>" update_xml "${update_xml}")
     endif()
