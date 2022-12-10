@@ -405,6 +405,7 @@
           <xs:attribute name="id" type="xs:ID" />
           <xs:attribute name="type" type="xs:IDREF" />
           <xs:attribute name="keyword" type="elaboration-keyword" use="optional" />
+          <xs:attribute name="qualifier" type="name" use="optional" />
         </xs:complexType>
       </xs:element>
 

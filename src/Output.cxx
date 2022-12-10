@@ -29,6 +29,7 @@
 #include "clang/AST/Expr.h"
 #include "clang/AST/ExprCXX.h"
 #include "clang/AST/Mangle.h"
+#include "clang/AST/NestedNameSpecifier.h"
 #include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
 #include "clang/Basic/FileManager.h"
@@ -784,7 +785,13 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       break;
     case clang::Type::Elaborated: {
       clang::ElaboratedType const* et = t->getAs<clang::ElaboratedType>();
-      if (this->Opts.GccXml || et->getKeyword() == clang::ETK_None) {
+      if (this->Opts.GccXml ||
+          (et->getKeyword() == clang::ETK_None && !et->getQualifier())) {
+        // The gccxml format does not include ElaboratedType elements,
+        // so replace this one with the underlying type.  Note that this
+        // can cause duplicate PointerType and ReferenceType elements
+        // to appear in the output: each copy corresponds to a different
+        // ElaboratedType, but the gccxml format cannot express this.
         return this->AddTypeDumpNode(DumpType(et->getNamedType(), c), complete,
                                      dq);
       }
@@ -2391,6 +2398,13 @@ void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
   this->OS << "  <ElaboratedType";
   this->PrintIdAttribute(dn);
 
+  if (clang::NestedNameSpecifier* nns = t->getQualifier()) {
+    std::string s;
+    llvm::raw_string_ostream rso(s);
+    nns->print(rso, this->PrintingPolicy);
+    this->OS << " qualifier=\"" << encodeXML(rso.str()) << '"';
+  }
+
   clang::ElaboratedTypeKeyword k = t->getKeyword();
   if (k != clang::ETK_None) {
     this->OS << " keyword=\""
@@ -2413,7 +2427,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.2\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".4.0\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
