@@ -1,3 +1,4 @@
+#pragma clang diagnostic ignored "-Wundefined-inline"
 constexpr void* __cdecl __builtin_assume_aligned(const void*, size_t,
                                                  ...) noexcept;
 
