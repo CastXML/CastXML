@@ -2390,7 +2390,7 @@ void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
 {
   this->OS << "  <ElaboratedType";
   this->PrintIdAttribute(dn);
-  this->PrintTypeAttribute(t->getNamedType(), false);
+  this->PrintTypeAttribute(t->getNamedType(), dn->Complete);
   this->OS << "/>\n";
 }
 
