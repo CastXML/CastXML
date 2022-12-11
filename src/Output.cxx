@@ -1930,7 +1930,9 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   if (!d->isAnonymousStructOrUnion() && !d->isLambda()) {
     std::string s;
     llvm::raw_string_ostream rso(s);
-    d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
+    if (d->getIdentifier()) {
+      d->getNameForDiagnostic(rso, this->PrintingPolicy, false);
+    }
     this->PrintNameAttribute(rso.str());
   }
   clang::AccessSpecifier access = clang::AS_none;
