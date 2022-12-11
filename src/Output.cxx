@@ -782,13 +782,13 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                      complete, dq);
       }
       break;
-    case clang::Type::Elaborated:
-      if (this->Opts.GccXml || !t->isElaboratedTypeSpecifier()) {
-        return this->AddTypeDumpNode(
-          DumpType(t->getAs<clang::ElaboratedType>()->getNamedType(), c),
-          complete, dq);
+    case clang::Type::Elaborated: {
+      clang::ElaboratedType const* et = t->getAs<clang::ElaboratedType>();
+      if (this->Opts.GccXml || et->getKeyword() == clang::ETK_None) {
+        return this->AddTypeDumpNode(DumpType(et->getNamedType(), c), complete,
+                                     dq);
       }
-      break;
+    } break;
     case clang::Type::Enum:
       return this->AddDeclDumpNodeForType(
         t->getAs<clang::EnumType>()->getDecl(), complete, dq);
@@ -2390,6 +2390,14 @@ void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
 {
   this->OS << "  <ElaboratedType";
   this->PrintIdAttribute(dn);
+
+  clang::ElaboratedTypeKeyword k = t->getKeyword();
+  if (k != clang::ETK_None) {
+    this->OS << " keyword=\""
+             << encodeXML(clang::TypeWithKeyword::getKeywordName(k).str())
+             << '"';
+  }
+
   this->PrintTypeAttribute(t->getNamedType(), dn->Complete);
   this->OS << "/>\n";
 }
@@ -2405,7 +2413,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.1\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".3.2\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {

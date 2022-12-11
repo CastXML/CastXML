@@ -19,7 +19,7 @@
     <Argument type="_16" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
   <Destructor id="_12" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?/>
-  <ElaboratedType id="_13" type="_3"/>
+  <ElaboratedType id="_13" keyword="union" type="_3"/>
   <ReferenceType id="_14" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_15" type="_1" size="[0-9]+" align="[0-9]+"/>

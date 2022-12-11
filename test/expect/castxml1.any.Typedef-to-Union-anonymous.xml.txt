@@ -1,7 +1,7 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:3" file="f1" line="3"/>
-  <ElaboratedType id="_2" type="_4"/>
+  <ElaboratedType id="_2" keyword="union" type="_4"/>
   <Union id="_4" name="" context="_3" location="f1:1" file="f1" line="1" members="_5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_5" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
   <Constructor id="_6" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
