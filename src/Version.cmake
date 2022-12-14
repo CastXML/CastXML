@@ -1,7 +1,7 @@
 # CastXML version number components.
 set(CastXML_VERSION_MAJOR 0)
 set(CastXML_VERSION_MINOR 5)
-set(CastXML_VERSION_PATCH 0)
+set(CastXML_VERSION_PATCH 1)
 #set(CastXML_VERSION_RC 0)
 set(CastXML_VERSION_IS_DIRTY 0)
 
