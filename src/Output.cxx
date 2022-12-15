@@ -529,6 +529,7 @@ class ASTVisitor : public ASTVisitorBase
 
   bool HaveFloat128Type() const;
   void PrintFloat128Type(DumpNode const* dn);
+  bool IsFloat128TypedefDecl(clang::TypedefDecl const* td) const;
 
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
@@ -1672,6 +1673,19 @@ void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
   this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
 }
 
+bool ASTVisitor::IsFloat128TypedefDecl(clang::TypedefDecl const* td) const
+{
+  if (td->getName() == "__castxml__float128" &&
+      clang::isa<clang::TranslationUnitDecl>(td->getDeclContext())) {
+    clang::SourceLocation sl = td->getLocation();
+    if (sl.isValid()) {
+      clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
+      return !this->CI.getSourceManager().getFileEntryForID(fsl.getFileID());
+    }
+  }
+  return false;
+}
+
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn, const char* tag,
                                       unsigned int flags,
@@ -1983,16 +1997,9 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
 {
   // As a special case, replace our compatibility Typedef for __float128
   // with a FundamentalType so we generate the same thing gccxml did.
-  if (d->getName() == "__castxml__float128" &&
-      clang::isa<clang::TranslationUnitDecl>(d->getDeclContext())) {
-    clang::SourceLocation sl = d->getLocation();
-    if (sl.isValid()) {
-      clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
-      if (!this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
-        this->PrintFloat128Type(dn);
-        return;
-      }
-    }
+  if (this->IsFloat128TypedefDecl(d)) {
+    this->PrintFloat128Type(dn);
+    return;
   }
 
   this->OS << "  <Typedef";
