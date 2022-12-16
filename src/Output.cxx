@@ -529,6 +529,8 @@ class ASTVisitor : public ASTVisitorBase
 
   bool HaveFloat128Type() const;
   void PrintFloat128Type(DumpNode const* dn);
+  bool IsFloat128TypedefType(clang::QualType t) const;
+  bool IsFloat128TypedefDecl(clang::TypedefDecl const* td) const;
 
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
@@ -1672,6 +1674,31 @@ void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
   this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
 }
 
+bool ASTVisitor::IsFloat128TypedefType(clang::QualType t) const
+{
+  if (t->getTypeClass() == clang::Type::Typedef) {
+    clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+    if (clang::TypedefDecl const* td =
+          clang::dyn_cast<clang::TypedefDecl>(tdt->getDecl())) {
+      return this->IsFloat128TypedefDecl(td);
+    }
+  }
+  return false;
+}
+
+bool ASTVisitor::IsFloat128TypedefDecl(clang::TypedefDecl const* td) const
+{
+  if (td->getName() == "__castxml__float128" &&
+      clang::isa<clang::TranslationUnitDecl>(td->getDeclContext())) {
+    clang::SourceLocation sl = td->getLocation();
+    if (sl.isValid()) {
+      clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
+      return !this->CI.getSourceManager().getFileEntryForID(fsl.getFileID());
+    }
+  }
+  return false;
+}
+
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn, const char* tag,
                                       unsigned int flags,
@@ -1983,16 +2010,9 @@ void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
 {
   // As a special case, replace our compatibility Typedef for __float128
   // with a FundamentalType so we generate the same thing gccxml did.
-  if (d->getName() == "__castxml__float128" &&
-      clang::isa<clang::TranslationUnitDecl>(d->getDeclContext())) {
-    clang::SourceLocation sl = d->getLocation();
-    if (sl.isValid()) {
-      clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
-      if (!this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
-        this->PrintFloat128Type(dn);
-        return;
-      }
-    }
+  if (this->IsFloat128TypedefDecl(d)) {
+    this->PrintFloat128Type(dn);
+    return;
   }
 
   this->OS << "  <Typedef";
@@ -2071,7 +2091,7 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
     unsigned bits = d->getBitWidthValue(this->CTX);
     this->OS << " bits=\"" << bits << "\"";
   }
-  if (this->Opts.CastXml) {
+  if (this->Opts.CastXml && !this->IsFloat128TypedefType(d->getType())) {
     this->PrintInitAttribute(d->getInClassInitializer());
   }
   this->PrintContextAttribute(d);
@@ -2092,7 +2112,9 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
   this->PrintTypeAttribute(d->getType(), dn->Complete);
-  this->PrintInitAttribute(d->getInit());
+  if (!this->IsFloat128TypedefType(d->getType())) {
+    this->PrintInitAttribute(d->getInit());
+  }
   this->PrintContextAttribute(d);
   this->PrintLocationAttribute(d);
   if (d->getStorageClass() == clang::SC_Static) {
