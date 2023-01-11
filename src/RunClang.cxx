@@ -56,7 +56,7 @@
 #  define CASTXML_OWNS_OSTREAM
 #endif
 
-#if LLVM_VERSION_MAJOR > 9
+#if LLVM_VERSION_MAJOR >= 10
 #  define CASTXML_MAKE_UNIQUE std::make_unique
 #else
 #  define CASTXML_MAKE_UNIQUE llvm::make_unique
@@ -675,7 +675,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
       if (clang::CompilerInvocation::CreateFromArgs(
             CI->getInvocation(),
-#if LLVM_VERSION_MAJOR > 9
+#if LLVM_VERSION_MAJOR >= 10
             llvm::makeArrayRef(cmdArgBeg, cmdArgEnd),
 #else
             cmdArgBeg, cmdArgEnd,
