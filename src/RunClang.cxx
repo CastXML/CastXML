@@ -56,7 +56,7 @@
 #  define CASTXML_OWNS_OSTREAM
 #endif
 
-#if LLVM_VERSION_MAJOR > 9
+#if LLVM_VERSION_MAJOR >= 10
 #  define CASTXML_MAKE_UNIQUE std::make_unique
 #else
 #  define CASTXML_MAKE_UNIQUE llvm::make_unique
@@ -602,7 +602,12 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
   llvm::opt::InputArgList args(opts->ParseArgs(
-    llvm::makeArrayRef(argBeg, argEnd), missingArgIndex, missingArgCount));
+#  if LLVM_VERSION_MAJOR >= 16
+    llvm::ArrayRef(argBeg, argEnd),
+#  else
+    llvm::makeArrayRef(argBeg, argEnd),
+#  endif
+    missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, args);
 #else
   std::unique_ptr<llvm::opt::InputArgList> args(
@@ -675,7 +680,9 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
       if (clang::CompilerInvocation::CreateFromArgs(
             CI->getInvocation(),
-#if LLVM_VERSION_MAJOR > 9
+#if LLVM_VERSION_MAJOR >= 16
+            llvm::ArrayRef(cmdArgBeg, cmdArgEnd),
+#elif LLVM_VERSION_MAJOR >= 10
             llvm::makeArrayRef(cmdArgBeg, cmdArgEnd),
 #else
             cmdArgBeg, cmdArgEnd,

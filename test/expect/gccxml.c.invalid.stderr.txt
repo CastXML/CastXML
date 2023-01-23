@@ -1,1 +1,1 @@
-error: unknown type name 'class'
+error: (unknown type name 'class'|use of undeclared identifier 'class')
