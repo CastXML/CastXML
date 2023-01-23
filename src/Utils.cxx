@@ -17,8 +17,14 @@
 #include "Utils.h"
 #include "Version.h"
 
+#include "llvm/Config/llvm-config.h"
+
 #include <fstream>
-#include <llvm/ADT/Optional.h>
+#if LLVM_VERSION_MAJOR >= 16
+#  include <optional>
+#else
+#  include <llvm/ADT/Optional.h>
+#endif
 #include <llvm/ADT/SmallString.h>
 #include <llvm/Support/FileSystem.h>
 #include <llvm/Support/Path.h>
@@ -147,7 +153,12 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   llvm::StringRef inFile; // empty means /dev/null
   llvm::StringRef outFile = tmpOut.str();
   llvm::StringRef errFile = tmpErr.str();
-#if LLVM_VERSION_MAJOR >= 6
+#if LLVM_VERSION_MAJOR >= 16
+  std::optional<llvm::StringRef> redirects[3];
+  redirects[0] = inFile;
+  redirects[1] = outFile;
+  redirects[2] = errFile;
+#elif LLVM_VERSION_MAJOR >= 6
   llvm::Optional<llvm::StringRef> redirects[3];
   redirects[0] = inFile;
   redirects[1] = outFile;
@@ -162,11 +173,16 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
 #if LLVM_VERSION_MAJOR >= 7
   llvm::SmallVector<llvm::StringRef, 64> cmd(argv, argv + argc);
   llvm::ArrayRef<llvm::StringRef> args = cmd;
-  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
 #else
   std::vector<const char*> cmd(argv, argv + argc);
   cmd.push_back(0);
   const char** args = &*cmd.begin();
+#endif
+#if LLVM_VERSION_MAJOR >= 16
+  std::optional<llvm::ArrayRef<llvm::StringRef>> env = std::nullopt;
+#elif LLVM_VERSION_MAJOR >= 7
+  llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
+#else
   const char** env = nullptr;
 #endif
 

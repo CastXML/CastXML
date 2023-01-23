@@ -18,6 +18,8 @@
 #include "Options.h"
 #include "Utils.h"
 
+#include "llvm/Config/llvm-config.h"
+
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Attr.h"
 #include "clang/AST/Decl.h"
@@ -38,8 +40,21 @@
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Lex/Preprocessor.h"
-#include "llvm/ADT/Optional.h"
 #include "llvm/Support/raw_ostream.h"
+
+#if LLVM_VERSION_MAJOR >= 16
+#  include <optional>
+namespace cx {
+template <typename T>
+using optional = std::optional<T>;
+}
+#else
+#  include <llvm/ADT/Optional.h>
+namespace cx {
+template <typename T>
+using optional = llvm::Optional<T>;
+}
+#endif
 
 #include <fstream>
 #include <iomanip>
@@ -502,7 +517,7 @@ class ASTVisitor : public ASTVisitorBase
   void OutputFunctionHelper(
     clang::FunctionDecl const* d, DumpNode const* dn, const char* tag,
     unsigned int flags,
-    llvm::Optional<std::string> const& name = llvm::Optional<std::string>());
+    cx::optional<std::string> const& name = cx::optional<std::string>());
 
   /** Output a function type element using the tag given by the caller.
       This encompasses functionality common to all the function type
@@ -1683,6 +1698,9 @@ void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
 
 bool ASTVisitor::IsFloat128TypedefType(clang::QualType t) const
 {
+  if (t->getTypeClass() == clang::Type::Elaborated) {
+    t = t->getAs<clang::ElaboratedType>()->getNamedType();
+  }
   if (t->getTypeClass() == clang::Type::Typedef) {
     clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
     if (clang::TypedefDecl const* td =
@@ -1709,12 +1727,12 @@ bool ASTVisitor::IsFloat128TypedefDecl(clang::TypedefDecl const* td) const
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn, const char* tag,
                                       unsigned int flags,
-                                      llvm::Optional<std::string> const& name)
+                                      cx::optional<std::string> const& name)
 {
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
   if (name) {
-    this->PrintNameAttribute(name.getValue());
+    this->PrintNameAttribute(*name);
   }
   if (flags & FH_Returns) {
     this->PrintReturnsAttribute(d->getReturnType(), dn->Complete);
