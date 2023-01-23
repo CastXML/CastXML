@@ -1,0 +1,12 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
+  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" incomplete="1"/>
+  <Function id="_4" name="f" returns="_5" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+">
+    <Argument type="_6" location="f1:3" file="f1" line="3"/>
+  </Function>
+  <PointerType id="_5" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_6" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Elaborated-ns.cxx"/>
+</GCC_XML>$

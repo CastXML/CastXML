@@ -1,9 +1,9 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:3" file="f1" line="3"/>
-  <ElaboratedType id="_2" type="_4"/>
-  <Namespace id="_3" name="::"/>
+  <ElaboratedType id="_2" keyword="enum" type="_4"/>
   <Enumeration id="_4" name="start" type="_5" context="_3" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_5" name="(unsigned )?int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/Typedef-to-Enumeration-anonymous.cxx"/>
 </CastXML>$

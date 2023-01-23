@@ -4,7 +4,7 @@
   <PointerType id="_2" type="_4" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <Typedef id="_4" name="foo" type="_5" context="_3" location="f1:3" file="f1" line="3"/>
-  <ElaboratedType id="_5" type="_6"/>
+  <ElaboratedType id="_5" keyword="struct" type="_6"/>
   <Struct id="_6" name="foo_s" context="_3" location="f1:1" file="f1" line="1" size="[0-9]+" align="[0-9]+"/>
   <File id="f1" name=".*/test/input/GNU-attr-malloc-args.c"/>
 </CastXML>$

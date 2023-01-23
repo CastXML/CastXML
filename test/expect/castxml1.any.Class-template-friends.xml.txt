@@ -16,7 +16,7 @@
   <Function id="_7" name="f" returns="_11" context="_2" location="f1:9" file="f1" line="9" mangled="[^"]+">
     <Argument type="_11" location="f1:4" file="f1" line="4"/>
   </Function>
-  <ElaboratedType id="_8" type="_12"/>
+  <ElaboratedType id="_8" keyword="class" type="_12"/>
   <FundamentalType id="_11" name="int" size="[0-9]+" align="[0-9]+"/>
   <Class id="_12" name="A&lt;int&gt;" context="_2" location="f1:2" file="f1" line="2" incomplete="1"/>
   <File id="f1" name=".*/test/input/Class-template-friends.cxx"/>

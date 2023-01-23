@@ -1,9 +1,10 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:4" file="f1" line="4"/>
-  <Typedef id="_2" name="type" type="_4" context="_5" location="f1:2" file="f1" line="2"/>
-  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <ElaboratedType id="_2" qualifier="ns::" type="_4"/>
+  <Typedef id="_4" name="type" type="_5" context="_6" location="f1:2" file="f1" line="2"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
-  <Namespace id="_5" name="ns" context="_3"/>
+  <Namespace id="_6" name="ns" context="_3"/>
   <File id="f1" name=".*/test/input/qualified-type-name.cxx"/>
 </CastXML>$

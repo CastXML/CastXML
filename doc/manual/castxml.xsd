@@ -49,6 +49,17 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="elaboration-keyword">
+    <xs:restriction base="xs:token">
+      <xs:enumeration value="enum" />
+      <xs:enumeration value="union" />
+      <xs:enumeration value="class" />
+      <xs:enumeration value="struct" />
+      <xs:enumeration value="typename" />
+      <xs:enumeration value="__interface" />
+    </xs:restriction>
+  </xs:simpleType>
+
   <xs:attributeGroup name="abi">
     <xs:attribute name="size" type="xs:unsignedLong" />
     <xs:attribute name="align" type="xs:unsignedLong" />
@@ -393,6 +404,8 @@
         <xs:complexType>
           <xs:attribute name="id" type="xs:ID" />
           <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="keyword" type="elaboration-keyword" use="optional" />
+          <xs:attribute name="qualifier" type="name" use="optional" />
         </xs:complexType>
       </xs:element>
 

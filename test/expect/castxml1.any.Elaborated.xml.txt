@@ -91,9 +91,9 @@
   <ReferenceType id="_66" type="_24" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_67c" type="_67" const="1"/>
   <Namespace id="_2" name="::"/>
-  <ElaboratedType id="_60" type="_3"/>
-  <ElaboratedType id="_61" type="_10"/>
-  <ElaboratedType id="_64" type="_17"/>
-  <ElaboratedType id="_67" type="_24"/>
+  <ElaboratedType id="_60" keyword="struct" type="_3"/>
+  <ElaboratedType id="_61" keyword="enum" type="_10"/>
+  <ElaboratedType id="_64" keyword="union" type="_17"/>
+  <ElaboratedType id="_67" keyword="class" type="_24"/>
   <File id="f1" name=".*/test/input/Elaborated.cxx"/>
 </CastXML>$
