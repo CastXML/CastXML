@@ -358,6 +358,12 @@
         </xs:complexType>
       </xs:element>
 
+      <xs:element name="AutoType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+        </xs:complexType>
+      </xs:element>
+
       <xs:element name="PointerType">
         <xs:complexType>
           <xs:attribute name="id" type="xs:ID" />

@@ -573,6 +573,7 @@ class ASTVisitor : public ASTVisitorBase
 
   // Type node output methods.
   void OutputAtomicType(clang::AtomicType const* t, DumpNode const* dn);
+  void OutputAutoType(clang::AutoType const* t, DumpNode const* dn);
   void OutputBuiltinType(clang::BuiltinType const* t, DumpNode const* dn);
   void OutputConstantArrayType(clang::ConstantArrayType const* t,
                                DumpNode const* dn);
@@ -2290,6 +2291,17 @@ void ASTVisitor::OutputAtomicType(clang::AtomicType const* t,
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getValueType(), false);
   this->PrintABIAttributes(this->CTX.getTypeInfo(t));
+  this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputAutoType(clang::AutoType const* t, DumpNode const* dn)
+{
+  if (this->Opts.GccXml) {
+    this->OutputUnimplementedType(t, dn);
+    return;
+  }
+  this->OS << "  <AutoType";
+  this->PrintIdAttribute(dn);
   this->OS << "/>\n";
 }
 
