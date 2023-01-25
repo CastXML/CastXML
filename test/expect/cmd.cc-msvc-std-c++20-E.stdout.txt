@@ -1,0 +1,19 @@
+^#define _MSC_VER 1930
+#define _MSVC_LANG 202002L
+#define _WIN32 1
+(#define __GCC_HAVE_DWARF2_CFI_ASM 1
+)?#define __STDCPP_DEFAULT_NEW_ALIGNMENT__ 16ll
+#define __builtin_assume_aligned __castxml__builtin_assume_aligned
+#define __castxml__ [^
+]*
+#define __castxml_check[^
+]*
+#define __castxml_clang_major__ [0-9]+
+#define __castxml_clang_minor__ [0-9]+
+#define __castxml_clang_patchlevel__ [0-9]+
+#define __castxml_major__ [0-9]+
+#define __castxml_minor__ [0-9]+
+#define __castxml_patch__ [0-9]+
+#define __cplusplus 199711L
+#define __is_assignable\(_To,_Fr\) \(sizeof\(__castxml__is_assignable_check<_To,_Fr>\(0\)\) == sizeof\(char\(&\)\[1\]\)\)(
+#define __make_integer_seq __castxml__make_integer_seq)?$

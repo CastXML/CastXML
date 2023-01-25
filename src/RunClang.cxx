@@ -781,7 +781,13 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
                   msvc_lang = std::strtol(msvc_lang_str.c_str(), nullptr, 10);
                 }
               }
-              if (msvc_lang >= 201703L) {
+              if (msvc_lang >= 202002L) {
+#if LLVM_VERSION_MAJOR >= 11
+                args.push_back("-std=c++20");
+#else
+                args.push_back("-std=c++17");
+#endif
+              } else if (msvc_lang >= 201703L) {
                 args.push_back("-std=c++17");
               } else {
                 args.push_back("-std=c++14");
@@ -822,7 +828,15 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
             std_date = 0;
           }
           std_flag += "++";
-          if (std_date >= 201703L) {
+          if (std_date >= 202002L) {
+#if LLVM_VERSION_MAJOR >= 11
+            std_flag += "20";
+#elif LLVM_VERSION_MAJOR >= 5
+            std_flag += "17";
+#else
+            std_flag += "1z";
+#endif
+          } else if (std_date >= 201703L) {
 #if LLVM_VERSION_MAJOR >= 5
             std_flag += "17";
 #else
