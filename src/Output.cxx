@@ -711,17 +711,19 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
       return DumpId();
     }
 
-    if (clang::FunctionProtoType const* fpt =
-          fd->getType()->getAs<clang::FunctionProtoType>()) {
-      if (fpt->getReturnType()->isRValueReferenceType()) {
-        return DumpId();
-      }
-      for (clang::FunctionProtoType::param_type_iterator
-             i = fpt->param_type_begin(),
-             e = fpt->param_type_end();
-           i != e; ++i) {
-        if ((*i)->isRValueReferenceType()) {
+    if (this->Opts.GccXml) {
+      if (clang::FunctionProtoType const* fpt =
+            fd->getType()->getAs<clang::FunctionProtoType>()) {
+        if (fpt->getReturnType()->isRValueReferenceType()) {
           return DumpId();
+        }
+        for (clang::FunctionProtoType::param_type_iterator
+               i = fpt->param_type_begin(),
+               e = fpt->param_type_end();
+             i != e; ++i) {
+          if ((*i)->isRValueReferenceType()) {
+            return DumpId();
+          }
         }
       }
     }

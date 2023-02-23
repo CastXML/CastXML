@@ -1,0 +1,32 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Struct id="_1" name="start" context="_2" location="f1:12" file="f1" line="12" members="_3 _4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
+  <Field id="_3" name="b" type="_9" context="_1" access="public" location="f1:14" file="f1" line="14" offset="0"/>
+  <Typedef id="_4" name="type" type="_10" context="_1" access="public" location="f1:15" file="f1" line="15"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")?>
+    <Argument type="_11" location="f1:12" file="f1" line="12"/>
+  </Constructor>
+  <OperatorMethod id="_7" name="=" returns="_12" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_11" location="f1:12" file="f1" line="12"/>
+  </OperatorMethod>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:12" file="f1" line="12" inline="1" artificial="1"( throw="")?/>
+  <Struct id="_9" name="B&lt;Incomplete&gt;" context="_2" location="f1:7" file="f1" line="7" members="_13 _14 _15 _16" size="[0-9]+" align="[0-9]+"/>
+  <Struct id="_10" name="A&lt;Incomplete&gt;" context="_2" location="f1:2" file="f1" line="2" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_11" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <ReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <Constructor id="_13" name="B" context="_9" access="public" location="f1:9" file="f1" line="9" inline="1"/>
+  <Constructor id="_14" name="B" context="_9" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")?>
+    <Argument type="_17" location="f1:7" file="f1" line="7"/>
+  </Constructor>
+  <OperatorMethod id="_15" name="=" returns="_18" context="_9" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_17" location="f1:7" file="f1" line="7"/>
+  </OperatorMethod>
+  <Destructor id="_16" name="B" context="_9" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"( throw="")?/>
+  <ReferenceType id="_17" type="_9c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
+  <ReferenceType id="_18" type="_9" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/invalid-decl-for-type.cxx"/>
+</CastXML>$

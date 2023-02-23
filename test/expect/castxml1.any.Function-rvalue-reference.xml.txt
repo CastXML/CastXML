@@ -1,9 +1,17 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="[^"]+">
-    <Argument type="_2" location="f1:1" file="f1" line="1"/>
+  <Function id="_1" name="start" returns="_4" context="_5" location="f1:1" file="f1" line="1" mangled="[^"]+">
+    <Argument type="_4" location="f1:1" file="f1" line="1"/>
   </Function>
-  <FundamentalType id="_2" name="int" size="[0-9]+" align="[0-9]+"/>
-  <Namespace id="_3" name="::"/>
+  <Function id="_2" name="start" returns="_4" context="_5" location="f1:2" file="f1" line="2" mangled="[^"]+">
+    <Argument type="_6" location="f1:2" file="f1" line="2"/>
+  </Function>
+  <Function id="_3" name="start" returns="_6" context="_5" location="f1:3" file="f1" line="3" mangled="[^"]+">
+    <Argument type="_4" location="f1:3" file="f1" line="3"/>
+    <Argument type="_4" location="f1:3" file="f1" line="3"/>
+  </Function>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <RValueReferenceType id="_6" type="_4" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_5" name="::"/>
   <File id="f1" name=".*/test/input/Function-rvalue-reference.cxx"/>
 </CastXML>$

@@ -1,18 +1,25 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Variable id="_1" name="start" type="_2" init="" context="_3" location="f1:20" file="f1" line="20"/>
-  <Struct id="_2" name="C&lt;void&gt;" context="_3" location="f1:11" file="f1" line="11" members="_4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
+  <Struct id="_2" name="C&lt;void&gt;" context="_3" location="f1:11" file="f1" line="11" members="_4 _5 _6 _7 _8 _9" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_4" name="C" context="_2" access="public" location="f1:13" file="f1" line="13" inline="1"/>
   <Constructor id="_5" name="C" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?>
-    <Argument type="_8" location="f1:11" file="f1" line="11"/>
+    <Argument type="_10" location="f1:11" file="f1" line="11"/>
   </Constructor>
-  <OperatorMethod id="_6" name="=" returns="_9" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")? mangled="[^"]+">
-    <Argument type="_8" location="f1:11" file="f1" line="11"/>
+  <Constructor id="_6" name="C" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?>
+    <Argument type="_11" location="f1:11" file="f1" line="11"/>
+  </Constructor>
+  <OperatorMethod id="_7" name="=" returns="_12" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_10" location="f1:11" file="f1" line="11"/>
   </OperatorMethod>
-  <Destructor id="_7" name="C" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
-  <ReferenceType id="_8" type="_2c" size="[0-9]+" align="[0-9]+"/>
+  <OperatorMethod id="_8" name="=" returns="_12" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_11" location="f1:11" file="f1" line="11"/>
+  </OperatorMethod>
+  <Destructor id="_9" name="C" context="_2" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
+  <ReferenceType id="_10" type="_2c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_2c" type="_2" const="1"/>
-  <ReferenceType id="_9" type="_2" size="[0-9]+" align="[0-9]+"/>
+  <RValueReferenceType id="_11" type="_2" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_12" type="_2" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_3" name="::"/>
   <File id="f1" name=".*/test/input/Class-template-recurse.cxx"/>
 </CastXML>$
