@@ -698,43 +698,40 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
     return DumpId();
   }
 
-  // Skip C++11 declarations gccxml does not support.
-  if (this->Opts.GccXml || this->Opts.CastXml) {
-    if (clang::FunctionDecl const* fd =
-          clang::dyn_cast<clang::FunctionDecl>(d)) {
-      if (fd->isDeleted()) {
-        return DumpId();
-      }
-
-      if (fd->getLiteralIdentifier()) {
-        return DumpId();
-      }
-
-      if (clang::FunctionProtoType const* fpt =
-            fd->getType()->getAs<clang::FunctionProtoType>()) {
-        if (fpt->getReturnType()->isRValueReferenceType()) {
-          return DumpId();
-        }
-        for (clang::FunctionProtoType::param_type_iterator
-               i = fpt->param_type_begin(),
-               e = fpt->param_type_end();
-             i != e; ++i) {
-          if ((*i)->isRValueReferenceType()) {
-            return DumpId();
-          }
-        }
-      }
-    }
-
-    if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
+  // Skip declarations our output formats do not support.
+  if (clang::FunctionDecl const* fd =
+        clang::dyn_cast<clang::FunctionDecl>(d)) {
+    if (fd->isDeleted()) {
       return DumpId();
     }
 
-    if (clang::TypedefDecl const* td =
-          clang::dyn_cast<clang::TypedefDecl>(d)) {
-      if (td->getUnderlyingType()->isRValueReferenceType()) {
+    if (fd->getLiteralIdentifier()) {
+      return DumpId();
+    }
+
+    if (clang::FunctionProtoType const* fpt =
+          fd->getType()->getAs<clang::FunctionProtoType>()) {
+      if (fpt->getReturnType()->isRValueReferenceType()) {
         return DumpId();
       }
+      for (clang::FunctionProtoType::param_type_iterator
+             i = fpt->param_type_begin(),
+             e = fpt->param_type_end();
+           i != e; ++i) {
+        if ((*i)->isRValueReferenceType()) {
+          return DumpId();
+        }
+      }
+    }
+  }
+
+  if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
+    return DumpId();
+  }
+
+  if (clang::TypedefDecl const* td = clang::dyn_cast<clang::TypedefDecl>(d)) {
+    if (td->getUnderlyingType()->isRValueReferenceType()) {
+      return DumpId();
     }
   }
 
