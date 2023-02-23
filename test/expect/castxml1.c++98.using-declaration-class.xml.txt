@@ -1,0 +1,39 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:6" file="f1" line="6" members="_3 _4 _5 _6 _7 _8" bases="_9" size="[0-9]+" align="[0-9]+">
+    <Base type="_9" access="public" virtual="0" offset="0"/>
+  </Class>
+  <Method id="_3" name="f" returns="_10" context="_9" access="protected" location="f1:4" file="f1" line="4" mangled="[^"]+">
+    <Argument type="_10" location="f1:4" file="f1" line="4"/>
+  </Method>
+  <Method id="_4" name="f" returns="_10" context="_1" access="private" location="f1:9" file="f1" line="9" mangled="[^"]+">
+    <Argument type="_11" location="f1:9" file="f1" line="9"/>
+  </Method>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?>
+    <Argument type="_12" location="f1:6" file="f1" line="6"/>
+  </Constructor>
+  <OperatorMethod id="_7" name="=" returns="_13" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_12" location="f1:6" file="f1" line="6"/>
+  </OperatorMethod>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:6" file="f1" line="6" inline="1" artificial="1"( throw="")?/>
+  <Class id="_9" name="base" context="_2" location="f1:1" file="f1" line="1" members="_3 _14 _15 _16 _17" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_10" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_11" name="char" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_12" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <ReferenceType id="_13" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <Constructor id="_14" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Constructor id="_15" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+    <Argument type="_18" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_16" name="=" returns="_19" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+    <Argument type="_18" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_17" name="base" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <ReferenceType id="_18" type="_9c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
+  <ReferenceType id="_19" type="_9" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/using-declaration-class.cxx"/>
+</CastXML>$

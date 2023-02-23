@@ -583,6 +583,8 @@ class ASTVisitor : public ASTVisitorBase
                                DumpNode const* dn);
   void OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                  DumpNode const* dn);
+  void OutputRValueReferenceType(clang::RValueReferenceType const* t,
+                                 DumpNode const* dn);
   void OutputMemberPointerType(clang::MemberPointerType const* t,
                                DumpNode const* dn);
   void OutputMethodType(clang::FunctionProtoType const* t,
@@ -698,18 +700,18 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
     return DumpId();
   }
 
-  // Skip C++11 declarations gccxml does not support.
-  if (this->Opts.GccXml || this->Opts.CastXml) {
-    if (clang::FunctionDecl const* fd =
-          clang::dyn_cast<clang::FunctionDecl>(d)) {
-      if (fd->isDeleted()) {
-        return DumpId();
-      }
+  // Skip declarations our output formats do not support.
+  if (clang::FunctionDecl const* fd =
+        clang::dyn_cast<clang::FunctionDecl>(d)) {
+    if (fd->isDeleted()) {
+      return DumpId();
+    }
 
-      if (fd->getLiteralIdentifier()) {
-        return DumpId();
-      }
+    if (fd->getLiteralIdentifier()) {
+      return DumpId();
+    }
 
+    if (this->Opts.GccXml) {
       if (clang::FunctionProtoType const* fpt =
             fd->getType()->getAs<clang::FunctionProtoType>()) {
         if (fpt->getReturnType()->isRValueReferenceType()) {
@@ -725,11 +727,13 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
         }
       }
     }
+  }
 
-    if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
-      return DumpId();
-    }
+  if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
+    return DumpId();
+  }
 
+  if (this->Opts.GccXml) {
     if (clang::TypedefDecl const* td =
           clang::dyn_cast<clang::TypedefDecl>(d)) {
       if (td->getUnderlyingType()->isRValueReferenceType()) {
@@ -2375,6 +2379,16 @@ void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                            DumpNode const* dn)
 {
   this->OS << "  <ReferenceType";
+  this->PrintIdAttribute(dn);
+  this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
+  this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputRValueReferenceType(clang::RValueReferenceType const* t,
+                                           DumpNode const* dn)
+{
+  this->OS << "  <RValueReferenceType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
   this->PrintABIAttributes(this->CTX.getTypeInfo(t));

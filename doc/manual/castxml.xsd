@@ -389,6 +389,14 @@
         </xs:complexType>
       </xs:element>
 
+      <xs:element name="RValueReferenceType">
+        <xs:complexType>
+          <xs:attribute name="id" type="xs:ID" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attributeGroup ref="abi" />
+        </xs:complexType>
+      </xs:element>
+
       <xs:element name="ArrayType">
         <xs:complexType>
           <xs:attribute name="id" type="xs:ID" />
