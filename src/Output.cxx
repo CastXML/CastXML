@@ -583,6 +583,8 @@ class ASTVisitor : public ASTVisitorBase
                                DumpNode const* dn);
   void OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                  DumpNode const* dn);
+  void OutputRValueReferenceType(clang::RValueReferenceType const* t,
+                                 DumpNode const* dn);
   void OutputMemberPointerType(clang::MemberPointerType const* t,
                                DumpNode const* dn);
   void OutputMethodType(clang::FunctionProtoType const* t,
@@ -729,9 +731,12 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
     return DumpId();
   }
 
-  if (clang::TypedefDecl const* td = clang::dyn_cast<clang::TypedefDecl>(d)) {
-    if (td->getUnderlyingType()->isRValueReferenceType()) {
-      return DumpId();
+  if (this->Opts.GccXml) {
+    if (clang::TypedefDecl const* td =
+          clang::dyn_cast<clang::TypedefDecl>(d)) {
+      if (td->getUnderlyingType()->isRValueReferenceType()) {
+        return DumpId();
+      }
     }
   }
 
@@ -2372,6 +2377,16 @@ void ASTVisitor::OutputLValueReferenceType(clang::LValueReferenceType const* t,
                                            DumpNode const* dn)
 {
   this->OS << "  <ReferenceType";
+  this->PrintIdAttribute(dn);
+  this->PrintTypeAttribute(t->getPointeeType(), false);
+  this->PrintABIAttributes(this->CTX.getTypeInfo(t));
+  this->OS << "/>\n";
+}
+
+void ASTVisitor::OutputRValueReferenceType(clang::RValueReferenceType const* t,
+                                           DumpNode const* dn)
+{
+  this->OS << "  <RValueReferenceType";
   this->PrintIdAttribute(dn);
   this->PrintTypeAttribute(t->getPointeeType(), false);
   this->PrintABIAttributes(this->CTX.getTypeInfo(t));
