@@ -18,12 +18,20 @@
 #include "Options.h"
 #include "Utils.h"
 
+#include "llvm/Config/llvm-config.h"
+
+#if LLVM_VERSION_MAJOR >= 17
+#  include "llvm/TargetParser/Host.h"
+#  include "llvm/TargetParser/Triple.h"
+#else
+#  include "llvm/ADT/Triple.h"
+#  include "llvm/Support/Host.h"
+#endif
+
 #include "llvm/ADT/SmallString.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/StringRef.h"
-#include "llvm/ADT/Triple.h"
 #include "llvm/Support/FileSystem.h"
-#include "llvm/Support/Host.h"
 
 #include <algorithm>
 #include <cstdlib>

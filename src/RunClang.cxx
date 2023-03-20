@@ -21,6 +21,12 @@
 
 #include "llvm/Config/llvm-config.h"
 
+#if LLVM_VERSION_MAJOR >= 17
+#  include "llvm/TargetParser/Host.h"
+#else
+#  include "llvm/Support/Host.h"
+#endif
+
 #include "clang/AST/ASTConsumer.h"
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclCXX.h"
@@ -42,7 +48,6 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/FileSystem.h"
-#include "llvm/Support/Host.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 
