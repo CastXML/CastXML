@@ -2,7 +2,7 @@
 set(CastXML_VERSION_MAJOR 0)
 set(CastXML_VERSION_MINOR 6)
 set(CastXML_VERSION_PATCH 0)
-set(CastXML_VERSION_RC 0)
+#set(CastXML_VERSION_RC 0)
 set(CastXML_VERSION_IS_DIRTY 0)
 
 # Start with the full version number used in tags.  It has no dev info.
