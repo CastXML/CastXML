@@ -3,34 +3,34 @@
   <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8 _9 _10" size="[0-9]+" align="[0-9]+"/>
   <Struct id="_3" name="" context="_1" access="private" location="f1:3" file="f1" line="3" members="_11 _12 _13 _14 _15 _16" size="[0-9]+" align="[0-9]+"/>
   <Field id="_4" name="s" type="_17" context="_1" access="private" location="f1:5" file="f1" line="5" offset="0"/>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_19" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_7" name="=" returns="_19" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_18" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Constructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_8" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
     <Argument type="_20" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_9" name="=" returns="_19" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_9" name="=" returns="_19" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_20" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_10" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_11" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_12" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?>
+  <Destructor id="_10" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_11" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
+  <Constructor id="_12" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
     <Argument type="_21" location="f1:3" file="f1" line="3"/>
   </Constructor>
-  <OperatorMethod id="_13" name="=" returns="_22" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_13" name="=" returns="_22" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_21" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
-  <Constructor id="_14" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_14" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
     <Argument type="_23" location="f1:3" file="f1" line="3"/>
   </Constructor>
-  <OperatorMethod id="_15" name="=" returns="_22" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_15" name="=" returns="_22" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_23" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>
-  <Destructor id="_16" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_16" name="" context="_3" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
   <ElaboratedType id="_17" keyword="struct" type="_3"/>
   <ReferenceType id="_18" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>

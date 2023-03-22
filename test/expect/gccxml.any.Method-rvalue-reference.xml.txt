@@ -10,7 +10,7 @@
   <Method id="_5" name="method" returns="_8" context="_1" access="private" location="f1:7" file="f1" line="7" mangled="[^"]+">
     <Argument type="_8" location="f1:7" file="f1" line="7"/>
   </Method>
-  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
   <ReferenceType id="_7" type="_1" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
