@@ -3,14 +3,14 @@
   <Typedef id="_1" name="start" type="_2" context="_3" location="f1:3" file="f1" line="3"/>
   <ElaboratedType id="_2" keyword="struct" type="_4"/>
   <Struct id="_4" name="" context="_3" location="f1:1" file="f1" line="1" members="_5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_5" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_6" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_5" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throw=""/>
+  <Constructor id="_6" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throw="">
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_10" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_7" name="=" returns="_10" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throw="" mangled="[^"]+">
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_8" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_8" name="" context="_4" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" throw=""/>
   <ReferenceType id="_9" type="_4c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_4c" type="_4" const="1"/>
   <ReferenceType id="_10" type="_4" size="[0-9]+" align="[0-9]+"/>

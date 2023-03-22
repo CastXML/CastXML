@@ -2,13 +2,13 @@
 <GCC_XML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_3" name="start" context="_1" access="private" location="f1:3" file="f1" line="3" attributes="dllexport"/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
     <Argument type="_7" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_5" name="=" returns="_8" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_7" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
   <ReferenceType id="_7" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_8" type="_1" size="[0-9]+" align="[0-9]+"/>

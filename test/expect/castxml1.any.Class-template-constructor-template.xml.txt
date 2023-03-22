@@ -7,10 +7,10 @@
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:7" file="f1" line="7">
     <Argument type="_8" location="f1:7" file="f1" line="7"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_9" context="_1" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_5" name="=" returns="_9" context="_1" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_7" location="f1:2" file="f1" line="2"/>
   </OperatorMethod>
-  <Destructor id="_6" name="start" context="_1" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_6" name="start" context="_1" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
   <ReferenceType id="_7" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_8" type="_1c" size="[0-9]+" align="[0-9]+"/>

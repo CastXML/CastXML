@@ -4,14 +4,14 @@
   <Method id="_3" name="method" returns="_8" context="_1" access="private" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="annotate\(an annotation\)">
     <Argument type="_8" location="f1:3" file="f1" line="3"/>
   </Method>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </Constructor>
-  <OperatorMethod id="_6" name="=" returns="_10" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_6" name="=" returns="_10" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_9" location="f1:1" file="f1" line="1"/>
   </OperatorMethod>
-  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_7" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
   <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_9" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
