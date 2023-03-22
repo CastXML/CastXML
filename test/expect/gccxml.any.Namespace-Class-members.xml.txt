@@ -3,14 +3,14 @@
   <Namespace id="_1" name="start" context="_2" members="_3"/>
   <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" members="_4 _5 _6 _7 _8" size="[0-9]+" align="[0-9]+"/>
   <Variable id="_4" name="data" type="_9" context="_3" access="private" location="f1:4" file="f1" line="4" static="1" mangled="[^"]+"/>
-  <Constructor id="_5" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_6" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_5" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
+  <Constructor id="_6" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1">
     <Argument type="_10" location="f1:2" file="f1" line="2"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_11" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_7" name="=" returns="_11" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_10" location="f1:2" file="f1" line="2"/>
   </OperatorMethod>
-  <Destructor id="_8" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_8" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
   <FundamentalType id="_9" name="int" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_10" type="_3c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_3c" type="_3" const="1"/>

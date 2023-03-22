@@ -56,27 +56,27 @@
   <PointerType id="_42" type="_10c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_10c" type="_10" const="1"/>
   <PointerType id="_43" type="_61c" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_44" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_45" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_44" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1" throw=""/>
+  <Constructor id="_45" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1" throw="">
     <Argument type="_62" location="f1:26" file="f1" line="26"/>
   </Constructor>
-  <OperatorMethod id="_46" name="=" returns="_63" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_46" name="=" returns="_63" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1" throw="" mangled="[^"]+">
     <Argument type="_62" location="f1:26" file="f1" line="26"/>
   </OperatorMethod>
-  <Destructor id="_47" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_47" name="Foo3" context="_17" access="public" location="f1:26" file="f1" line="26" inline="1" artificial="1" throw=""/>
   <PointerType id="_48" type="_17" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_49" type="_64" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_50" type="_17c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_17c" type="_17" const="1"/>
   <PointerType id="_51" type="_64c" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_52" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_53" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_52" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1" throw=""/>
+  <Constructor id="_53" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1" throw="">
     <Argument type="_65" location="f1:38" file="f1" line="38"/>
   </Constructor>
-  <OperatorMethod id="_54" name="=" returns="_66" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_54" name="=" returns="_66" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1" throw="" mangled="[^"]+">
     <Argument type="_65" location="f1:38" file="f1" line="38"/>
   </OperatorMethod>
-  <Destructor id="_55" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_55" name="Foo4" context="_24" access="public" location="f1:38" file="f1" line="38" inline="1" artificial="1" throw=""/>
   <PointerType id="_56" type="_24" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_57" type="_67" size="[0-9]+" align="[0-9]+"/>
   <PointerType id="_58" type="_67c" size="[0-9]+" align="[0-9]+"/>

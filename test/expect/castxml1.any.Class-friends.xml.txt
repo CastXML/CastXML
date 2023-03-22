@@ -1,20 +1,20 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8" befriending="_9 _10" size="[0-9]+" align="[0-9]+"/>
-  <Constructor id="_3" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_3" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"/>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1">
     <Argument type="_11" location="f1:5" file="f1" line="5"/>
   </Constructor>
-  <OperatorMethod id="_5" name="=" returns="_12" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_5" name="=" returns="_12" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_11" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
-  <Constructor id="_6" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1">
     <Argument type="_13" location="f1:5" file="f1" line="5"/>
   </Constructor>
-  <OperatorMethod id="_7" name="=" returns="_12" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")? mangled="[^"]+">
+  <OperatorMethod id="_7" name="=" returns="_12" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1" mangled="[^"]+">
     <Argument type="_13" location="f1:5" file="f1" line="5"/>
   </OperatorMethod>
-  <Destructor id="_8" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_8" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1"/>
   <ReferenceType id="_11" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>

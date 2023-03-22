@@ -3,8 +3,8 @@
   <Class id="_1" name="start" context="_2" location="f1:11" file="f1" line="11" members="_3 _4" bases="_5" size="[0-9]+" align="[0-9]+">
     <Base type="_5" access="public" virtual="0" offset="0"/>
   </Class>
-  <Destructor id="_3" name="start" context="_1" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
-  <Constructor id="_4" name="start" context="_1" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_3" name="start" context="_1" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"/>
+  <Constructor id="_4" name="start" context="_1" access="public" location="f1:11" file="f1" line="11" inline="1" artificial="1"/>
   <Class id="_5" name="base" context="_2" location="f1:1" file="f1" line="1" members="_6 _7 _8 _9" size="[0-9]+" align="[0-9]+"/>
   <Constructor id="_6" name="base" context="_5" access="protected" location="f1:4" file="f1" line="4"/>
   <Destructor id="_7" name="base" context="_5" access="protected" location="f1:5" file="f1" line="5"/>

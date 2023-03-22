@@ -23,7 +23,7 @@
     <Argument type="_13" location="f1:9" file="f1" line="9"/>
     <Argument type="_13" location="f1:9" file="f1" line="9"/>
   </Method>
-  <Destructor id="_10" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"( throw="")?/>
+  <Destructor id="_10" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
   <ReferenceType id="_11" type="_1" size="[0-9]+" align="[0-9]+"/>
   <RValueReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_13" name="int" size="[0-9]+" align="[0-9]+"/>
