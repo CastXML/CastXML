@@ -476,10 +476,6 @@ protected:
                              ) override
   {
     CI.getPreprocessor().setPredefines(this->UpdatePredefines(CI));
-
-    // Tell Clang not to tear down the parser at EOF.
-    CI.getPreprocessor().enableIncrementalProcessing();
-
     return true;
   }
 };
@@ -515,6 +511,28 @@ class CastXMLSyntaxOnlyAction
     } else {
       return nullptr;
     }
+  }
+
+protected:
+  bool BeginSourceFileAction(clang::CompilerInstance& CI
+#if LLVM_VERSION_MAJOR < 5
+                             ,
+                             llvm::StringRef Filename
+#endif
+                             ) override
+  {
+    this->CastXMLPredefines::BeginSourceFileAction(CI
+#if LLVM_VERSION_MAJOR < 5
+                                                   ,
+                                                   Filename
+#endif
+    );
+
+    // Tell Clang not to tear down the parser at EOF.
+    // We need it in ASTConsumer::HandleTranslationUnit.
+    CI.getPreprocessor().enableIncrementalProcessing();
+
+    return true;
   }
 
 public:
