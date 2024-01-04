@@ -56,6 +56,31 @@ using optional = llvm::Optional<T>;
 }
 #endif
 
+#if LLVM_VERSION_MAJOR >= 16
+namespace cx {
+using FileEntryRef = clang::FileEntryRef;
+using OptionalFileEntryRef = clang::OptionalFileEntryRef;
+}
+#elif LLVM_VERSION_MAJOR >= 12
+namespace cx {
+using FileEntryRef = clang::FileEntryRef;
+using OptionalFileEntryRef = llvm::Optional<clang::FileEntryRef>;
+}
+#else
+namespace cx {
+using FileEntryRef = clang::FileEntry const*;
+using OptionalFileEntryRef = clang::FileEntry const*;
+}
+#endif
+
+#if LLVM_VERSION_MAJOR >= 18
+#  define cx_ElaboratedTypeKeyword(x) clang::ElaboratedTypeKeyword::x
+#  define cx_TagTypeKind(x) clang::TagTypeKind::x
+#else
+#  define cx_ElaboratedTypeKeyword(x) clang::ETK_##x
+#  define cx_TagTypeKind(x) clang::TTK_##x
+#endif
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -223,6 +248,23 @@ protected:
              << "\"/>\n";
     /* clang-format on */
   }
+
+  std::string getNameOfFileEntryRef(cx::FileEntryRef f) const
+  {
+#if LLVM_VERSION_MAJOR >= 12
+    return std::string(f.getName());
+#else
+    return std::string(f->getName());
+#endif
+  }
+  cx::OptionalFileEntryRef getFileEntryRefForID(clang::FileID id) const
+  {
+#if LLVM_VERSION_MAJOR >= 12
+    return this->CI.getSourceManager().getFileEntryRefForID(id);
+#else
+    return this->CI.getSourceManager().getFileEntryForID(id);
+#endif
+  }
 };
 
 class ASTVisitor : public ASTVisitorBase
@@ -364,7 +406,13 @@ class ASTVisitor : public ASTVisitorBase
   DumpId AddDumpNodeImpl(K k, bool complete);
 
   /** Allocate a dump node for a source file entry.  */
-  unsigned int AddDumpFile(clang::FileEntry const* f);
+  unsigned int AddDumpFile(cx::FileEntryRef f);
+#if LLVM_VERSION_MAJOR < 12
+  unsigned int AddDumpFile(clang::FileEntry const& f)
+  {
+    return this->AddDumpFile(&f);
+  }
+#endif
 
   /** Add class template specializations and instantiations for output.  */
   void AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
@@ -636,7 +684,7 @@ private:
   QualNodesMap QualNodes;
 
   // Map from clang file entry to our source file index.
-  typedef std::map<clang::FileEntry const*, unsigned int> FileNodesMap;
+  typedef std::map<cx::FileEntryRef, unsigned int> FileNodesMap;
   FileNodesMap FileNodes;
 
   // Node traversal queue.
@@ -646,7 +694,7 @@ private:
   std::queue<CommentEntry> CommentQueue;
 
   // File traversal queue.
-  std::queue<clang::FileEntry const*> FileQueue;
+  std::queue<cx::FileEntryRef> FileQueue;
 
 public:
   ASTVisitor(clang::CompilerInstance& ci, clang::ASTContext& ctx,
@@ -806,7 +854,8 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     case clang::Type::Elaborated: {
       clang::ElaboratedType const* et = t->getAs<clang::ElaboratedType>();
       if (this->Opts.GccXml ||
-          (et->getKeyword() == clang::ETK_None && !et->getQualifier())) {
+          (et->getKeyword() == cx_ElaboratedTypeKeyword(None) &&
+           !et->getQualifier())) {
         // The gccxml format does not include ElaboratedType elements,
         // so replace this one with the underlying type.  Note that this
         // can cause duplicate PointerType and ReferenceType elements
@@ -925,7 +974,7 @@ ASTVisitor::DumpId ASTVisitor::AddDumpNodeImpl(K k, bool complete)
   return dn->Index;
 }
 
-unsigned int ASTVisitor::AddDumpFile(clang::FileEntry const* f)
+unsigned int ASTVisitor::AddDumpFile(cx::FileEntryRef f)
 {
   unsigned int& index = this->FileNodes[f];
   if (index == 0) {
@@ -1141,10 +1190,10 @@ void ASTVisitor::ProcessCommentQueue()
       clang::SourceManager const& sm = this->CI.getSourceManager();
       clang::FileID bid = bfl.getFileID();
       clang::FileID eid = efl.getFileID();
-      clang::FileEntry const* bf = sm.getFileEntryForID(bid);
-      clang::FileEntry const* ef = sm.getFileEntryForID(eid);
+      cx::OptionalFileEntryRef bf = this->getFileEntryRefForID(bid);
+      cx::OptionalFileEntryRef ef = this->getFileEntryRefForID(eid);
       if (bf && bf == ef) {
-        unsigned int fi = this->AddDumpFile(bf);
+        unsigned int fi = this->AddDumpFile(*bf);
         unsigned int boff = sm.getFileOffset(bfl);
         unsigned int eoff = sm.getFileOffset(efl);
         /* clang-format off */
@@ -1174,13 +1223,13 @@ void ASTVisitor::ProcessFileQueue()
     /* clang-format on */
   }
   while (!this->FileQueue.empty()) {
-    clang::FileEntry const* f = this->FileQueue.front();
+    cx::FileEntryRef f = this->FileQueue.front();
     this->FileQueue.pop();
     /* clang-format off */
     this->OS <<
       "  <File"
       " id=\"f" << this->FileNodes[f] << "\""
-      " name=\"" << encodeXML(std::string(f->getName())) << "\""
+      " name=\"" << encodeXML(this->getNameOfFileEntryRef(f)) << "\""
       "/>\n"
       ;
     /* clang-format on */
@@ -1383,9 +1432,9 @@ void ASTVisitor::PrintLocationAttribute(clang::Decl const* d)
   clang::SourceLocation sl = d->getLocation();
   if (sl.isValid()) {
     clang::FullSourceLoc fsl = this->CTX.getFullLoc(sl).getExpansionLoc();
-    if (clang::FileEntry const* f =
-          this->CI.getSourceManager().getFileEntryForID(fsl.getFileID())) {
-      unsigned int id = this->AddDumpFile(f);
+    if (cx::OptionalFileEntryRef f =
+          this->getFileEntryRefForID(fsl.getFileID())) {
+      unsigned int id = this->AddDumpFile(*f);
       unsigned int line = fsl.getExpansionLineNumber();
       /* clang-format off */
       this->OS <<
@@ -1938,18 +1987,18 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 {
   const char* tag;
   switch (d->getTagKind()) {
-    case clang::TTK_Class:
+    case cx_TagTypeKind(Class):
       tag = "Class";
       break;
-    case clang::TTK_Union:
+    case cx_TagTypeKind(Union):
       tag = "Union";
       break;
-    case clang::TTK_Struct:
+    case cx_TagTypeKind(Struct):
       tag = "Struct";
       break;
-    case clang::TTK_Interface:
+    case cx_TagTypeKind(Interface):
       return;
-    case clang::TTK_Enum:
+    case cx_TagTypeKind(Enum):
       return;
   }
   clang::CXXRecordDecl const* dx = clang::dyn_cast<clang::CXXRecordDecl>(d);
@@ -2450,7 +2499,7 @@ void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
   }
 
   clang::ElaboratedTypeKeyword k = t->getKeyword();
-  if (k != clang::ETK_None) {
+  if (k != cx_ElaboratedTypeKeyword(None)) {
     this->OS << " keyword=\""
              << encodeXML(clang::TypeWithKeyword::getKeywordName(k).str())
              << '"';
