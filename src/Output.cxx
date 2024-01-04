@@ -73,6 +73,14 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 }
 #endif
 
+#if LLVM_VERSION_MAJOR >= 18
+#  define cx_ElaboratedTypeKeyword(x) clang::ElaboratedTypeKeyword::x
+#  define cx_TagTypeKind(x) clang::TagTypeKind::x
+#else
+#  define cx_ElaboratedTypeKeyword(x) clang::ETK_##x
+#  define cx_TagTypeKind(x) clang::TTK_##x
+#endif
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -846,7 +854,8 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     case clang::Type::Elaborated: {
       clang::ElaboratedType const* et = t->getAs<clang::ElaboratedType>();
       if (this->Opts.GccXml ||
-          (et->getKeyword() == clang::ETK_None && !et->getQualifier())) {
+          (et->getKeyword() == cx_ElaboratedTypeKeyword(None) &&
+           !et->getQualifier())) {
         // The gccxml format does not include ElaboratedType elements,
         // so replace this one with the underlying type.  Note that this
         // can cause duplicate PointerType and ReferenceType elements
@@ -1978,18 +1987,18 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
 {
   const char* tag;
   switch (d->getTagKind()) {
-    case clang::TTK_Class:
+    case cx_TagTypeKind(Class):
       tag = "Class";
       break;
-    case clang::TTK_Union:
+    case cx_TagTypeKind(Union):
       tag = "Union";
       break;
-    case clang::TTK_Struct:
+    case cx_TagTypeKind(Struct):
       tag = "Struct";
       break;
-    case clang::TTK_Interface:
+    case cx_TagTypeKind(Interface):
       return;
-    case clang::TTK_Enum:
+    case cx_TagTypeKind(Enum):
       return;
   }
   clang::CXXRecordDecl const* dx = clang::dyn_cast<clang::CXXRecordDecl>(d);
@@ -2490,7 +2499,7 @@ void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
   }
 
   clang::ElaboratedTypeKeyword k = t->getKeyword();
-  if (k != clang::ETK_None) {
+  if (k != cx_ElaboratedTypeKeyword(None)) {
     this->OS << " keyword=\""
              << encodeXML(clang::TypeWithKeyword::getKeywordName(k).str())
              << '"';
