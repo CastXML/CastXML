@@ -1343,6 +1343,11 @@ void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
   std::string n = name;
   n = stringReplace(n, "__castxml__float128_s", "__float128");
+  n = stringReplace(n, "__castxml_Float32_s", "_Float32");
+  n = stringReplace(n, "__castxml_Float32x_s", "_Float32x");
+  n = stringReplace(n, "__castxml_Float64_s", "_Float64");
+  n = stringReplace(n, "__castxml_Float64x_s", "_Float64x");
+  n = stringReplace(n, "__castxml_Float128_s", "_Float128");
   this->OS << " name=\"" << encodeXML(n) << "\"";
 }
 
@@ -1753,6 +1758,16 @@ void ASTVisitor::PrintCastXMLTypedef(clang::TypedefDecl const* d,
   this->PrintIdAttribute(dn);
   if (d->getName() == "__castxml__float128") {
     this->OS << " name=\"__float128\" size=\"128\" align=\"128\"";
+  } else if (d->getName() == "__castxml_Float32") {
+    this->OS << " name=\"_Float32\" size=\"32\" align=\"32\"";
+  } else if (d->getName() == "__castxml_Float32x") {
+    this->OS << " name=\"_Float32x\" size=\"64\" align=\"64\"";
+  } else if (d->getName() == "__castxml_Float64") {
+    this->OS << " name=\"_Float64\" size=\"64\" align=\"64\"";
+  } else if (d->getName() == "__castxml_Float64x") {
+    this->OS << " name=\"_Float64x\" size=\"128\" align=\"128\"";
+  } else if (d->getName() == "__castxml_Float128") {
+    this->OS << " name=\"_Float128\" size=\"128\" align=\"128\"";
   }
   this->OS << "/>\n";
 }

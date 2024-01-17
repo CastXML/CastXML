@@ -691,6 +691,22 @@ castxml_test_output_c(invalid)
 
 castxml_test_output_broken(ReferenceType-to-Class-template)
 
+set(castxml_test_output_extra_arguments --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> --ver-major=7 ")")
+castxml_test_output_c(GNU-_Float32)
+castxml_test_output_c(GNU-_Float32x)
+castxml_test_output_c(GNU-_Float64)
+castxml_test_output_c(GNU-_Float64x)
+castxml_test_output_c(GNU-_Float128)
+unset(castxml_test_output_extra_arguments)
+
+set(castxml_test_output_extra_arguments --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --ver-major=13 ")")
+castxml_test_output(GNU-_Float32)
+castxml_test_output(GNU-_Float32x)
+castxml_test_output(GNU-_Float64)
+castxml_test_output(GNU-_Float64x)
+castxml_test_output(GNU-_Float128)
+unset(castxml_test_output_extra_arguments)
+
 set(castxml_test_output_extra_arguments --castxml-cc-gnu-c "(" $<TARGET_FILE:cc-gnu> --cc-define=__x86_64__ ")")
 castxml_test_output_c(GNU-__float128)
 set(castxml_test_output_custom_start "")
