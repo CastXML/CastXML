@@ -10,5 +10,5 @@
   <PointerType id="_7" type="_8" size="[0-9]+" align="[0-9]+"/>
   <Namespace id="_2" name="::"/>
   <Struct id="_8" name="A&lt;__float128&gt;" context="_2" location="f1:2" file="f1" line="2" incomplete="1"/>
-  <File id="f1" name=".*/test/input/GNU-float128.cxx"/>
+  <File id="f1" name=".*/test/input/GNU-__float128.cxx"/>
 </GCC_XML>$

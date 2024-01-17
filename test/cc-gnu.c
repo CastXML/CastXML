@@ -5,10 +5,13 @@ int main(int argc, const char* argv[])
 {
   int cpp = 0;
   const char* std_date = 0;
+  const char* ver_major = "1";
   int i;
   for (i = 1; i < argc; ++i) {
     if (strncmp(argv[i], "--cc-define=", 12) == 0) {
       fprintf(stdout, "#define %s 1\n", argv[i] + 12);
+    } else if (strncmp(argv[i], "--ver-major=", 12) == 0) {
+      ver_major = argv[i] + 12;
     } else if (strncmp(argv[i], "-std=", 5) == 0) {
       std_date = argv[i] + 5;
     } else if (strcmp(argv[i], "-ansi") == 0) {
@@ -34,7 +37,7 @@ int main(int argc, const char* argv[])
           "#define _WIN32 1\n"
           "#define __MINGW32__ 1\n"
 #endif
-          "#define __GNUC__ 1\n"
+          "#define __GNUC__ %s\n"
           "#define __has_include(x) x\n"
           "#define __has_include_next(x) x\n"
           "#define __GNUC_MINOR__ 1\n"
@@ -42,7 +45,8 @@ int main(int argc, const char* argv[])
           "#define __builtin_vsx_foo __builtin_vsx_foo\n"
           "#define __pixel __pixel\n"
           "#define __vector __vector\n"
-          "#define __has_last(x) x");
+          "#define __has_last(x) x",
+          ver_major);
   fprintf(stderr,
           "#include <...> search starts here:\n"
           " /some/include\n"
