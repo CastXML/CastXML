@@ -42,6 +42,10 @@
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/Support/raw_ostream.h"
 
+#if LLVM_VERSION_MAJOR < 16
+#  define starts_with startswith
+#endif
+
 #if LLVM_VERSION_MAJOR >= 16
 #  include <optional>
 namespace cx {
@@ -592,9 +596,9 @@ class ASTVisitor : public ASTVisitorBase
                              clang::AccessSpecifier alt = clang::AS_none);
 
   bool HaveFloat128Type() const;
-  void PrintFloat128Type(DumpNode const* dn);
-  bool IsFloat128TypedefType(clang::QualType t) const;
-  bool IsFloat128TypedefDecl(clang::TypedefDecl const* td) const;
+  void PrintCastXMLTypedef(clang::TypedefDecl const* d, DumpNode const* dn);
+  bool IsCastXMLTypedefType(clang::QualType t) const;
+  bool IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const;
 
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
@@ -1337,7 +1341,8 @@ void ASTVisitor::PrintIdAttribute(DumpNode const* dn)
 
 void ASTVisitor::PrintNameAttribute(std::string const& name)
 {
-  std::string n = stringReplace(name, "__castxml__float128_s", "__float128");
+  std::string n = name;
+  n = stringReplace(n, "__castxml__float128_s", "__float128");
   this->OS << " name=\"" << encodeXML(n) << "\"";
 }
 
@@ -1355,12 +1360,10 @@ void ASTVisitor::PrintMangledAttribute(clang::NamedDecl const* d)
     this->MangleContext->mangleName(d, rso);
   }
 
-  if (!this->HaveFloat128Type()) {
-    // We cannot mangle __float128 correctly because Clang does not have
-    // it as an internal type, so skip mangled attributes involving it.
-    if (s.find("__float128") != s.npos) {
-      s = "";
-    }
+  // We cannot mangle some types correctly because Clang does not have
+  // them as internal types, so skip mangled attributes involving them.
+  if (s.find("__castxml") != std::string::npos) {
+    s = "";
   }
 
   // Strip a leading 1 byte in MS mangling.
@@ -1743,14 +1746,18 @@ bool ASTVisitor::HaveFloat128Type() const
 #endif
 }
 
-void ASTVisitor::PrintFloat128Type(DumpNode const* dn)
+void ASTVisitor::PrintCastXMLTypedef(clang::TypedefDecl const* d,
+                                     DumpNode const* dn)
 {
   this->OS << "  <FundamentalType";
   this->PrintIdAttribute(dn);
-  this->OS << " name=\"__float128\" size=\"128\" align=\"128\"/>\n";
+  if (d->getName() == "__castxml__float128") {
+    this->OS << " name=\"__float128\" size=\"128\" align=\"128\"";
+  }
+  this->OS << "/>\n";
 }
 
-bool ASTVisitor::IsFloat128TypedefType(clang::QualType t) const
+bool ASTVisitor::IsCastXMLTypedefType(clang::QualType t) const
 {
   if (t->getTypeClass() == clang::Type::Elaborated) {
     t = t->getAs<clang::ElaboratedType>()->getNamedType();
@@ -1759,15 +1766,15 @@ bool ASTVisitor::IsFloat128TypedefType(clang::QualType t) const
     clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
     if (clang::TypedefDecl const* td =
           clang::dyn_cast<clang::TypedefDecl>(tdt->getDecl())) {
-      return this->IsFloat128TypedefDecl(td);
+      return this->IsCastXMLTypedefDecl(td);
     }
   }
   return false;
 }
 
-bool ASTVisitor::IsFloat128TypedefDecl(clang::TypedefDecl const* td) const
+bool ASTVisitor::IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const
 {
-  if (td->getName() == "__castxml__float128" &&
+  if (td->getName().starts_with("__castxml") &&
       clang::isa<clang::TranslationUnitDecl>(td->getDeclContext())) {
     clang::SourceLocation sl = td->getLocation();
     if (sl.isValid()) {
@@ -2089,10 +2096,10 @@ void ASTVisitor::OutputClassTemplateSpecializationDecl(
 void ASTVisitor::OutputTypedefDecl(clang::TypedefDecl const* d,
                                    DumpNode const* dn)
 {
-  // As a special case, replace our compatibility Typedef for __float128
-  // with a FundamentalType so we generate the same thing gccxml did.
-  if (this->IsFloat128TypedefDecl(d)) {
-    this->PrintFloat128Type(dn);
+  // As a special case, replace our compatibility Typedef types
+  // with FundamentalType to pretend we had a builtin type.
+  if (this->IsCastXMLTypedefDecl(d)) {
+    this->PrintCastXMLTypedef(d, dn);
     return;
   }
 
@@ -2172,7 +2179,7 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
     unsigned bits = d->getBitWidthValue(this->CTX);
     this->OS << " bits=\"" << bits << "\"";
   }
-  if (this->Opts.CastXml && !this->IsFloat128TypedefType(d->getType())) {
+  if (this->Opts.CastXml && !this->IsCastXMLTypedefType(d->getType())) {
     this->PrintInitAttribute(d->getInClassInitializer());
   }
   this->PrintContextAttribute(d);
@@ -2193,7 +2200,7 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   this->PrintIdAttribute(dn);
   this->PrintNameAttribute(d->getName().str());
   this->PrintTypeAttribute(d->getType(), dn->Complete);
-  if (!this->IsFloat128TypedefType(d->getType())) {
+  if (!this->IsCastXMLTypedefType(d->getType())) {
     this->PrintInitAttribute(d->getInit());
   }
   this->PrintContextAttribute(d);
