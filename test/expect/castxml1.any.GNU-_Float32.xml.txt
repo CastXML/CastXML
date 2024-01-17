@@ -1,0 +1,9 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Function id="_1" name="start" returns="_2" context="_3" location="f1:1" file="f1" line="1" mangled="">
+    <Argument type="_2" location="f1:1" file="f1" line="1"/>
+  </Function>
+  <FundamentalType id="_2" name="_Float32" size="32" align="32"/>
+  <Namespace id="_3" name="::"/>
+  <File id="f1" name=".*/test/input/GNU-_Float32.cxx"/>
+</CastXML>$

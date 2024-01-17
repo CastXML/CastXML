@@ -387,10 +387,42 @@ protected:
                     "#define __ARM_FEATURE_DIRECTED_ROUNDING 1\n";
       }
 
+      // Provide _Float## types if simulating the actual GNU compiler.
+      if (this->Need_Float(this->Opts.Predefines)) {
+        // Clang does not have these types for all sizes.
+        // Provide our own approximation of the builtins.
+        builtins += "\n"
+                    "typedef struct __castxml_Float32_s { "
+                    "  char x[4] __attribute__((aligned(4))); "
+                    "} __castxml_Float32;\n"
+                    "#define _Float32 __castxml_Float32\n"
+                    "typedef struct __castxml_Float32x_s { "
+                    "  char x[8] __attribute__((aligned(8))); "
+                    "} __castxml_Float32x;\n"
+                    "#define _Float32x __castxml_Float32x\n"
+                    "typedef struct __castxml_Float64_s { "
+                    "  char x[8] __attribute__((aligned(8))); "
+                    "} __castxml_Float64;\n"
+                    "#define _Float64 __castxml_Float64\n"
+                    "typedef struct __castxml_Float64x_s { "
+                    "  char x[16] __attribute__((aligned(16))); "
+                    "} __castxml_Float64x;\n"
+                    "#define _Float64x __castxml_Float64x\n"
+                    "typedef struct __castxml_Float128_s { "
+                    "  char x[16] __attribute__((aligned(16))); "
+                    "} __castxml_Float128;\n"
+                    "#define _Float128 __castxml_Float128\n";
+      }
+
     } else {
       builtins += predefines.substr(start, end - start);
     }
     return predefines.substr(0, start) + builtins + predefines.substr(end);
+  }
+
+  bool IsCPlusPlus(std::string const& pd) const
+  {
+    return pd.find("#define __cplusplus ") != pd.npos;
   }
 
   bool IsActualGNU(std::string const& pd) const
@@ -400,6 +432,25 @@ protected:
             pd.find("#define __INTEL_COMPILER ") == pd.npos &&
             pd.find("#define __CUDACC__ ") == pd.npos &&
             pd.find("#define __PGI ") == pd.npos);
+  }
+
+  unsigned int GetGNUMajorVersion(std::string const& pd) const
+  {
+    if (const char* d = strstr(pd.c_str(), "#define __GNUC__ ")) {
+      d += 17;
+      if (const char* e = strchr(d, '\n')) {
+        if (*(e - 1) == '\r') {
+          --e;
+        }
+        std::string const ver_str(d, e - d);
+        errno = 0;
+        long ver = std::strtol(ver_str.c_str(), nullptr, 10);
+        if (errno == 0 && ver > 0) {
+          return static_cast<unsigned int>(ver);
+        }
+      }
+    }
+    return 0;
   }
 
   bool NeedBuiltinVarArgPack(std::string const& pd)
@@ -428,6 +479,14 @@ protected:
     static_cast<void>(CI);
     return false;
 #endif
+  }
+
+  bool Need_Float(std::string const& pd) const
+  {
+    // gcc >= 7  provides _Float## types in C.
+    // g++ >= 13 provides _Float## types in C++.
+    return (this->IsActualGNU(pd) &&
+            this->GetGNUMajorVersion(pd) >= (this->IsCPlusPlus(pd) ? 13 : 7));
   }
 
 #if LLVM_VERSION_MAJOR < 6
