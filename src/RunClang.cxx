@@ -392,26 +392,57 @@ protected:
         // Clang does not have these types for all sizes.
         // Provide our own approximation of the builtins.
         builtins += "\n"
-                    "typedef struct __castxml_Float32_s { "
-                    "  char x[4] __attribute__((aligned(4))); "
-                    "} __castxml_Float32;\n"
                     "#define _Float32 __castxml_Float32\n"
-                    "typedef struct __castxml_Float32x_s { "
-                    "  char x[8] __attribute__((aligned(8))); "
-                    "} __castxml_Float32x;\n"
                     "#define _Float32x __castxml_Float32x\n"
-                    "typedef struct __castxml_Float64_s { "
-                    "  char x[8] __attribute__((aligned(8))); "
-                    "} __castxml_Float64;\n"
                     "#define _Float64 __castxml_Float64\n"
-                    "typedef struct __castxml_Float64x_s { "
-                    "  char x[16] __attribute__((aligned(16))); "
-                    "} __castxml_Float64x;\n"
-                    "#define _Float64x __castxml_Float64x\n"
-                    "typedef struct __castxml_Float128_s { "
-                    "  char x[16] __attribute__((aligned(16))); "
-                    "} __castxml_Float128;\n"
-                    "#define _Float128 __castxml_Float128\n";
+                    "#define _Float64x __castxml_Float64x\n";
+        if (this->NeedFloat128(this->Opts.Predefines)) {
+          builtins += "#define _Float128 __castxml_Float128\n";
+        }
+
+        if (this->IsCPlusPlus(this->Opts.Predefines)) {
+          // In C++ we need distinct types for template specializations
+          // in glibc headers, but also need conversions.
+          builtins += "\n"
+                      "typedef struct __castxml_Float32_s { "
+                      "  float x; "
+                      "  operator float() const; "
+                      "  __castxml_Float32_s(float); "
+                      "} __castxml_Float32;\n"
+                      "typedef struct __castxml_Float32x_s { "
+                      "  double x; "
+                      "  operator double() const; "
+                      "  __castxml_Float32x_s(double); "
+                      "} __castxml_Float32x;\n"
+                      "typedef struct __castxml_Float64_s { "
+                      "  double x; "
+                      "  operator double() const; "
+                      "  __castxml_Float64_s(double); "
+                      "} __castxml_Float64;\n"
+                      "typedef struct __castxml_Float64x_s { "
+                      "  long double x; "
+                      "  operator long double() const; "
+                      "  __castxml_Float64x_s(long double); "
+                      "} __castxml_Float64x;\n";
+          if (this->NeedFloat128(this->Opts.Predefines)) {
+            builtins += "typedef struct __castxml_Float128_s { "
+                        "  __float128 x; "
+                        "  operator __float128() const; "
+                        "  __castxml_Float128_s(__float128); "
+                        "} __castxml_Float128;\n";
+          }
+
+        } else {
+          // In C we need real float types for conversions in glibc headers.
+          builtins += "\n"
+                      "typedef float __castxml_Float32;\n"
+                      "typedef double __castxml_Float32x;\n"
+                      "typedef double __castxml_Float64;\n"
+                      "typedef long double __castxml_Float64x;\n";
+          if (this->NeedFloat128(this->Opts.Predefines)) {
+            builtins += "typedef __float128 __castxml_Float128;\n";
+          }
+        }
       }
 
     } else {
