@@ -50,10 +50,6 @@
 #include <string>
 #include <vector>
 
-#if LLVM_VERSION_MAJOR < 16
-#  define starts_with startswith
-#endif
-
 #if LLVM_VERSION_MAJOR >= 16
 #  include <optional>
 namespace cx {
@@ -91,6 +87,10 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 #else
 #  define cx_ElaboratedTypeKeyword(x) clang::ETK_##x
 #  define cx_TagTypeKind(x) clang::TTK_##x
+#endif
+
+#if LLVM_VERSION_MAJOR < 16
+#  define starts_with startswith
 #endif
 
 class ASTVisitorBase
