@@ -42,6 +42,14 @@
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/Support/raw_ostream.h"
 
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <string>
+#include <vector>
+
 #if LLVM_VERSION_MAJOR < 16
 #  define starts_with startswith
 #endif
@@ -84,14 +92,6 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 #  define cx_ElaboratedTypeKeyword(x) clang::ETK_##x
 #  define cx_TagTypeKind(x) clang::TTK_##x
 #endif
-
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <queue>
-#include <set>
-#include <string>
-#include <vector>
 
 class ASTVisitorBase
 {
