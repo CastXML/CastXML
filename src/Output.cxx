@@ -42,9 +42,13 @@
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/Support/raw_ostream.h"
 
-#if LLVM_VERSION_MAJOR < 16
-#  define starts_with startswith
-#endif
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <queue>
+#include <set>
+#include <string>
+#include <vector>
 
 #if LLVM_VERSION_MAJOR >= 16
 #  include <optional>
@@ -85,13 +89,13 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 #  define cx_TagTypeKind(x) clang::TTK_##x
 #endif
 
-#include <fstream>
-#include <iomanip>
-#include <iostream>
-#include <queue>
-#include <set>
-#include <string>
-#include <vector>
+#if LLVM_VERSION_MAJOR < 16
+#  define starts_with startswith
+#endif
+
+#if LLVM_VERSION_MAJOR < 18
+#  define isPureVirtual isPure
+#endif
 
 class ASTVisitorBase
 {
@@ -2282,7 +2286,7 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   if (d->isVirtual()) {
     flags |= FH_Virtual;
   }
-  if (d->isPure()) {
+  if (d->isPureVirtual()) {
     flags |= FH_Pure;
   }
   if (d->isOverloadedOperator()) {
@@ -2312,7 +2316,7 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   if (d->isVirtual()) {
     flags |= FH_Virtual;
   }
-  if (d->isPure()) {
+  if (d->isPureVirtual()) {
     flags |= FH_Pure;
   }
   this->OutputFunctionHelper(d, dn, "Converter", flags);
@@ -2348,7 +2352,7 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
   if (d->isVirtual()) {
     flags |= FH_Virtual;
   }
-  if (d->isPure()) {
+  if (d->isPureVirtual()) {
     flags |= FH_Pure;
   }
   this->OutputFunctionHelper(d, dn, "Destructor", flags,
