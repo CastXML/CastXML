@@ -93,6 +93,10 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 #  define starts_with startswith
 #endif
 
+#if LLVM_VERSION_MAJOR < 18
+#  define isPureVirtual isPure
+#endif
+
 class ASTVisitorBase
 {
 protected:
@@ -2282,7 +2286,7 @@ void ASTVisitor::OutputCXXMethodDecl(clang::CXXMethodDecl const* d,
   if (d->isVirtual()) {
     flags |= FH_Virtual;
   }
-  if (d->isPure()) {
+  if (d->isPureVirtual()) {
     flags |= FH_Pure;
   }
   if (d->isOverloadedOperator()) {
@@ -2312,7 +2316,7 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   if (d->isVirtual()) {
     flags |= FH_Virtual;
   }
-  if (d->isPure()) {
+  if (d->isPureVirtual()) {
     flags |= FH_Pure;
   }
   this->OutputFunctionHelper(d, dn, "Converter", flags);
@@ -2348,7 +2352,7 @@ void ASTVisitor::OutputCXXDestructorDecl(clang::CXXDestructorDecl const* d,
   if (d->isVirtual()) {
     flags |= FH_Virtual;
   }
-  if (d->isPure()) {
+  if (d->isPureVirtual()) {
     flags |= FH_Pure;
   }
   this->OutputFunctionHelper(d, dn, "Destructor", flags,
