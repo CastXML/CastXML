@@ -5,6 +5,7 @@
 #define __MINGW32__ 1)?
 #define __NO_MATH_INLINES 1
 #define __OPTIMIZE__ 1
+#define __assume__\(\.\.\.\)[ ]*
 #define __builtin_va_arg_pack\(\) 0
 #define __builtin_va_arg_pack_len\(\) 1
 #define __castxml__ [^
