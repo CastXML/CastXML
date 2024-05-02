@@ -724,11 +724,13 @@ unset(castxml_test_output_custom_start)
 unset(castxml_test_output_extra_arguments)
 
 set(castxml_test_output_extra_arguments --castxml-cc-gnu-c $<TARGET_FILE:cc-gnu>)
+castxml_test_output_c(GNU-attr-assume)
 castxml_test_output_c(GNU-attr-malloc-args)
 castxml_test_output_c(GNU-va_arg_pack)
 unset(castxml_test_output_extra_arguments)
 
 set(castxml_test_output_extra_arguments --castxml-cc-gnu $<TARGET_FILE:cc-gnu>)
+castxml_test_output(GNU-attr-assume)
 castxml_test_output(GNU-attr-malloc-args)
 castxml_test_output(GNU-va_arg_pack)
 unset(castxml_test_output_extra_arguments)
