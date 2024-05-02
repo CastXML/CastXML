@@ -407,6 +407,12 @@ protected:
         builtins += "\n"
                     "#define __malloc__(...) __malloc__\n";
       }
+      if (this->NeedAttributeAssumeSuppression(this->Opts.Predefines)) {
+        // Clang does not support '__attribute__((__assume__(args...)))'
+        // as a statement attribute used in libstdc++ headers.
+        builtins += "\n"
+                    "#define __assume__(...)\n";
+      }
 
       // Clang's arm_neon.h checks for a feature macro not defined by GCC.
       if (this->NeedARMv8Intrinsics(this->Opts.Predefines)) {
@@ -517,6 +523,11 @@ protected:
   }
 
   bool NeedAttributeMallocArgs(std::string const& pd)
+  {
+    return this->IsActualGNU(pd);
+  }
+
+  bool NeedAttributeAssumeSuppression(std::string const& pd)
   {
     return this->IsActualGNU(pd);
   }
