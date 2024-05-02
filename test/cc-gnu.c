@@ -47,6 +47,31 @@ int main(int argc, const char* argv[])
           "#define __vector __vector\n"
           "#define __has_last(x) x",
           ver_major);
+  /* Test GCC builtin definitions for features Clang does not implement.  */
+  fprintf(stdout,
+          "#define __BFLT16_DECIMAL_DIG__\n"
+          "#define __BFLT16_DENORM_MIN__\n"
+          "#define __BFLT16_DIG__\n"
+          "#define __BFLT16_DIG__\n"
+          "#define __BFLT16_EPSILON__\n"
+          "#define __BFLT16_HAS_DENORM__\n"
+          "#define __BFLT16_HAS_INFINITY__\n"
+          "#define __BFLT16_HAS_QUIET_NAN__\n"
+          "#define __BFLT16_IS_IEC_60559__\n"
+          "#define __BFLT16_MANT_DIG__\n"
+          "#define __BFLT16_MAX_10_EXP__\n"
+          "#define __BFLT16_MAX_EXP__\n"
+          "#define __BFLT16_MAX__\n"
+          "#define __BFLT16_MIN_10_EXP__\n"
+          "#define __BFLT16_MIN_EXP__\n"
+          "#define __BFLT16_MIN__\n"
+          "#define __BFLT16_NORM_MAX__\n"
+          "#define __SIZEOF_FLOAT80__\n"
+          "#define __STDCPP_BFLOAT16_T__\n"
+          "#define __STDCPP_FLOAT128_T__\n"
+          "#define __STDCPP_FLOAT16_T__\n"
+          "#define __STDCPP_FLOAT32_T__\n"
+          "#define __STDCPP_FLOAT64_T__\n");
   fprintf(stderr,
           "#include <...> search starts here:\n"
           " /some/include\n"
