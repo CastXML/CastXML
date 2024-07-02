@@ -289,7 +289,6 @@ protected:
                     "#undef __BFLT16_MIN_EXP__\n"
                     "#undef __BFLT16_MIN__\n"
                     "#undef __BFLT16_NORM_MAX__\n"
-                    "#undef __SIZEOF_FLOAT80__\n"
                     "#undef __STDCPP_BFLOAT16_T__\n"
                     "#undef __STDCPP_FLOAT128_T__\n"
                     "#undef __STDCPP_FLOAT16_T__\n"
@@ -304,6 +303,14 @@ protected:
         builtins += "\n"
                     "#define __builtin_va_arg_pack() 0\n"
                     "#define __builtin_va_arg_pack_len() 1\n";
+      }
+
+      // Provide __float80 if simulating the actual GNU compiler.
+      if (this->NeedFloat80(this->Opts.Predefines)) {
+        // Clang does not support this builtin.  Approximate it.
+        builtins += "\n"
+                    "typedef long double __castxml__float80;\n"
+                    "#define __float80 __castxml__float80\n";
       }
 
       // Provide __float128 if simulating the actual GNU compiler.
@@ -532,12 +539,17 @@ protected:
     return this->IsActualGNU(pd);
   }
 
-  bool NeedFloat128(std::string const& pd) const
+  bool NeedFloat80(std::string const& pd) const
   {
     return (this->IsActualGNU(pd) &&
             (pd.find("#define __i386__ ") != pd.npos ||
              pd.find("#define __x86_64__ ") != pd.npos ||
              pd.find("#define __ia64__ ") != pd.npos));
+  }
+
+  bool NeedFloat128(std::string const& pd) const
+  {
+    return this->NeedFloat80(pd);
   }
 
   bool HaveFloat128(clang::CompilerInstance const& CI) const

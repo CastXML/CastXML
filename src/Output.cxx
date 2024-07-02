@@ -1760,7 +1760,9 @@ void ASTVisitor::PrintCastXMLTypedef(clang::TypedefDecl const* d,
 {
   this->OS << "  <FundamentalType";
   this->PrintIdAttribute(dn);
-  if (d->getName() == "__castxml__float128") {
+  if (d->getName() == "__castxml__float80") {
+    this->OS << " name=\"__float80\" size=\"128\" align=\"128\"";
+  } else if (d->getName() == "__castxml__float128") {
     this->OS << " name=\"__float128\" size=\"128\" align=\"128\"";
   } else if (d->getName() == "__castxml_Float32") {
     this->OS << " name=\"_Float32\" size=\"32\" align=\"32\"";
