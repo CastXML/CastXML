@@ -66,7 +66,6 @@ int main(int argc, const char* argv[])
           "#define __BFLT16_MIN_EXP__\n"
           "#define __BFLT16_MIN__\n"
           "#define __BFLT16_NORM_MAX__\n"
-          "#define __SIZEOF_FLOAT80__\n"
           "#define __STDCPP_BFLOAT16_T__\n"
           "#define __STDCPP_FLOAT128_T__\n"
           "#define __STDCPP_FLOAT16_T__\n"
