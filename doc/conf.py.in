@@ -34,7 +34,7 @@ extensions = []
 templates_path = ['@conf_path@/templates']
 
 castxml_manuals = sorted(glob.glob(r'@conf_docs@/manual/*.rst'))
-castxml_manual_description = re.compile('^\.\. castxml-manual-description:(.*)$')
+castxml_manual_description = re.compile(r'^\.\. castxml-manual-description:(.*)$')
 man_pages = []
 for fpath in castxml_manuals:
     try:
