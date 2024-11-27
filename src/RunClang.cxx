@@ -52,6 +52,7 @@
 #include "llvm/Support/raw_ostream.h"
 
 #include <cstdlib>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <queue>
@@ -564,10 +565,37 @@ protected:
 
   bool Need_Float(std::string const& pd) const
   {
-    // gcc >= 7  provides _Float## types in C.
-    // g++ >= 13 provides _Float## types in C++.
-    return (this->IsActualGNU(pd) &&
-            this->GetGNUMajorVersion(pd) >= (this->IsCPlusPlus(pd) ? 13 : 7));
+    if (this->IsActualGNU(pd)) {
+      // gcc >= 7  provides _Float## types in C.
+      if (!this->IsCPlusPlus(pd)) {
+        return this->GetGNUMajorVersion(pd) >= 7;
+      }
+      // g++ >= 13 provides _Float## types in C++.
+      if (this->GetGNUMajorVersion(pd) < 13) {
+        return false;
+      }
+      // glibc 2.27 added bits/floatn-common.h to define _Float## types when
+      // the compiler does not, but only knew about GCC 7+ _Float## types in C.
+      // glibc 2.37 updated the conditions for GCC 13+ _Float## types in C++.
+      for (Options::Include const& i : this->Opts.Includes) {
+        if (i.Framework) {
+          continue;
+        }
+        if (std::ifstream f{ i.Directory + "/bits/floatn-common.h" }) {
+          std::string h{ std::istreambuf_iterator<char>(f),
+                         std::istreambuf_iterator<char>() };
+          // If the header contains the pre-2.37 condition then
+          // let it handle defining the _Float## types.
+          if (h.find("if !__GNUC_PREREQ (7, 0) || defined __cplusplus") !=
+              std::string::npos) {
+            return false;
+          }
+          break;
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
 #if LLVM_VERSION_MAJOR < 6
