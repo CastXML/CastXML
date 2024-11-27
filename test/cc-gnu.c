@@ -16,6 +16,8 @@ int main(int argc, const char* argv[])
       std_date = argv[i] + 5;
     } else if (strcmp(argv[i], "-ansi") == 0) {
       fprintf(stdout, "#define __STRICT_ANSI__ 1\n");
+    } else if (strcmp(argv[i], "-fsized-deallocation") == 0) {
+      fprintf(stdout, "#define __cpp_sized_deallocation 201309L\n");
     } else if (strcmp(argv[i], "-tgt-armv7") == 0) {
       fprintf(stdout, "#define __arm__ 1\n");
       fprintf(stdout, "#define __ARM_ARCH 7\n");
