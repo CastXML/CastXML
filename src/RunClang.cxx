@@ -935,6 +935,9 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
 
     // Configure language options to match given compiler.
     std::string const& pd = opts.Predefines;
+    if (pd.find("#define __cpp_sized_deallocation ") != std::string::npos) {
+      args.emplace_back("-fsized-deallocation");
+    }
     if (pd.find("#define _MSC_EXTENSIONS ") != pd.npos) {
       args.push_back("-fms-extensions");
     }
