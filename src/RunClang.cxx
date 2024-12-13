@@ -51,6 +51,10 @@
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
 
+#if LLVM_VERSION_MAJOR >= 20
+#  include "llvm/Support/VirtualFileSystem.h"
+#endif
+
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
@@ -738,7 +742,11 @@ static bool isObjC(clang::CompilerInstance* CI)
 static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 {
   // Create a diagnostics engine for this compiler instance.
-  CI->createDiagnostics();
+  CI->createDiagnostics(
+#if LLVM_VERSION_MAJOR >= 20
+    *llvm::vfs::getRealFileSystem()
+#endif
+  );
   if (!CI->hasDiagnostics()) {
     return false;
   }
@@ -809,7 +817,11 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
     new clang::TextDiagnosticPrinter(llvm::errs(), &*diagOpts);
   llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine> diags(
     new clang::DiagnosticsEngine(diagID, &*diagOpts, diagClient));
-  clang::ProcessWarningOptions(*diags, *diagOpts, /*ReportDiags=*/false);
+  clang::ProcessWarningOptions(*diags, *diagOpts,
+#if LLVM_VERSION_MAJOR >= 20
+                               *llvm::vfs::getRealFileSystem(),
+#endif
+                               /*ReportDiags=*/false);
   return diags;
 }
 
