@@ -1,0 +1,108 @@
+name: Multi-Arch CI
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }} - ${{ matrix.arch }})
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - os: ubuntu-22.04
+            arch: x86_64
+            runs-on: ubuntu-22.04
+          - os: ubuntu-22.04
+            arch: aarch64
+            runs-on: ubuntu-22.04-arm
+          - os: ubuntu-24.04
+            arch: x86_64
+            runs-on: ubuntu-24.04
+          - os: ubuntu-24.04
+            arch: aarch64
+            runs-on: ubuntu-24.04-arm
+          # macOS
+          - os: macos-13
+            arch: x86_64
+            runs-on: macos-13
+          - os: macos-15
+            arch: arm64
+            runs-on: macos-15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      #########################
+      # Dependencies Installation
+      #########################
+      - name: Install LLVM and Dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
+          sudo add-apt-repository -y "deb http://apt.llvm.org/$(lsb_release -cs)/ llvm-toolchain-$(lsb_release -cs)-18 main"
+          sudo apt-get update
+          sudo apt-get install -y curl clang-18 lld-18 llvm-18-dev libclang-18-dev ninja-build cmake libxml2-dev
+      - name: Install LLVM and Dependencies (macOS)
+        if: runner.os == 'macos'
+        run: |
+          brew update
+          brew install curl llvm libxml2 cmake ninja
+          # Add LLVM’s bin directory to PATH so that CMake and tools can find LLVM 18.
+          echo "$(brew --prefix llvm)/bin" >> $GITHUB_PATH
+      - name: Install LLVM and Clang (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install curl llvm cmake -y
+      - name: 🧳 Setup MSVC (Windows)
+        if: runner.os == 'Windows'
+        uses: microsoft/setup-msbuild@v2
+      # Configure the Project with CMake
+      #########################
+      - name: Configure CMake (Non-Windows)
+        if: runner.os != 'Windows'
+        run: |
+          cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+      - name: Configure CMake (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake -B build -S . -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=bin
+          ninja -C build
+      #########################
+      # Build and Test
+      #########################
+      - name: Build Project
+        if: runner.os != 'Windows'
+        run: ninja -C build
+
+      - name: Run Tests
+        run: ctest --test-dir build --output-on-failure
+
+      #########################
+      # Artifact Packaging
+      #########################
+      - name: Create Artifact (Linux/macOS)
+        if: runner.os != 'Windows'
+        run: |
+          cd build/bin
+          tar czvf ../../castxml-${{ matrix.os }}-${{ matrix.arch }}.tar.gz castxml
+      - name: Create Artifact (Windows)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          cd build\bin
+          7z a ..\..\castxml-${{ matrix.os }}-${{ matrix.arch }}.zip castxml.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: castxml-${{ matrix.os }}-${{ matrix.arch }}
+          path: castxml-${{ matrix.os }}-${{ matrix.arch }}.*
