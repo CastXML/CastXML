@@ -2197,7 +2197,11 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
   this->PrintNameAttribute(d->getName().str());
   this->PrintTypeAttribute(d->getType(), dn->Complete);
   if (d->isBitField()) {
-    unsigned bits = d->getBitWidthValue(this->CTX);
+    unsigned bits = d->getBitWidthValue(
+#if LLVM_VERSION_MAJOR < 20
+      this->CTX
+#endif
+    );
     this->OS << " bits=\"" << bits << "\"";
   }
   if (this->Opts.CastXml && !this->IsCastXMLTypedefType(d->getType())) {
