@@ -5,7 +5,9 @@
 #define __castxml_clang_patchlevel__ [0-9]+
 #define __castxml_major__ @CastXML_VERSION_MAJOR@
 #define __castxml_minor__ @CastXML_VERSION_MINOR@
-#define __castxml_patch__ @CastXML_VERSION_PATCH@
+#define __castxml_patch__ @CastXML_VERSION_PATCH@(
+#define __cdecl [^
+]*)?
 #define __clang__ 1(
 #define __clang_literal_encoding__ [^
 ]*)?
