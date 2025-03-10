@@ -6,8 +6,8 @@
 #define __castxml_major__ @CastXML_VERSION_MAJOR@
 #define __castxml_minor__ @CastXML_VERSION_MINOR@
 #define __castxml_patch__ @CastXML_VERSION_PATCH@(
-#define __cdecl [^
-]*)?
+#define __c[^
+]*)*
 #define __clang__ 1(
 #define __clang_literal_encoding__ [^
 ]*)?
