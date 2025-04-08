@@ -50,6 +50,10 @@
 #include <string>
 #include <vector>
 
+#if LLVM_VERSION_MAJOR >= 21
+#  include "clang/AST/DeclOpenACC.h"
+#endif
+
 #if LLVM_VERSION_MAJOR >= 16
 #  include <optional>
 namespace cx {
@@ -2479,13 +2483,19 @@ void ASTVisitor::OutputRValueReferenceType(clang::RValueReferenceType const* t,
 void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
                                          DumpNode const* dn)
 {
+  clang::Type const* c =
+#if LLVM_VERSION_MAJOR >= 21
+    t->getQualifier()->getAsType()
+#else
+    t->getClass()
+#endif
+    ;
   if (t->isMemberDataPointerType()) {
-    this->OutputOffsetType(t->getPointeeType(), t->getClass(), dn);
+    this->OutputOffsetType(t->getPointeeType(), c, dn);
   } else {
     this->OS << "  <PointerType";
     this->PrintIdAttribute(dn);
-    DumpId id = this->AddTypeDumpNode(
-      DumpType(t->getPointeeType(), t->getClass()), false);
+    DumpId id = this->AddTypeDumpNode(DumpType(t->getPointeeType(), c), false);
     this->OS << " type=\"_" << id << "\"";
     this->OS << "/>\n";
   }
