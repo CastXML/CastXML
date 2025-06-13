@@ -814,11 +814,10 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
     driverOpts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, *args);
 #endif
-  clang::TextDiagnosticPrinter* diagClient =
-    new clang::TextDiagnosticPrinter(llvm::errs(), &*diagOpts);
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine> diags(
-    new clang::DiagnosticsEngine(diagID, &*diagOpts, diagClient));
-  clang::ProcessWarningOptions(*diags, *diagOpts,
+  clang::TextDiagnosticPrinter diagClient(llvm::errs(), &*diagOpts);
+  clang::DiagnosticsEngine diags(diagID, &*diagOpts, &diagClient,
+                                 /*ShouldOwnClient=*/false);
+  clang::ProcessWarningOptions(diags, *diagOpts,
 #if LLVM_VERSION_MAJOR >= 20
                                *llvm::vfs::getRealFileSystem(),
 #endif
@@ -826,8 +825,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 
   // Use the approach in clang::createInvocationFromCommandLine to
   // get system compiler setting arguments from the Driver.
-  clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(),
-                          *diags);
+  clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(), diags);
   if (!llvm::sys::path::is_absolute(d.ResourceDir) ||
       !llvm::sys::fs::is_directory(d.ResourceDir)) {
     d.ResourceDir = getClangResourceDir();
@@ -845,7 +843,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 
   // Ask the driver to build the compiler commands for us.
   std::unique_ptr<clang::driver::Compilation> c(d.BuildCompilation(cArgs));
-  if (diags->hasErrorOccurred()) {
+  if (diags.hasErrorOccurred()) {
     return 1;
   }
 
@@ -857,7 +855,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 
   // Reject '-o' with multiple inputs.
   if (!opts.OutputFile.empty() && c->getJobs().size() > 1) {
-    diags->Report(clang::diag::err_drv_output_argument_with_multiple_files);
+    diags.Report(clang::diag::err_drv_output_argument_with_multiple_files);
     return 1;
   }
 
@@ -882,8 +880,8 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 #else
             cmdArgBeg, cmdArgEnd,
 #endif
-            *diags)) {
-        if (diags->hasErrorOccurred()) {
+            diags)) {
+        if (diags.hasErrorOccurred()) {
           return 1;
         }
         result = runClangCI(CI.get(), opts) && result;
@@ -895,8 +893,8 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       llvm::SmallString<128> buf;
       llvm::raw_svector_ostream msg(buf);
       job.Print(msg, "\n", true);
-      diags->Report(clang::diag::err_fe_expected_clang_command);
-      diags->Report(clang::diag::err_fe_expected_compiler_job) << msg.str();
+      diags.Report(clang::diag::err_fe_expected_clang_command);
+      diags.Report(clang::diag::err_fe_expected_compiler_job) << msg.str();
       result = false;
     }
   }
