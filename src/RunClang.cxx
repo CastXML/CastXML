@@ -790,6 +790,8 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
   // Construct a diagnostics engine for use while processing driver options.
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagOpts(
     new clang::DiagnosticOptions);
+  clang::DiagnosticOptions& diagOptsRef = *diagOpts;
+  clang::DiagnosticOptions* diagOptsPtr = &diagOptsRef;
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
     new clang::DiagnosticIDs());
 #if LLVM_VERSION_MAJOR >= 10
@@ -808,16 +810,16 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
     llvm::makeArrayRef(argBeg, argEnd),
 #  endif
     missingArgIndex, missingArgCount));
-  clang::ParseDiagnosticArgs(*diagOpts, args);
+  clang::ParseDiagnosticArgs(diagOptsRef, args);
 #else
   std::unique_ptr<llvm::opt::InputArgList> args(
     driverOpts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
-  clang::ParseDiagnosticArgs(*diagOpts, *args);
+  clang::ParseDiagnosticArgs(diagOptsRef, *args);
 #endif
-  clang::TextDiagnosticPrinter diagClient(llvm::errs(), &*diagOpts);
-  clang::DiagnosticsEngine diags(diagID, &*diagOpts, &diagClient,
+  clang::TextDiagnosticPrinter diagClient(llvm::errs(), diagOptsPtr);
+  clang::DiagnosticsEngine diags(diagID, diagOptsPtr, &diagClient,
                                  /*ShouldOwnClient=*/false);
-  clang::ProcessWarningOptions(diags, *diagOpts,
+  clang::ProcessWarningOptions(diags, diagOptsRef,
 #if LLVM_VERSION_MAJOR >= 20
                                *llvm::vfs::getRealFileSystem(),
 #endif
