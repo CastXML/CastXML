@@ -784,23 +784,24 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
   }
 }
 
-static llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine>
-runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
+static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
+                        Options const& opts)
 {
+  // Construct a diagnostics engine for use while processing driver options.
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagOpts(
     new clang::DiagnosticOptions);
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
     new clang::DiagnosticIDs());
 #if LLVM_VERSION_MAJOR >= 10
-  llvm::opt::OptTable const* opts = &clang::driver::getDriverOptTable();
+  llvm::opt::OptTable const* driverOpts = &clang::driver::getDriverOptTable();
 #else
-  std::unique_ptr<llvm::opt::OptTable> opts(
+  std::unique_ptr<llvm::opt::OptTable> driverOpts(
     clang::driver::createDriverOptTable());
 #endif
   unsigned missingArgIndex, missingArgCount;
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
-  llvm::opt::InputArgList args(opts->ParseArgs(
+  llvm::opt::InputArgList args(driverOpts->ParseArgs(
 #  if LLVM_VERSION_MAJOR >= 16
     llvm::ArrayRef(argBeg, argEnd),
 #  else
@@ -810,7 +811,7 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
   clang::ParseDiagnosticArgs(*diagOpts, args);
 #else
   std::unique_ptr<llvm::opt::InputArgList> args(
-    opts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
+    driverOpts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
   clang::ParseDiagnosticArgs(*diagOpts, *args);
 #endif
   clang::TextDiagnosticPrinter* diagClient =
@@ -822,15 +823,6 @@ runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
                                *llvm::vfs::getRealFileSystem(),
 #endif
                                /*ReportDiags=*/false);
-  return diags;
-}
-
-static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
-                        Options const& opts)
-{
-  // Construct a diagnostics engine for use while processing driver options.
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine> diags =
-    runClangCreateDiagnostics(argBeg, argEnd);
 
   // Use the approach in clang::createInvocationFromCommandLine to
   // get system compiler setting arguments from the Driver.
