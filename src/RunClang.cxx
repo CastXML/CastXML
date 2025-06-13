@@ -788,10 +788,16 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
                         Options const& opts)
 {
   // Construct a diagnostics engine for use while processing driver options.
+#if LLVM_VERSION_MAJOR >= 21
+  clang::DiagnosticOptions diagOpts;
+  clang::DiagnosticOptions& diagOptsRef = diagOpts;
+  clang::DiagnosticOptions& diagOptsPtr = diagOpts;
+#else
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagOpts(
     new clang::DiagnosticOptions);
   clang::DiagnosticOptions& diagOptsRef = *diagOpts;
   clang::DiagnosticOptions* diagOptsPtr = &diagOptsRef;
+#endif
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
     new clang::DiagnosticIDs());
 #if LLVM_VERSION_MAJOR >= 10
