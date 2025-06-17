@@ -784,58 +784,56 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
   }
 }
 
-static llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine>
-runClangCreateDiagnostics(const char* const* argBeg, const char* const* argEnd)
+static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
+                        Options const& opts)
 {
+  // Construct a diagnostics engine for use while processing driver options.
+#if LLVM_VERSION_MAJOR >= 21
+  clang::DiagnosticOptions diagOpts;
+  clang::DiagnosticOptions& diagOptsRef = diagOpts;
+  clang::DiagnosticOptions& diagOptsPtr = diagOpts;
+#else
   llvm::IntrusiveRefCntPtr<clang::DiagnosticOptions> diagOpts(
     new clang::DiagnosticOptions);
+  clang::DiagnosticOptions& diagOptsRef = *diagOpts;
+  clang::DiagnosticOptions* diagOptsPtr = &diagOptsRef;
+#endif
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
     new clang::DiagnosticIDs());
 #if LLVM_VERSION_MAJOR >= 10
-  llvm::opt::OptTable const* opts = &clang::driver::getDriverOptTable();
+  llvm::opt::OptTable const* driverOpts = &clang::driver::getDriverOptTable();
 #else
-  std::unique_ptr<llvm::opt::OptTable> opts(
+  std::unique_ptr<llvm::opt::OptTable> driverOpts(
     clang::driver::createDriverOptTable());
 #endif
   unsigned missingArgIndex, missingArgCount;
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
-  llvm::opt::InputArgList args(opts->ParseArgs(
+  llvm::opt::InputArgList args(driverOpts->ParseArgs(
 #  if LLVM_VERSION_MAJOR >= 16
     llvm::ArrayRef(argBeg, argEnd),
 #  else
     llvm::makeArrayRef(argBeg, argEnd),
 #  endif
     missingArgIndex, missingArgCount));
-  clang::ParseDiagnosticArgs(*diagOpts, args);
+  clang::ParseDiagnosticArgs(diagOptsRef, args);
 #else
   std::unique_ptr<llvm::opt::InputArgList> args(
-    opts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
-  clang::ParseDiagnosticArgs(*diagOpts, *args);
+    driverOpts->ParseArgs(argBeg, argEnd, missingArgIndex, missingArgCount));
+  clang::ParseDiagnosticArgs(diagOptsRef, *args);
 #endif
-  clang::TextDiagnosticPrinter* diagClient =
-    new clang::TextDiagnosticPrinter(llvm::errs(), &*diagOpts);
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine> diags(
-    new clang::DiagnosticsEngine(diagID, &*diagOpts, diagClient));
-  clang::ProcessWarningOptions(*diags, *diagOpts,
+  clang::TextDiagnosticPrinter diagClient(llvm::errs(), diagOptsPtr);
+  clang::DiagnosticsEngine diags(diagID, diagOptsPtr, &diagClient,
+                                 /*ShouldOwnClient=*/false);
+  clang::ProcessWarningOptions(diags, diagOptsRef,
 #if LLVM_VERSION_MAJOR >= 20
                                *llvm::vfs::getRealFileSystem(),
 #endif
                                /*ReportDiags=*/false);
-  return diags;
-}
-
-static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
-                        Options const& opts)
-{
-  // Construct a diagnostics engine for use while processing driver options.
-  llvm::IntrusiveRefCntPtr<clang::DiagnosticsEngine> diags =
-    runClangCreateDiagnostics(argBeg, argEnd);
 
   // Use the approach in clang::createInvocationFromCommandLine to
   // get system compiler setting arguments from the Driver.
-  clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(),
-                          *diags);
+  clang::driver::Driver d("clang", llvm::sys::getDefaultTargetTriple(), diags);
   if (!llvm::sys::path::is_absolute(d.ResourceDir) ||
       !llvm::sys::fs::is_directory(d.ResourceDir)) {
     d.ResourceDir = getClangResourceDir();
@@ -853,7 +851,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 
   // Ask the driver to build the compiler commands for us.
   std::unique_ptr<clang::driver::Compilation> c(d.BuildCompilation(cArgs));
-  if (diags->hasErrorOccurred()) {
+  if (diags.hasErrorOccurred()) {
     return 1;
   }
 
@@ -865,7 +863,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 
   // Reject '-o' with multiple inputs.
   if (!opts.OutputFile.empty() && c->getJobs().size() > 1) {
-    diags->Report(clang::diag::err_drv_output_argument_with_multiple_files);
+    diags.Report(clang::diag::err_drv_output_argument_with_multiple_files);
     return 1;
   }
 
@@ -890,8 +888,8 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
 #else
             cmdArgBeg, cmdArgEnd,
 #endif
-            *diags)) {
-        if (diags->hasErrorOccurred()) {
+            diags)) {
+        if (diags.hasErrorOccurred()) {
           return 1;
         }
         result = runClangCI(CI.get(), opts) && result;
@@ -903,8 +901,8 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       llvm::SmallString<128> buf;
       llvm::raw_svector_ostream msg(buf);
       job.Print(msg, "\n", true);
-      diags->Report(clang::diag::err_fe_expected_clang_command);
-      diags->Report(clang::diag::err_fe_expected_compiler_job) << msg.str();
+      diags.Report(clang::diag::err_fe_expected_clang_command);
+      diags.Report(clang::diag::err_fe_expected_compiler_job) << msg.str();
       result = false;
     }
   }
