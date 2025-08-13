@@ -727,6 +727,11 @@ castxml_test_output(GNU-__float128-nostart)
 unset(castxml_test_output_custom_start)
 unset(castxml_test_output_extra_arguments)
 
+# Test for GCC 14 limits header conflict with C++17
+set(castxml_test_output_extra_arguments --castxml-cc-gnu "(" $<TARGET_FILE:cc-gnu> --ver-major=14 -std=c++17 ")")
+castxml_test_output(GCC14-limits-conflict)
+unset(castxml_test_output_extra_arguments)
+
 set(castxml_test_output_extra_arguments --castxml-cc-gnu-c $<TARGET_FILE:cc-gnu>)
 castxml_test_output_c(GNU-attr-assume)
 castxml_test_output_c(GNU-attr-malloc-args)
