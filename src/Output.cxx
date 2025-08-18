@@ -608,6 +608,12 @@ class ASTVisitor : public ASTVisitorBase
   bool IsCastXMLTypedefType(clang::QualType t) const;
   bool IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const;
 
+  bool IsElaboratedType(clang::ElaboratedType const* t) const
+  {
+    return (t->getKeyword() != cx_ElaboratedTypeKeyword(None) ||
+            t->getQualifier());
+  }
+
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
@@ -871,9 +877,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     case clang::Type::Elaborated: {
       auto const* et =
         static_cast<clang::ElaboratedType const*>(t.getTypePtr());
-      if (this->Opts.GccXml ||
-          (et->getKeyword() == cx_ElaboratedTypeKeyword(None) &&
-           !et->getQualifier())) {
+      if (this->Opts.GccXml || !this->IsElaboratedType(et)) {
         // The gccxml format does not include ElaboratedType elements,
         // so replace this one with the underlying type.  Note that this
         // can cause duplicate PointerType and ReferenceType elements
