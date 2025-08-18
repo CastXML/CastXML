@@ -1408,7 +1408,7 @@ void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
 void ASTVisitor::PrintABIAttributes(clang::TypeDecl const* d)
 {
   if (clang::TypeDecl const* td = clang::dyn_cast<clang::TypeDecl>(d)) {
-    clang::Type const* ty = td->getTypeForDecl();
+    clang::QualType ty = this->CTX.getTypeDeclType(td);
     if (!ty->isIncompleteType()) {
       this->PrintABIAttributes(this->CTX.getTypeInfo(ty));
     }
