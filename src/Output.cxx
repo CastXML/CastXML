@@ -838,33 +838,39 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
 
   // Replace some types with their decls.
   switch (t->getTypeClass()) {
-    case clang::Type::Adjusted:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::AdjustedType>()->getAdjustedType(), c),
-        complete, dq);
-    case clang::Type::Attributed:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::AttributedType>()->getEquivalentType(), c),
-        complete, dq);
+    case clang::Type::Adjusted: {
+      auto const* at = static_cast<clang::AdjustedType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(at->getAdjustedType(), c),
+                                   complete, dq);
+    } break;
+    case clang::Type::Attributed: {
+      auto const* at =
+        static_cast<clang::AttributedType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(at->getEquivalentType(), c),
+                                   complete, dq);
+    } break;
     case clang::Type::Auto: {
-      clang::AutoType const* at = t->getAs<clang::AutoType>();
+      auto const* at = static_cast<clang::AutoType const*>(t.getTypePtr());
       if (at->isSugared()) {
         return this->AddTypeDumpNode(DumpType(at->desugar(), c), complete, dq);
       }
     } break;
-    case clang::Type::Decayed:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
-        complete, dq);
-    case clang::Type::Decltype:
+    case clang::Type::Decayed: {
+      auto const* dt = static_cast<clang::DecayedType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(dt->getDecayedType(), c), complete,
+                                   dq);
+    } break;
+    case clang::Type::Decltype: {
       if (this->Opts.CastXml) {
-        clang::DecltypeType const* dtt = t->getAs<clang::DecltypeType>();
+        auto const* dtt =
+          static_cast<clang::DecltypeType const*>(t.getTypePtr());
         return this->AddTypeDumpNode(DumpType(dtt->getUnderlyingType(), c),
                                      complete, dq);
       }
-      break;
+    } break;
     case clang::Type::Elaborated: {
-      clang::ElaboratedType const* et = t->getAs<clang::ElaboratedType>();
+      auto const* et =
+        static_cast<clang::ElaboratedType const*>(t.getTypePtr());
       if (this->Opts.GccXml ||
           (et->getKeyword() == cx_ElaboratedTypeKeyword(None) &&
            !et->getQualifier())) {
@@ -877,32 +883,35 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                      dq);
       }
     } break;
-    case clang::Type::Enum:
-      return this->AddDeclDumpNodeForType(
-        t->getAs<clang::EnumType>()->getDecl(), complete, dq);
-    case clang::Type::Paren:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::ParenType>()->getInnerType(), c), complete,
-        dq);
-    case clang::Type::Record:
-      return this->AddDeclDumpNodeForType(
-        t->getAs<clang::RecordType>()->getDecl(), complete, dq);
-    case clang::Type::SubstTemplateTypeParm:
-      return this->AddTypeDumpNode(
-        DumpType(
-          t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(),
-          c),
-        complete, dq);
+    case clang::Type::Enum: {
+      auto const* et = static_cast<clang::EnumType const*>(t.getTypePtr());
+      return this->AddDeclDumpNodeForType(et->getDecl(), complete, dq);
+    } break;
+    case clang::Type::Paren: {
+      auto const* pt = static_cast<clang::ParenType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(pt->getInnerType(), c), complete,
+                                   dq);
+    } break;
+    case clang::Type::Record: {
+      auto const* rt = static_cast<clang::RecordType const*>(t.getTypePtr());
+      return this->AddDeclDumpNodeForType(rt->getDecl(), complete, dq);
+    } break;
+    case clang::Type::SubstTemplateTypeParm: {
+      auto const* st =
+        static_cast<clang::SubstTemplateTypeParmType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(st->getReplacementType(), c),
+                                   complete, dq);
+    } break;
     case clang::Type::TemplateSpecialization: {
-      clang::TemplateSpecializationType const* tst =
-        t->getAs<clang::TemplateSpecializationType>();
+      auto const* tst =
+        static_cast<clang::TemplateSpecializationType const*>(t.getTypePtr());
       if (tst->isSugared()) {
         return this->AddTypeDumpNode(DumpType(tst->desugar(), c), complete,
                                      dq);
       }
     } break;
     case clang::Type::Typedef: {
-      clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+      auto const* tdt = static_cast<clang::TypedefType const*>(t.getTypePtr());
       if (!tdt->isInstantiationDependentType() && tdt->isSugared()) {
         // Make sure all containing contexts are not templates.
         clang::Decl const* d = tdt->getDecl();
@@ -929,7 +938,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     } break;
 #if LLVM_VERSION_MAJOR >= 14
     case clang::Type::Using: {
-      clang::UsingType const* ut = t->getAs<clang::UsingType>();
+      auto const* ut = static_cast<clang::UsingType const*>(t.getTypePtr());
       return this->AddTypeDumpNode(DumpType(ut->desugar(), c), complete, dq);
     } break;
 #endif
@@ -1785,10 +1794,11 @@ void ASTVisitor::PrintCastXMLTypedef(clang::TypedefDecl const* d,
 bool ASTVisitor::IsCastXMLTypedefType(clang::QualType t) const
 {
   if (t->getTypeClass() == clang::Type::Elaborated) {
-    t = t->getAs<clang::ElaboratedType>()->getNamedType();
+    auto const* et = static_cast<clang::ElaboratedType const*>(t.getTypePtr());
+    t = et->getNamedType();
   }
   if (t->getTypeClass() == clang::Type::Typedef) {
-    clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+    auto const* tdt = static_cast<clang::TypedefType const*>(t.getTypePtr());
     if (clang::TypedefDecl const* td =
           clang::dyn_cast<clang::TypedefDecl>(tdt->getDecl())) {
       return this->IsCastXMLTypedefDecl(td);
