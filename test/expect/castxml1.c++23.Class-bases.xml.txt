@@ -1,0 +1,85 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Class id="_1" name="start" context="_2" location="f1:10" file="f1" line="10" members="_3 _4 _5 _6 _7 _8" bases="_9 private:_10 protected:_11" size="[0-9]+" align="[0-9]+">
+    <Base type="_9" access="public" virtual="0" offset="[0-9]+"/>
+    <Base type="_10" access="private" virtual="0" offset="[0-9]+"/>
+    <Base type="_11" access="protected" virtual="1"/>
+  </Class>
+  <OperatorMethod id="_3" name="=" returns="_12" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_13" location="f1:10" file="f1" line="10"/>
+  </OperatorMethod>
+  <OperatorMethod id="_4" name="=" returns="_12" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_14" location="f1:10" file="f1" line="10"/>
+  </OperatorMethod>
+  <Destructor id="_5" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1"/>
+  <Constructor id="_6" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1"/>
+  <Constructor id="_7" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1">
+    <Argument type="_13" location="f1:10" file="f1" line="10"/>
+  </Constructor>
+  <Constructor id="_8" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1">
+    <Argument type="_14" location="f1:10" file="f1" line="10"/>
+  </Constructor>
+  <Class id="_9" name="base_public" context="_2" location="f1:1" file="f1" line="1" members="_15 _16 _17 _18 _19 _20" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_10" name="base_private" context="_2" location="f1:4" file="f1" line="4" members="_21 _22 _23 _24 _25 _26" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_11" name="base_protected" context="_2" location="f1:7" file="f1" line="7" members="_27 _28 _29 _30 _31 _32" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_13" type="_1c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_1c" type="_1" const="1"/>
+  <RValueReferenceType id="_14" type="_1" size="[0-9]+" align="[0-9]+"/>
+  <OperatorMethod id="_15" name="=" returns="_33" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_34" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <OperatorMethod id="_16" name="=" returns="_33" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_35" location="f1:1" file="f1" line="1"/>
+  </OperatorMethod>
+  <Destructor id="_17" name="base_public" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_18" name="base_public" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
+  <Constructor id="_19" name="base_public" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+    <Argument type="_34" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <Constructor id="_20" name="base_public" context="_9" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">
+    <Argument type="_35" location="f1:1" file="f1" line="1"/>
+  </Constructor>
+  <OperatorMethod id="_21" name="=" returns="_36" context="_10" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_37" location="f1:4" file="f1" line="4"/>
+  </OperatorMethod>
+  <OperatorMethod id="_22" name="=" returns="_36" context="_10" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_38" location="f1:4" file="f1" line="4"/>
+  </OperatorMethod>
+  <Destructor id="_23" name="base_private" context="_10" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"/>
+  <Constructor id="_24" name="base_private" context="_10" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"/>
+  <Constructor id="_25" name="base_private" context="_10" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1">
+    <Argument type="_37" location="f1:4" file="f1" line="4"/>
+  </Constructor>
+  <Constructor id="_26" name="base_private" context="_10" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1">
+    <Argument type="_38" location="f1:4" file="f1" line="4"/>
+  </Constructor>
+  <OperatorMethod id="_27" name="=" returns="_39" context="_11" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_40" location="f1:7" file="f1" line="7"/>
+  </OperatorMethod>
+  <OperatorMethod id="_28" name="=" returns="_39" context="_11" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_41" location="f1:7" file="f1" line="7"/>
+  </OperatorMethod>
+  <Destructor id="_29" name="base_protected" context="_11" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"/>
+  <Constructor id="_30" name="base_protected" context="_11" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1"/>
+  <Constructor id="_31" name="base_protected" context="_11" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1">
+    <Argument type="_40" location="f1:7" file="f1" line="7"/>
+  </Constructor>
+  <Constructor id="_32" name="base_protected" context="_11" access="public" location="f1:7" file="f1" line="7" inline="1" artificial="1">
+    <Argument type="_41" location="f1:7" file="f1" line="7"/>
+  </Constructor>
+  <ReferenceType id="_33" type="_9" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_34" type="_9c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_9c" type="_9" const="1"/>
+  <RValueReferenceType id="_35" type="_9" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_36" type="_10" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_37" type="_10c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_10c" type="_10" const="1"/>
+  <RValueReferenceType id="_38" type="_10" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_39" type="_11" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_40" type="_11c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_11c" type="_11" const="1"/>
+  <RValueReferenceType id="_41" type="_11" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Class-bases.cxx"/>
+</CastXML>$
