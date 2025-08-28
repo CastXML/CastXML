@@ -1,0 +1,53 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6"/>
+  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" members="_7 _8 _9 _10 _11 _12 _13 _14 _15" size="[0-9]+" align="[0-9]+"/>
+  <Function id="_4" name="function" returns="_3" context="_1" location="f1:8" file="f1" line="8" mangled="[^"]+">
+    <Argument type="_16" location="f1:8" file="f1" line="8"/>
+    <Argument type="_17" location="f1:8" file="f1" line="8"/>
+  </Function>
+  <Function id="_5" name="function" returns="_3" context="_1" location="f1:9" file="f1" line="9" mangled="[^"]+">
+    <Argument type="_18" location="f1:9" file="f1" line="9"/>
+    <Argument type="_19" location="f1:9" file="f1" line="9"/>
+  </Function>
+  <Function id="_6" name="function" returns="_3" context="_1" location="f1:10" file="f1" line="10" mangled="[^"]+">
+    <Argument type="_20" location="f1:10" file="f1" line="10"/>
+    <Argument type="_21" location="f1:10" file="f1" line="10"/>
+  </Function>
+  <Method id="_7" name="method" returns="_3" context="_3" access="private" location="f1:4" file="f1" line="4" mangled="[^"]+">
+    <Argument type="_16" location="f1:4" file="f1" line="4"/>
+    <Argument type="_17" location="f1:4" file="f1" line="4"/>
+  </Method>
+  <Method id="_8" name="method" returns="_3" context="_3" access="private" location="f1:5" file="f1" line="5" mangled="[^"]+">
+    <Argument type="_18" location="f1:5" file="f1" line="5"/>
+    <Argument type="_19" location="f1:5" file="f1" line="5"/>
+  </Method>
+  <Method id="_9" name="method" returns="_3" context="_3" access="private" location="f1:6" file="f1" line="6" mangled="[^"]+">
+    <Argument type="_20" location="f1:6" file="f1" line="6"/>
+    <Argument type="_21" location="f1:6" file="f1" line="6"/>
+  </Method>
+  <Constructor id="_10" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
+  <Constructor id="_11" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1">
+    <Argument type="_22" location="f1:2" file="f1" line="2"/>
+  </Constructor>
+  <OperatorMethod id="_12" name="=" returns="_18" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_22" location="f1:2" file="f1" line="2"/>
+  </OperatorMethod>
+  <Constructor id="_13" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1">
+    <Argument type="_20" location="f1:2" file="f1" line="2"/>
+  </Constructor>
+  <OperatorMethod id="_14" name="=" returns="_18" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_20" location="f1:2" file="f1" line="2"/>
+  </OperatorMethod>
+  <Destructor id="_15" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
+  <PointerType id="_16" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_17" type="_16" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_18" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_19" type="_16" size="[0-9]+" align="[0-9]+"/>
+  <RValueReferenceType id="_20" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <RValueReferenceType id="_21" type="_16" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_22" type="_3c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_3c" type="_3" const="1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Class-member-injected.cxx"/>
+</CastXML>$

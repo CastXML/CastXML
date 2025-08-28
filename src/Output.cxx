@@ -85,6 +85,25 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 }
 #endif
 
+#if LLVM_VERSION_MAJOR >= 22
+namespace cx {
+using NestedNameSpecifier = clang::NestedNameSpecifier;
+NestedNameSpecifier const& deref(NestedNameSpecifier const& nns)
+{
+  return nns;
+}
+}
+#else
+namespace cx {
+using NestedNameSpecifier = clang::NestedNameSpecifier*;
+clang::NestedNameSpecifier const& deref(NestedNameSpecifier const& nns)
+{
+  return *nns;
+}
+}
+#  define getOriginalDecl getDecl
+#endif
+
 #if LLVM_VERSION_MAJOR >= 18
 #  define cx_ElaboratedTypeKeyword(x) clang::ElaboratedTypeKeyword::x
 #  define cx_TagTypeKind(x) clang::TagTypeKind::x
@@ -417,6 +436,12 @@ class ASTVisitor : public ASTVisitorBase
   template <typename K>
   DumpId AddDumpNodeImpl(K k, bool complete);
 
+#if LLVM_VERSION_MAJOR >= 22
+  /** Remove type info that we do not care about to avoid duplication.  */
+  clang::QualType ConsolidateType(clang::QualType t);
+  clang::Type const* ConsolidateTypeImpl(clang::Type const* t);
+#endif
+
   /** Allocate a dump node for a source file entry.  */
   unsigned int AddDumpFile(cx::FileEntryRef f);
 #if LLVM_VERSION_MAJOR < 12
@@ -608,6 +633,92 @@ class ASTVisitor : public ASTVisitorBase
   bool IsCastXMLTypedefType(clang::QualType t) const;
   bool IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const;
 
+#if LLVM_VERSION_MAJOR >= 22
+  bool IsElaboratedType(clang::TagType const* t) const
+  {
+    return (t->getKeyword() != clang::ElaboratedTypeKeyword::None ||
+            t->getQualifier());
+  }
+  bool IsElaboratedType(clang::TemplateSpecializationType const* t) const
+  {
+    return t->getKeyword() != clang::ElaboratedTypeKeyword::None;
+  }
+  bool IsElaboratedType(clang::TypedefType const* t) const
+  {
+    return static_cast<bool>(t->getQualifier());
+  }
+  clang::QualType GetElaboratedTypeNamed(clang::TagType const* t) const
+  {
+    return t->getCanonicalTypeUnqualified();
+  }
+  clang::QualType GetElaboratedTypeNamed(
+    clang::TemplateSpecializationType const* t) const
+  {
+    return t->getCanonicalTypeUnqualified();
+  }
+  clang::QualType GetElaboratedTypeNamed(clang::TypedefType const* t) const
+  {
+    return this->CTX.getTypedefType(t->getKeyword(), std::nullopt,
+                                    t->getDecl(), t->desugar());
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::TagType const* t) const
+  {
+    return t->getKeyword();
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::TemplateSpecializationType const* t) const
+  {
+    return t->getKeyword();
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::TypedefType const*) const
+  {
+    return clang::ElaboratedTypeKeyword::None;
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::TagType const* t) const
+  {
+    return t->getQualifier();
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::TemplateSpecializationType const* t) const
+  {
+    return std::nullopt;
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::TypedefType const* t) const
+  {
+    return t->getQualifier();
+  }
+#else
+  bool IsElaboratedType(clang::TagType const*) const { return false; }
+  bool IsElaboratedType(clang::TemplateSpecializationType const*) const
+  {
+    return false;
+  }
+  bool IsElaboratedType(clang::TypedefType const*) const { return false; }
+  bool IsElaboratedType(clang::ElaboratedType const* t) const
+  {
+    return (t->getKeyword() != cx_ElaboratedTypeKeyword(None) ||
+            t->getQualifier());
+  }
+  clang::QualType GetElaboratedTypeNamed(clang::ElaboratedType const* t) const
+  {
+    return t->getNamedType();
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::ElaboratedType const* t) const
+  {
+    return t->getKeyword();
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::ElaboratedType const* t) const
+  {
+    return t->getQualifier();
+  }
+#endif
+
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
@@ -652,8 +763,33 @@ class ASTVisitor : public ASTVisitorBase
   void OutputOffsetType(clang::QualType t, clang::Type const* c,
                         DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
-  void OutputElaboratedType(clang::ElaboratedType const* t,
-                            DumpNode const* dn);
+
+#if LLVM_VERSION_MAJOR >= 22
+  void OutputEnumType(clang::EnumType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+  void OutputRecordType(clang::RecordType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+  void OutputTypedefType(clang::TypedefType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+  void OutputTemplateSpecializationType(
+    clang::TemplateSpecializationType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+#else
+  void OutputElaboratedType(clang::ElaboratedType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+#endif
+  template <typename T>
+  void OutputElaboratedTypeImpl(T const* t, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -686,6 +822,12 @@ private:
   // Map from clang AST declaration node to our dump status node.
   typedef std::map<clang::Decl const*, DumpNode> DeclNodesMap;
   DeclNodesMap DeclNodes;
+
+#if LLVM_VERSION_MAJOR >= 22
+  // Memoize ConsolidateType results.
+  typedef std::map<clang::Type const*, clang::Type const*> ConsolidatedTypeMap;
+  ConsolidatedTypeMap ConsolidatedType;
+#endif
 
   // Map from clang AST type node to our dump status node.
   typedef std::map<DumpType, DumpNode> TypeNodesMap;
@@ -824,6 +966,9 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
 ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                                DumpQual dq)
 {
+#if LLVM_VERSION_MAJOR >= 22
+  dt.Type = this->ConsolidateType(dt.Type);
+#endif
   clang::QualType t = dt.Type;
   clang::Type const* c = dt.Class;
 
@@ -838,36 +983,41 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
 
   // Replace some types with their decls.
   switch (t->getTypeClass()) {
-    case clang::Type::Adjusted:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::AdjustedType>()->getAdjustedType(), c),
-        complete, dq);
-    case clang::Type::Attributed:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::AttributedType>()->getEquivalentType(), c),
-        complete, dq);
+    case clang::Type::Adjusted: {
+      auto const* at = static_cast<clang::AdjustedType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(at->getAdjustedType(), c),
+                                   complete, dq);
+    } break;
+    case clang::Type::Attributed: {
+      auto const* at =
+        static_cast<clang::AttributedType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(at->getEquivalentType(), c),
+                                   complete, dq);
+    } break;
     case clang::Type::Auto: {
-      clang::AutoType const* at = t->getAs<clang::AutoType>();
+      auto const* at = static_cast<clang::AutoType const*>(t.getTypePtr());
       if (at->isSugared()) {
         return this->AddTypeDumpNode(DumpType(at->desugar(), c), complete, dq);
       }
     } break;
-    case clang::Type::Decayed:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::DecayedType>()->getDecayedType(), c),
-        complete, dq);
-    case clang::Type::Decltype:
+    case clang::Type::Decayed: {
+      auto const* dt = static_cast<clang::DecayedType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(dt->getDecayedType(), c), complete,
+                                   dq);
+    } break;
+    case clang::Type::Decltype: {
       if (this->Opts.CastXml) {
-        clang::DecltypeType const* dtt = t->getAs<clang::DecltypeType>();
+        auto const* dtt =
+          static_cast<clang::DecltypeType const*>(t.getTypePtr());
         return this->AddTypeDumpNode(DumpType(dtt->getUnderlyingType(), c),
                                      complete, dq);
       }
-      break;
+    } break;
+#if LLVM_VERSION_MAJOR < 22
     case clang::Type::Elaborated: {
-      clang::ElaboratedType const* et = t->getAs<clang::ElaboratedType>();
-      if (this->Opts.GccXml ||
-          (et->getKeyword() == cx_ElaboratedTypeKeyword(None) &&
-           !et->getQualifier())) {
+      auto const* et =
+        static_cast<clang::ElaboratedType const*>(t.getTypePtr());
+      if (this->Opts.GccXml || !this->IsElaboratedType(et)) {
         // The gccxml format does not include ElaboratedType elements,
         // so replace this one with the underlying type.  Note that this
         // can cause duplicate PointerType and ReferenceType elements
@@ -877,32 +1027,51 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                      dq);
       }
     } break;
-    case clang::Type::Enum:
-      return this->AddDeclDumpNodeForType(
-        t->getAs<clang::EnumType>()->getDecl(), complete, dq);
-    case clang::Type::Paren:
-      return this->AddTypeDumpNode(
-        DumpType(t->getAs<clang::ParenType>()->getInnerType(), c), complete,
-        dq);
-    case clang::Type::Record:
-      return this->AddDeclDumpNodeForType(
-        t->getAs<clang::RecordType>()->getDecl(), complete, dq);
-    case clang::Type::SubstTemplateTypeParm:
-      return this->AddTypeDumpNode(
-        DumpType(
-          t->getAs<clang::SubstTemplateTypeParmType>()->getReplacementType(),
-          c),
-        complete, dq);
+#endif
+    case clang::Type::Enum: {
+      auto const* et = static_cast<clang::EnumType const*>(t.getTypePtr());
+      if (this->Opts.GccXml || !this->IsElaboratedType(et)) {
+        return this->AddDeclDumpNodeForType(et->getOriginalDecl(), complete,
+                                            dq);
+      }
+    } break;
+    case clang::Type::Paren: {
+      auto const* pt = static_cast<clang::ParenType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(pt->getInnerType(), c), complete,
+                                   dq);
+    } break;
+#if LLVM_VERSION_MAJOR >= 22
+    case clang::Type::PredefinedSugar: {
+      clang::PredefinedSugarType const* st =
+        static_cast<clang::PredefinedSugarType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(st->desugar(), c), complete, dq);
+    } break;
+#endif
+    case clang::Type::Record: {
+      auto const* rt = static_cast<clang::RecordType const*>(t.getTypePtr());
+      if (this->Opts.GccXml || !this->IsElaboratedType(rt)) {
+        return this->AddDeclDumpNodeForType(rt->getOriginalDecl(), complete,
+                                            dq);
+      }
+    } break;
+    case clang::Type::SubstTemplateTypeParm: {
+      auto const* st =
+        static_cast<clang::SubstTemplateTypeParmType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(st->getReplacementType(), c),
+                                   complete, dq);
+    } break;
     case clang::Type::TemplateSpecialization: {
-      clang::TemplateSpecializationType const* tst =
-        t->getAs<clang::TemplateSpecializationType>();
-      if (tst->isSugared()) {
-        return this->AddTypeDumpNode(DumpType(tst->desugar(), c), complete,
-                                     dq);
+      auto const* tst =
+        static_cast<clang::TemplateSpecializationType const*>(t.getTypePtr());
+      if (this->Opts.GccXml || !this->IsElaboratedType(tst)) {
+        if (tst->isSugared()) {
+          return this->AddTypeDumpNode(DumpType(tst->desugar(), c), complete,
+                                       dq);
+        }
       }
     } break;
     case clang::Type::Typedef: {
-      clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+      auto const* tdt = static_cast<clang::TypedefType const*>(t.getTypePtr());
       if (!tdt->isInstantiationDependentType() && tdt->isSugared()) {
         // Make sure all containing contexts are not templates.
         clang::Decl const* d = tdt->getDecl();
@@ -925,11 +1094,13 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
           }
         }
       }
-      return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
+      if (this->Opts.GccXml || !this->IsElaboratedType(tdt)) {
+        return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
+      }
     } break;
 #if LLVM_VERSION_MAJOR >= 14
     case clang::Type::Using: {
-      clang::UsingType const* ut = t->getAs<clang::UsingType>();
+      auto const* ut = static_cast<clang::UsingType const*>(t.getTypePtr());
       return this->AddTypeDumpNode(DumpType(ut->desugar(), c), complete, dq);
     } break;
 #endif
@@ -948,6 +1119,69 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
 
   return id;
 }
+
+#if LLVM_VERSION_MAJOR >= 22
+clang::QualType ASTVisitor::ConsolidateType(clang::QualType t)
+{
+  clang::Type const* oldTy = t.getTypePtr();
+  clang::Type const*& newTy = this->ConsolidatedType[oldTy];
+  if (!newTy) {
+    newTy = this->ConsolidateTypeImpl(oldTy);
+    assert(newTy != nullptr);
+  }
+  return clang::QualType(newTy, t.getLocalFastQualifiers());
+}
+
+clang::Type const* ASTVisitor::ConsolidateTypeImpl(clang::Type const* t)
+{
+  switch (t->getTypeClass()) {
+    case clang::Type::LValueReference: {
+      auto const* rt = static_cast<clang::LValueReferenceType const*>(t);
+      clang::QualType oldPointeeType = rt->getPointeeType();
+      clang::QualType newPointeeType = this->ConsolidateType(oldPointeeType);
+      if (newPointeeType != oldPointeeType) {
+        return this->CTX.getLValueReferenceType(newPointeeType).getTypePtr();
+      }
+    } break;
+    case clang::Type::Pointer: {
+      auto const* pt = static_cast<clang::PointerType const*>(t);
+      clang::QualType oldPointeeType = pt->getPointeeType();
+      clang::QualType newPointeeType = this->ConsolidateType(oldPointeeType);
+      if (newPointeeType != oldPointeeType) {
+        return this->CTX.getPointerType(newPointeeType).getTypePtr();
+      }
+    } break;
+    case clang::Type::RValueReference: {
+      auto const* rt = static_cast<clang::RValueReferenceType const*>(t);
+      clang::QualType oldPointeeType = rt->getPointeeType();
+      clang::QualType newPointeeType = this->ConsolidateType(oldPointeeType);
+      if (newPointeeType != oldPointeeType) {
+        return this->CTX.getRValueReferenceType(newPointeeType).getTypePtr();
+      }
+    } break;
+    case clang::Type::Record: {
+      auto const* rt = static_cast<clang::RecordType const*>(t);
+      // Clang allocates separate RecordType instances for a record decl
+      // and its injected class name.  Replace the latter with the former.
+      if (rt->isInjected()) {
+        if (auto const* rd =
+              clang::dyn_cast<clang::CXXRecordDecl>(rt->getOriginalDecl())) {
+          if (rd->isInjectedClassName()) {
+            rd =
+              static_cast<clang::CXXRecordDecl const*>(rd->getDeclContext());
+          }
+          return this->CTX
+            .getTagType(rt->getKeyword(), rt->getQualifier(), rd, false)
+            .getTypePtr();
+        }
+      }
+    } break;
+    default:
+      break;
+  }
+  return t;
+}
+#endif
 
 ASTVisitor::DumpId ASTVisitor::AddQualDumpNode(DumpId id)
 {
@@ -1395,7 +1629,7 @@ void ASTVisitor::PrintOffsetAttribute(unsigned int const& offset)
 void ASTVisitor::PrintABIAttributes(clang::TypeDecl const* d)
 {
   if (clang::TypeDecl const* td = clang::dyn_cast<clang::TypeDecl>(d)) {
-    clang::Type const* ty = td->getTypeForDecl();
+    clang::QualType ty = this->CTX.getTypeDeclType(td);
     if (!ty->isIncompleteType()) {
       this->PrintABIAttributes(this->CTX.getTypeInfo(ty));
     }
@@ -1784,11 +2018,14 @@ void ASTVisitor::PrintCastXMLTypedef(clang::TypedefDecl const* d,
 
 bool ASTVisitor::IsCastXMLTypedefType(clang::QualType t) const
 {
+#if LLVM_VERSION_MAJOR < 22
   if (t->getTypeClass() == clang::Type::Elaborated) {
-    t = t->getAs<clang::ElaboratedType>()->getNamedType();
+    auto const* et = static_cast<clang::ElaboratedType const*>(t.getTypePtr());
+    t = et->getNamedType();
   }
+#endif
   if (t->getTypeClass() == clang::Type::Typedef) {
-    clang::TypedefType const* tdt = t->getAs<clang::TypedefType>();
+    auto const* tdt = static_cast<clang::TypedefType const*>(t.getTypePtr());
     if (clang::TypedefDecl const* td =
           clang::dyn_cast<clang::TypedefDecl>(tdt->getDecl())) {
       return this->IsCastXMLTypedefDecl(td);
@@ -2083,7 +2320,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
          i != e; ++i) {
       clang::QualType bt = i->getType().getCanonicalType();
       clang::CXXRecordDecl const* bd = clang::dyn_cast<clang::CXXRecordDecl>(
-        bt->getAs<clang::RecordType>()->getDecl());
+        bt->getAs<clang::RecordType>()->getOriginalDecl());
       this->OS << "    <Base";
       this->PrintTypeAttribute(bt, true);
       this->PrintAccessAttribute(i->getAccessSpecifier());
@@ -2485,7 +2722,7 @@ void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
 {
   clang::Type const* c =
 #if LLVM_VERSION_MAJOR >= 21
-    t->getQualifier()->getAsType()
+    cx::deref(t->getQualifier()).getAsType()
 #else
     t->getClass()
 #endif
@@ -2527,27 +2764,28 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "/>\n";
 }
 
-void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
-                                      DumpNode const* dn)
+template <typename T>
+void ASTVisitor::OutputElaboratedTypeImpl(T const* t, DumpNode const* dn)
 {
+  assert(this->IsElaboratedType(t));
   this->OS << "  <ElaboratedType";
   this->PrintIdAttribute(dn);
 
-  if (clang::NestedNameSpecifier* nns = t->getQualifier()) {
+  if (cx::NestedNameSpecifier nns = this->GetElaboratedTypeQualifier(t)) {
     std::string s;
     llvm::raw_string_ostream rso(s);
-    nns->print(rso, this->PrintingPolicy);
+    cx::deref(nns).print(rso, this->PrintingPolicy);
     this->OS << " qualifier=\"" << encodeXML(rso.str()) << '"';
   }
 
-  clang::ElaboratedTypeKeyword k = t->getKeyword();
+  clang::ElaboratedTypeKeyword k = this->GetElaboratedTypeKeyword(t);
   if (k != cx_ElaboratedTypeKeyword(None)) {
     this->OS << " keyword=\""
              << encodeXML(clang::TypeWithKeyword::getKeywordName(k).str())
              << '"';
   }
 
-  this->PrintTypeAttribute(t->getNamedType(), dn->Complete);
+  this->PrintTypeAttribute(this->GetElaboratedTypeNamed(t), dn->Complete);
   this->OS << "/>\n";
 }
 
