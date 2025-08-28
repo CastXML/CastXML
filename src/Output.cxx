@@ -85,6 +85,10 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 }
 #endif
 
+#if LLVM_VERSION_MAJOR < 22
+#  define getOriginalDecl getDecl
+#endif
+
 #if LLVM_VERSION_MAJOR >= 18
 #  define cx_ElaboratedTypeKeyword(x) clang::ElaboratedTypeKeyword::x
 #  define cx_TagTypeKind(x) clang::TagTypeKind::x
@@ -889,7 +893,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     } break;
     case clang::Type::Enum: {
       auto const* et = static_cast<clang::EnumType const*>(t.getTypePtr());
-      return this->AddDeclDumpNodeForType(et->getDecl(), complete, dq);
+      return this->AddDeclDumpNodeForType(et->getOriginalDecl(), complete, dq);
     } break;
     case clang::Type::Paren: {
       auto const* pt = static_cast<clang::ParenType const*>(t.getTypePtr());
@@ -898,7 +902,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     } break;
     case clang::Type::Record: {
       auto const* rt = static_cast<clang::RecordType const*>(t.getTypePtr());
-      return this->AddDeclDumpNodeForType(rt->getDecl(), complete, dq);
+      return this->AddDeclDumpNodeForType(rt->getOriginalDecl(), complete, dq);
     } break;
     case clang::Type::SubstTemplateTypeParm: {
       auto const* st =
@@ -2097,7 +2101,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
          i != e; ++i) {
       clang::QualType bt = i->getType().getCanonicalType();
       clang::CXXRecordDecl const* bd = clang::dyn_cast<clang::CXXRecordDecl>(
-        bt->getAs<clang::RecordType>()->getDecl());
+        bt->getAs<clang::RecordType>()->getOriginalDecl());
       this->OS << "    <Base";
       this->PrintTypeAttribute(bt, true);
       this->PrintAccessAttribute(i->getAccessSpecifier());
