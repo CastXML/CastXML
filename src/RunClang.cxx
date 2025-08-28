@@ -197,6 +197,25 @@ public:
   }
 };
 
+#define UNDEF_FLT(x)                                                          \
+  "#undef __" #x "_DECIMAL_DIG__\n"                                           \
+  "#undef __" #x "_DENORM_MIN__\n"                                            \
+  "#undef __" #x "_DIG__\n"                                                   \
+  "#undef __" #x "_EPSILON__\n"                                               \
+  "#undef __" #x "_HAS_DENORM__\n"                                            \
+  "#undef __" #x "_HAS_INFINITY__\n"                                          \
+  "#undef __" #x "_HAS_QUIET_NAN__\n"                                         \
+  "#undef __" #x "_IS_IEC_60559__\n"                                          \
+  "#undef __" #x "_MANT_DIG__\n"                                              \
+  "#undef __" #x "_MAX_10_EXP__\n"                                            \
+  "#undef __" #x "_MAX_EXP__\n"                                               \
+  "#undef __" #x "_MAX__\n"                                                   \
+  "#undef __" #x "_MIN_10_EXP__\n"                                            \
+  "#undef __" #x "_MIN_EXP__\n"                                               \
+  "#undef __" #x "_MIN__\n"                                                   \
+  "#undef __" #x "_NORM_MAX__\n"                                              \
+  ""
+
 template <class T>
 class CastXMLPredefines : public T
 {
@@ -277,24 +296,13 @@ protected:
 
       // Remove GCC builtin definitions for features Clang does not implement.
       if (this->IsActualGNU(this->Opts.Predefines)) {
-        builtins += "#undef __BFLT16_DECIMAL_DIG__\n"
-                    "#undef __BFLT16_DENORM_MIN__\n"
-                    "#undef __BFLT16_DIG__\n"
-                    "#undef __BFLT16_DIG__\n"
-                    "#undef __BFLT16_EPSILON__\n"
-                    "#undef __BFLT16_HAS_DENORM__\n"
-                    "#undef __BFLT16_HAS_INFINITY__\n"
-                    "#undef __BFLT16_HAS_QUIET_NAN__\n"
-                    "#undef __BFLT16_IS_IEC_60559__\n"
-                    "#undef __BFLT16_MANT_DIG__\n"
-                    "#undef __BFLT16_MAX_10_EXP__\n"
-                    "#undef __BFLT16_MAX_EXP__\n"
-                    "#undef __BFLT16_MAX__\n"
-                    "#undef __BFLT16_MIN_10_EXP__\n"
-                    "#undef __BFLT16_MIN_EXP__\n"
-                    "#undef __BFLT16_MIN__\n"
-                    "#undef __BFLT16_NORM_MAX__\n"
-                    "#undef __STDCPP_BFLOAT16_T__\n"
+        builtins += UNDEF_FLT(BFLT16);
+        builtins += UNDEF_FLT(FLT32);
+        builtins += UNDEF_FLT(FLT32X);
+        builtins += UNDEF_FLT(FLT64);
+        builtins += UNDEF_FLT(FLT64X);
+        builtins += UNDEF_FLT(FLT128);
+        builtins += "#undef __STDCPP_BFLOAT16_T__\n"
                     "#undef __STDCPP_FLOAT128_T__\n"
                     "#undef __STDCPP_FLOAT16_T__\n"
                     "#undef __STDCPP_FLOAT32_T__\n"

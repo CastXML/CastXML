@@ -1,6 +1,25 @@
 #include <stdio.h>
 #include <string.h>
 
+#define DEFINE_FLT(x)                                                         \
+  "#define __" #x "_DECIMAL_DIG__\n"                                          \
+  "#define __" #x "_DENORM_MIN__\n"                                           \
+  "#define __" #x "_DIG__\n"                                                  \
+  "#define __" #x "_EPSILON__\n"                                              \
+  "#define __" #x "_HAS_DENORM__\n"                                           \
+  "#define __" #x "_HAS_INFINITY__\n"                                         \
+  "#define __" #x "_HAS_QUIET_NAN__\n"                                        \
+  "#define __" #x "_IS_IEC_60559__\n"                                         \
+  "#define __" #x "_MANT_DIG__\n"                                             \
+  "#define __" #x "_MAX_10_EXP__\n"                                           \
+  "#define __" #x "_MAX_EXP__\n"                                              \
+  "#define __" #x "_MAX__\n"                                                  \
+  "#define __" #x "_MIN_10_EXP__\n"                                           \
+  "#define __" #x "_MIN_EXP__\n"                                              \
+  "#define __" #x "_MIN__\n"                                                  \
+  "#define __" #x "_NORM_MAX__\n"                                             \
+  ""
+
 int main(int argc, const char* argv[])
 {
   int cpp = 0;
@@ -50,24 +69,13 @@ int main(int argc, const char* argv[])
           "#define __has_last(x) x",
           ver_major);
   /* Test GCC builtin definitions for features Clang does not implement.  */
+  fprintf(stdout, DEFINE_FLT(BFLT16));
+  fprintf(stdout, DEFINE_FLT(FLT32));
+  fprintf(stdout, DEFINE_FLT(FLT32X));
+  fprintf(stdout, DEFINE_FLT(FLT64));
+  fprintf(stdout, DEFINE_FLT(FLT64X));
+  fprintf(stdout, DEFINE_FLT(FLT128));
   fprintf(stdout,
-          "#define __BFLT16_DECIMAL_DIG__\n"
-          "#define __BFLT16_DENORM_MIN__\n"
-          "#define __BFLT16_DIG__\n"
-          "#define __BFLT16_DIG__\n"
-          "#define __BFLT16_EPSILON__\n"
-          "#define __BFLT16_HAS_DENORM__\n"
-          "#define __BFLT16_HAS_INFINITY__\n"
-          "#define __BFLT16_HAS_QUIET_NAN__\n"
-          "#define __BFLT16_IS_IEC_60559__\n"
-          "#define __BFLT16_MANT_DIG__\n"
-          "#define __BFLT16_MAX_10_EXP__\n"
-          "#define __BFLT16_MAX_EXP__\n"
-          "#define __BFLT16_MAX__\n"
-          "#define __BFLT16_MIN_10_EXP__\n"
-          "#define __BFLT16_MIN_EXP__\n"
-          "#define __BFLT16_MIN__\n"
-          "#define __BFLT16_NORM_MAX__\n"
           "#define __STDCPP_BFLOAT16_T__\n"
           "#define __STDCPP_FLOAT128_T__\n"
           "#define __STDCPP_FLOAT16_T__\n"
