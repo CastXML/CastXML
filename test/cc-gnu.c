@@ -70,6 +70,11 @@ int main(int argc, const char* argv[])
           ver_major);
   /* Test GCC builtin definitions for features Clang does not implement.  */
   fprintf(stdout, DEFINE_FLT(BFLT16));
+  fprintf(stdout, DEFINE_FLT(FLT32));
+  fprintf(stdout, DEFINE_FLT(FLT32X));
+  fprintf(stdout, DEFINE_FLT(FLT64));
+  fprintf(stdout, DEFINE_FLT(FLT64X));
+  fprintf(stdout, DEFINE_FLT(FLT128));
   fprintf(stdout,
           "#define __STDCPP_BFLOAT16_T__\n"
           "#define __STDCPP_FLOAT128_T__\n"

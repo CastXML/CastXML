@@ -297,6 +297,11 @@ protected:
       // Remove GCC builtin definitions for features Clang does not implement.
       if (this->IsActualGNU(this->Opts.Predefines)) {
         builtins += UNDEF_FLT(BFLT16);
+        builtins += UNDEF_FLT(FLT32);
+        builtins += UNDEF_FLT(FLT32X);
+        builtins += UNDEF_FLT(FLT64);
+        builtins += UNDEF_FLT(FLT64X);
+        builtins += UNDEF_FLT(FLT128);
         builtins += "#undef __STDCPP_BFLOAT16_T__\n"
                     "#undef __STDCPP_FLOAT128_T__\n"
                     "#undef __STDCPP_FLOAT16_T__\n"
