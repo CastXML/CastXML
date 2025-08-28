@@ -85,7 +85,22 @@ using OptionalFileEntryRef = clang::FileEntry const*;
 }
 #endif
 
-#if LLVM_VERSION_MAJOR < 22
+#if LLVM_VERSION_MAJOR >= 22
+namespace cx {
+using NestedNameSpecifier = clang::NestedNameSpecifier;
+NestedNameSpecifier const& deref(NestedNameSpecifier const& nns)
+{
+  return nns;
+}
+}
+#else
+namespace cx {
+using NestedNameSpecifier = clang::NestedNameSpecifier*;
+clang::NestedNameSpecifier const& deref(NestedNameSpecifier const& nns)
+{
+  return *nns;
+}
+}
 #  define getOriginalDecl getDecl
 #endif
 
@@ -612,11 +627,91 @@ class ASTVisitor : public ASTVisitorBase
   bool IsCastXMLTypedefType(clang::QualType t) const;
   bool IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const;
 
+#if LLVM_VERSION_MAJOR >= 22
+  bool IsElaboratedType(clang::TagType const* t) const
+  {
+    return (t->getKeyword() != clang::ElaboratedTypeKeyword::None ||
+            t->getQualifier());
+  }
+  bool IsElaboratedType(clang::TemplateSpecializationType const* t) const
+  {
+    return t->getKeyword() != clang::ElaboratedTypeKeyword::None;
+  }
+  bool IsElaboratedType(clang::TypedefType const* t) const
+  {
+    return static_cast<bool>(t->getQualifier());
+  }
+  clang::QualType GetElaboratedTypeNamed(clang::TagType const* t) const
+  {
+    return t->getCanonicalTypeUnqualified();
+  }
+  clang::QualType GetElaboratedTypeNamed(
+    clang::TemplateSpecializationType const* t) const
+  {
+    return t->getCanonicalTypeUnqualified();
+  }
+  clang::QualType GetElaboratedTypeNamed(clang::TypedefType const* t) const
+  {
+    return this->CTX.getTypedefType(t->getKeyword(), std::nullopt,
+                                    t->getDecl(), t->desugar());
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::TagType const* t) const
+  {
+    return t->getKeyword();
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::TemplateSpecializationType const* t) const
+  {
+    return t->getKeyword();
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::TypedefType const*) const
+  {
+    return clang::ElaboratedTypeKeyword::None;
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::TagType const* t) const
+  {
+    return t->getQualifier();
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::TemplateSpecializationType const* t) const
+  {
+    return std::nullopt;
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::TypedefType const* t) const
+  {
+    return t->getQualifier();
+  }
+#else
+  bool IsElaboratedType(clang::TagType const*) const { return false; }
+  bool IsElaboratedType(clang::TemplateSpecializationType const*) const
+  {
+    return false;
+  }
+  bool IsElaboratedType(clang::TypedefType const*) const { return false; }
   bool IsElaboratedType(clang::ElaboratedType const* t) const
   {
     return (t->getKeyword() != cx_ElaboratedTypeKeyword(None) ||
             t->getQualifier());
   }
+  clang::QualType GetElaboratedTypeNamed(clang::ElaboratedType const* t) const
+  {
+    return t->getNamedType();
+  }
+  clang::ElaboratedTypeKeyword GetElaboratedTypeKeyword(
+    clang::ElaboratedType const* t) const
+  {
+    return t->getKeyword();
+  }
+  cx::NestedNameSpecifier GetElaboratedTypeQualifier(
+    clang::ElaboratedType const* t) const
+  {
+    return t->getQualifier();
+  }
+#endif
 
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
@@ -662,8 +757,33 @@ class ASTVisitor : public ASTVisitorBase
   void OutputOffsetType(clang::QualType t, clang::Type const* c,
                         DumpNode const* dn);
   void OutputPointerType(clang::PointerType const* t, DumpNode const* dn);
-  void OutputElaboratedType(clang::ElaboratedType const* t,
-                            DumpNode const* dn);
+
+#if LLVM_VERSION_MAJOR >= 22
+  void OutputEnumType(clang::EnumType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+  void OutputRecordType(clang::RecordType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+  void OutputTypedefType(clang::TypedefType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+  void OutputTemplateSpecializationType(
+    clang::TemplateSpecializationType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+#else
+  void OutputElaboratedType(clang::ElaboratedType const* t, DumpNode const* dn)
+  {
+    this->OutputElaboratedTypeImpl(t, dn);
+  }
+#endif
+  template <typename T>
+  void OutputElaboratedTypeImpl(T const* t, DumpNode const* dn);
 
   /** Queue declarations matching given qualified name in given context.  */
   void LookupStart(clang::DeclContext const* dc, std::string const& name);
@@ -878,6 +998,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                      complete, dq);
       }
     } break;
+#if LLVM_VERSION_MAJOR < 22
     case clang::Type::Elaborated: {
       auto const* et =
         static_cast<clang::ElaboratedType const*>(t.getTypePtr());
@@ -891,9 +1012,13 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                      dq);
       }
     } break;
+#endif
     case clang::Type::Enum: {
       auto const* et = static_cast<clang::EnumType const*>(t.getTypePtr());
-      return this->AddDeclDumpNodeForType(et->getOriginalDecl(), complete, dq);
+      if (this->Opts.GccXml || !this->IsElaboratedType(et)) {
+        return this->AddDeclDumpNodeForType(et->getOriginalDecl(), complete,
+                                            dq);
+      }
     } break;
     case clang::Type::Paren: {
       auto const* pt = static_cast<clang::ParenType const*>(t.getTypePtr());
@@ -902,7 +1027,10 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     } break;
     case clang::Type::Record: {
       auto const* rt = static_cast<clang::RecordType const*>(t.getTypePtr());
-      return this->AddDeclDumpNodeForType(rt->getOriginalDecl(), complete, dq);
+      if (this->Opts.GccXml || !this->IsElaboratedType(rt)) {
+        return this->AddDeclDumpNodeForType(rt->getOriginalDecl(), complete,
+                                            dq);
+      }
     } break;
     case clang::Type::SubstTemplateTypeParm: {
       auto const* st =
@@ -913,9 +1041,11 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     case clang::Type::TemplateSpecialization: {
       auto const* tst =
         static_cast<clang::TemplateSpecializationType const*>(t.getTypePtr());
-      if (tst->isSugared()) {
-        return this->AddTypeDumpNode(DumpType(tst->desugar(), c), complete,
-                                     dq);
+      if (this->Opts.GccXml || !this->IsElaboratedType(tst)) {
+        if (tst->isSugared()) {
+          return this->AddTypeDumpNode(DumpType(tst->desugar(), c), complete,
+                                       dq);
+        }
       }
     } break;
     case clang::Type::Typedef: {
@@ -942,7 +1072,9 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
           }
         }
       }
-      return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
+      if (this->Opts.GccXml || !this->IsElaboratedType(tdt)) {
+        return this->AddDeclDumpNodeForType(tdt->getDecl(), complete, dq);
+      }
     } break;
 #if LLVM_VERSION_MAJOR >= 14
     case clang::Type::Using: {
@@ -1801,10 +1933,12 @@ void ASTVisitor::PrintCastXMLTypedef(clang::TypedefDecl const* d,
 
 bool ASTVisitor::IsCastXMLTypedefType(clang::QualType t) const
 {
+#if LLVM_VERSION_MAJOR < 22
   if (t->getTypeClass() == clang::Type::Elaborated) {
     auto const* et = static_cast<clang::ElaboratedType const*>(t.getTypePtr());
     t = et->getNamedType();
   }
+#endif
   if (t->getTypeClass() == clang::Type::Typedef) {
     auto const* tdt = static_cast<clang::TypedefType const*>(t.getTypePtr());
     if (clang::TypedefDecl const* td =
@@ -2503,7 +2637,7 @@ void ASTVisitor::OutputMemberPointerType(clang::MemberPointerType const* t,
 {
   clang::Type const* c =
 #if LLVM_VERSION_MAJOR >= 21
-    t->getQualifier()->getAsType()
+    cx::deref(t->getQualifier()).getAsType()
 #else
     t->getClass()
 #endif
@@ -2545,27 +2679,28 @@ void ASTVisitor::OutputPointerType(clang::PointerType const* t,
   this->OS << "/>\n";
 }
 
-void ASTVisitor::OutputElaboratedType(clang::ElaboratedType const* t,
-                                      DumpNode const* dn)
+template <typename T>
+void ASTVisitor::OutputElaboratedTypeImpl(T const* t, DumpNode const* dn)
 {
+  assert(this->IsElaboratedType(t));
   this->OS << "  <ElaboratedType";
   this->PrintIdAttribute(dn);
 
-  if (clang::NestedNameSpecifier* nns = t->getQualifier()) {
+  if (cx::NestedNameSpecifier nns = this->GetElaboratedTypeQualifier(t)) {
     std::string s;
     llvm::raw_string_ostream rso(s);
-    nns->print(rso, this->PrintingPolicy);
+    cx::deref(nns).print(rso, this->PrintingPolicy);
     this->OS << " qualifier=\"" << encodeXML(rso.str()) << '"';
   }
 
-  clang::ElaboratedTypeKeyword k = t->getKeyword();
+  clang::ElaboratedTypeKeyword k = this->GetElaboratedTypeKeyword(t);
   if (k != cx_ElaboratedTypeKeyword(None)) {
     this->OS << " keyword=\""
              << encodeXML(clang::TypeWithKeyword::getKeywordName(k).str())
              << '"';
   }
 
-  this->PrintTypeAttribute(t->getNamedType(), dn->Complete);
+  this->PrintTypeAttribute(this->GetElaboratedTypeNamed(t), dn->Complete);
   this->OS << "/>\n";
 }
 
