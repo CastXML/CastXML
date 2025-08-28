@@ -1025,6 +1025,13 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
       return this->AddTypeDumpNode(DumpType(pt->getInnerType(), c), complete,
                                    dq);
     } break;
+#if LLVM_VERSION_MAJOR >= 22
+    case clang::Type::PredefinedSugar: {
+      clang::PredefinedSugarType const* st =
+        static_cast<clang::PredefinedSugarType const*>(t.getTypePtr());
+      return this->AddTypeDumpNode(DumpType(st->desugar(), c), complete, dq);
+    } break;
+#endif
     case clang::Type::Record: {
       auto const* rt = static_cast<clang::RecordType const*>(t.getTypePtr());
       if (this->Opts.GccXml || !this->IsElaboratedType(rt)) {
