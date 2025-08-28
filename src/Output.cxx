@@ -436,6 +436,12 @@ class ASTVisitor : public ASTVisitorBase
   template <typename K>
   DumpId AddDumpNodeImpl(K k, bool complete);
 
+#if LLVM_VERSION_MAJOR >= 22
+  /** Remove type info that we do not care about to avoid duplication.  */
+  clang::QualType ConsolidateType(clang::QualType t);
+  clang::Type const* ConsolidateTypeImpl(clang::Type const* t);
+#endif
+
   /** Allocate a dump node for a source file entry.  */
   unsigned int AddDumpFile(cx::FileEntryRef f);
 #if LLVM_VERSION_MAJOR < 12
@@ -817,6 +823,12 @@ private:
   typedef std::map<clang::Decl const*, DumpNode> DeclNodesMap;
   DeclNodesMap DeclNodes;
 
+#if LLVM_VERSION_MAJOR >= 22
+  // Memoize ConsolidateType results.
+  typedef std::map<clang::Type const*, clang::Type const*> ConsolidatedTypeMap;
+  ConsolidatedTypeMap ConsolidatedType;
+#endif
+
   // Map from clang AST type node to our dump status node.
   typedef std::map<DumpType, DumpNode> TypeNodesMap;
   TypeNodesMap TypeNodes;
@@ -954,6 +966,9 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNodeForType(clang::Decl const* d,
 ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
                                                DumpQual dq)
 {
+#if LLVM_VERSION_MAJOR >= 22
+  dt.Type = this->ConsolidateType(dt.Type);
+#endif
   clang::QualType t = dt.Type;
   clang::Type const* c = dt.Class;
 
@@ -1104,6 +1119,69 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
 
   return id;
 }
+
+#if LLVM_VERSION_MAJOR >= 22
+clang::QualType ASTVisitor::ConsolidateType(clang::QualType t)
+{
+  clang::Type const* oldTy = t.getTypePtr();
+  clang::Type const*& newTy = this->ConsolidatedType[oldTy];
+  if (!newTy) {
+    newTy = this->ConsolidateTypeImpl(oldTy);
+    assert(newTy != nullptr);
+  }
+  return clang::QualType(newTy, t.getLocalFastQualifiers());
+}
+
+clang::Type const* ASTVisitor::ConsolidateTypeImpl(clang::Type const* t)
+{
+  switch (t->getTypeClass()) {
+    case clang::Type::LValueReference: {
+      auto const* rt = static_cast<clang::LValueReferenceType const*>(t);
+      clang::QualType oldPointeeType = rt->getPointeeType();
+      clang::QualType newPointeeType = this->ConsolidateType(oldPointeeType);
+      if (newPointeeType != oldPointeeType) {
+        return this->CTX.getLValueReferenceType(newPointeeType).getTypePtr();
+      }
+    } break;
+    case clang::Type::Pointer: {
+      auto const* pt = static_cast<clang::PointerType const*>(t);
+      clang::QualType oldPointeeType = pt->getPointeeType();
+      clang::QualType newPointeeType = this->ConsolidateType(oldPointeeType);
+      if (newPointeeType != oldPointeeType) {
+        return this->CTX.getPointerType(newPointeeType).getTypePtr();
+      }
+    } break;
+    case clang::Type::RValueReference: {
+      auto const* rt = static_cast<clang::RValueReferenceType const*>(t);
+      clang::QualType oldPointeeType = rt->getPointeeType();
+      clang::QualType newPointeeType = this->ConsolidateType(oldPointeeType);
+      if (newPointeeType != oldPointeeType) {
+        return this->CTX.getRValueReferenceType(newPointeeType).getTypePtr();
+      }
+    } break;
+    case clang::Type::Record: {
+      auto const* rt = static_cast<clang::RecordType const*>(t);
+      // Clang allocates separate RecordType instances for a record decl
+      // and its injected class name.  Replace the latter with the former.
+      if (rt->isInjected()) {
+        if (auto const* rd =
+              clang::dyn_cast<clang::CXXRecordDecl>(rt->getOriginalDecl())) {
+          if (rd->isInjectedClassName()) {
+            rd =
+              static_cast<clang::CXXRecordDecl const*>(rd->getDeclContext());
+          }
+          return this->CTX
+            .getTagType(rt->getKeyword(), rt->getQualifier(), rd, false)
+            .getTypePtr();
+        }
+      }
+    } break;
+    default:
+      break;
+  }
+  return t;
+}
+#endif
 
 ASTVisitor::DumpId ASTVisitor::AddQualDumpNode(DumpId id)
 {
