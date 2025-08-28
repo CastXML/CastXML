@@ -1,0 +1,37 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5"/>
+  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" members="_6 _7 _8 _9 _10 _11" size="[0-9]+" align="[0-9]+"/>
+  <Function id="_4" name="function" returns="_3" context="_1" location="f1:8" file="f1" line="8" mangled="[^"]+">
+    <Argument type="_12" location="f1:8" file="f1" line="8"/>
+    <Argument type="_13" location="f1:8" file="f1" line="8"/>
+  </Function>
+  <Function id="_5" name="function" returns="_3" context="_1" location="f1:9" file="f1" line="9" mangled="[^"]+">
+    <Argument type="_14" location="f1:9" file="f1" line="9"/>
+    <Argument type="_15" location="f1:9" file="f1" line="9"/>
+  </Function>
+  <Method id="_6" name="method" returns="_3" context="_3" access="private" location="f1:4" file="f1" line="4" mangled="[^"]+">
+    <Argument type="_12" location="f1:4" file="f1" line="4"/>
+    <Argument type="_13" location="f1:4" file="f1" line="4"/>
+  </Method>
+  <Method id="_7" name="method" returns="_3" context="_3" access="private" location="f1:5" file="f1" line="5" mangled="[^"]+">
+    <Argument type="_14" location="f1:5" file="f1" line="5"/>
+    <Argument type="_15" location="f1:5" file="f1" line="5"/>
+  </Method>
+  <Constructor id="_8" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
+  <Constructor id="_9" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1">
+    <Argument type="_16" location="f1:2" file="f1" line="2"/>
+  </Constructor>
+  <OperatorMethod id="_10" name="=" returns="_14" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_16" location="f1:2" file="f1" line="2"/>
+  </OperatorMethod>
+  <Destructor id="_11" name="A" context="_3" access="public" location="f1:2" file="f1" line="2" inline="1" artificial="1"/>
+  <PointerType id="_12" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_13" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_14" type="_3" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_15" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_16" type="_3c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_3c" type="_3" const="1"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Class-member-injected.cxx"/>
+</GCC_XML>$
