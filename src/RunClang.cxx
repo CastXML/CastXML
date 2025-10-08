@@ -751,7 +751,7 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
 {
   // Create a diagnostics engine for this compiler instance.
   CI->createDiagnostics(
-#if LLVM_VERSION_MAJOR >= 20
+#if LLVM_VERSION_MAJOR >= 20 && LLVM_VERSION_MAJOR < 22
     *llvm::vfs::getRealFileSystem()
 #endif
   );
