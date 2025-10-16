@@ -101,7 +101,6 @@ clang::NestedNameSpecifier const& deref(NestedNameSpecifier const& nns)
   return *nns;
 }
 }
-#  define getOriginalDecl getDecl
 #endif
 
 #if LLVM_VERSION_MAJOR >= 18
@@ -1031,8 +1030,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     case clang::Type::Enum: {
       auto const* et = static_cast<clang::EnumType const*>(t.getTypePtr());
       if (this->Opts.GccXml || !this->IsElaboratedType(et)) {
-        return this->AddDeclDumpNodeForType(et->getOriginalDecl(), complete,
-                                            dq);
+        return this->AddDeclDumpNodeForType(et->getDecl(), complete, dq);
       }
     } break;
     case clang::Type::Paren: {
@@ -1050,8 +1048,7 @@ ASTVisitor::DumpId ASTVisitor::AddTypeDumpNode(DumpType dt, bool complete,
     case clang::Type::Record: {
       auto const* rt = static_cast<clang::RecordType const*>(t.getTypePtr());
       if (this->Opts.GccXml || !this->IsElaboratedType(rt)) {
-        return this->AddDeclDumpNodeForType(rt->getOriginalDecl(), complete,
-                                            dq);
+        return this->AddDeclDumpNodeForType(rt->getDecl(), complete, dq);
       }
     } break;
     case clang::Type::SubstTemplateTypeParm: {
@@ -1165,7 +1162,7 @@ clang::Type const* ASTVisitor::ConsolidateTypeImpl(clang::Type const* t)
       // and its injected class name.  Replace the latter with the former.
       if (rt->isInjected()) {
         if (auto const* rd =
-              clang::dyn_cast<clang::CXXRecordDecl>(rt->getOriginalDecl())) {
+              clang::dyn_cast<clang::CXXRecordDecl>(rt->getDecl())) {
           if (rd->isInjectedClassName()) {
             rd =
               static_cast<clang::CXXRecordDecl const*>(rd->getDeclContext());
@@ -2320,7 +2317,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
          i != e; ++i) {
       clang::QualType bt = i->getType().getCanonicalType();
       clang::CXXRecordDecl const* bd = clang::dyn_cast<clang::CXXRecordDecl>(
-        bt->getAs<clang::RecordType>()->getOriginalDecl());
+        bt->getAs<clang::RecordType>()->getDecl());
       this->OS << "    <Base";
       this->PrintTypeAttribute(bt, true);
       this->PrintAccessAttribute(i->getAccessSpecifier());
