@@ -35,7 +35,7 @@
 static std::string castxmlResourceDir;
 static std::string castxmlClangResourceDir;
 
-static std::string GetMainExecutable(const char* argv0)
+static std::string GetMainExecutable(char const* argv0)
 {
   return llvm::sys::fs::getMainExecutable(argv0,
                                           (void*)(intptr_t)GetMainExecutable);
@@ -61,7 +61,7 @@ static bool tryBuildDir(std::string const& dir)
   return false;
 }
 
-bool findResourceDir(const char* argv0, std::ostream& error)
+bool findResourceDir(char const* argv0, std::ostream& error)
 {
   std::string exe = GetMainExecutable(argv0);
   if (!llvm::sys::path::is_absolute(exe)) {
@@ -124,7 +124,7 @@ unsigned int getVersionPatch()
   return CASTXML_VERSION_PATCH;
 }
 
-bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
+bool runCommand(int argc, char const* const* argv, int& ret, std::string& out,
                 std::string& err, std::string& msg, std::string* maybeTmpDir)
 {
   // Find the program to run.
@@ -174,16 +174,16 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
   llvm::SmallVector<llvm::StringRef, 64> cmd(argv, argv + argc);
   llvm::ArrayRef<llvm::StringRef> args = cmd;
 #else
-  std::vector<const char*> cmd(argv, argv + argc);
+  std::vector<char const*> cmd(argv, argv + argc);
   cmd.push_back(0);
-  const char** args = &*cmd.begin();
+  char const** args = &*cmd.begin();
 #endif
 #if LLVM_VERSION_MAJOR >= 16
   std::optional<llvm::ArrayRef<llvm::StringRef>> env = std::nullopt;
 #elif LLVM_VERSION_MAJOR >= 7
   llvm::Optional<llvm::ArrayRef<llvm::StringRef>> env = llvm::None;
 #else
-  const char** env = nullptr;
+  char const** env = nullptr;
 #endif
 
   // Actually run the command.
@@ -213,8 +213,8 @@ bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
 std::string encodeXML(std::string const& in, bool cdata)
 {
   std::string xml;
-  const char* last = in.c_str();
-  for (const char* c = last; *c; ++c) {
+  char const* last = in.c_str();
+  for (char const* c = last; *c; ++c) {
     switch (*c) {
 #define XML(OUT)                                                              \
   xml.append(last, c - last);                                                 \

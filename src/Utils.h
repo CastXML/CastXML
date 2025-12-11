@@ -21,7 +21,7 @@
 /// findResourceDir - Call from main() to find resources
 /// relative to the executable.  On success returns true.
 /// On failure returns false and stores a message in the stream.
-bool findResourceDir(const char* argv0, std::ostream& error);
+bool findResourceDir(char const* argv0, std::ostream& error);
 
 /// getResourceDir - Get resource directory found at startup
 std::string getResourceDir();
@@ -42,7 +42,7 @@ unsigned int getVersionMinor();
 unsigned int getVersionPatch();
 
 /// runCommand - Run a given command line and capture the output.
-bool runCommand(int argc, const char* const* argv, int& ret, std::string& out,
+bool runCommand(int argc, char const* const* argv, int& ret, std::string& out,
                 std::string& err, std::string& msg,
                 std::string* maybeTmpDir = nullptr);
 

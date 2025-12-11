@@ -5,7 +5,7 @@ struct Foo1;
 
 Foo1* s1;
 struct Foo1* s2; // elaborated
-const Foo1* s3;
+Foo1 const* s3;
 const struct Foo1* s4; // elaborated
 typedef Foo1* s5;
 typedef struct Foo1* s6; // elaborated
@@ -17,7 +17,7 @@ enum Foo2
 
 Foo2* e1;
 enum Foo2* e2; // elaborated
-const Foo2* e3;
+Foo2 const* e3;
 const enum Foo2* e4; // elaborated
 typedef Foo2* e5;
 typedef enum Foo2* e6; // elaborated
@@ -29,7 +29,7 @@ union Foo3
 
 Foo3* u1;
 union Foo3* u2; // elaborated
-const Foo3* u3;
+Foo3 const* u3;
 const union Foo3* u4; // elaborated
 typedef Foo3* u5;
 typedef union Foo3* u6; // elaborated
@@ -41,7 +41,7 @@ class Foo4
 
 Foo4* c1;
 class Foo4* c2; // elaborated
-const Foo3* c3;
+Foo3 const* c3;
 const class Foo4* c4; // elaborated
 typedef Foo4* c5;
 typedef class Foo4* c6; // elaborated

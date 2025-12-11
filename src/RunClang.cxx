@@ -520,9 +520,9 @@ protected:
 
   unsigned int GetGNUMajorVersion(std::string const& pd) const
   {
-    if (const char* d = strstr(pd.c_str(), "#define __GNUC__ ")) {
+    if (char const* d = strstr(pd.c_str(), "#define __GNUC__ ")) {
       d += 17;
-      if (const char* e = strchr(d, '\n')) {
+      if (char const* e = strchr(d, '\n')) {
         if (*(e - 1) == '\r') {
           --e;
         }
@@ -628,12 +628,12 @@ protected:
 
   bool NeedARMv8Intrinsics(std::string const& pd)
   {
-    if (const char* d = strstr(pd.c_str(), "#define __ARM_ARCH ")) {
+    if (char const* d = strstr(pd.c_str(), "#define __ARM_ARCH ")) {
       d += 19;
       if (pd.find("#define __ARM_FEATURE_DIRECTED_ROUNDING ") != pd.npos) {
         return false;
       }
-      if (const char* e = strchr(d, '\n')) {
+      if (char const* e = strchr(d, '\n')) {
         if (*(e - 1) == '\r') {
           --e;
         }
@@ -792,7 +792,7 @@ static bool runClangCI(clang::CompilerInstance* CI, Options const& opts)
   }
 }
 
-static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
+static int runClangImpl(char const* const* argBeg, char const* const* argEnd,
                         Options const& opts)
 {
   // Construct a diagnostics engine for use while processing driver options.
@@ -846,7 +846,7 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       !llvm::sys::fs::is_directory(d.ResourceDir)) {
     d.ResourceDir = getClangResourceDir();
   }
-  llvm::SmallVector<const char*, 16> cArgs;
+  llvm::SmallVector<char const*, 16> cArgs;
   cArgs.push_back("<clang>");
   cArgs.insert(cArgs.end(), argBeg, argEnd);
 
@@ -885,8 +885,8 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
       // Invoke Clang with this set of arguments.
       std::unique_ptr<clang::CompilerInstance> CI(
         new clang::CompilerInstance());
-      const char* const* cmdArgBeg = cmd->getArguments().data();
-      const char* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
+      char const* const* cmdArgBeg = cmd->getArguments().data();
+      char const* const* cmdArgEnd = cmdArgBeg + cmd->getArguments().size();
       if (clang::CompilerInvocation::CreateFromArgs(
             CI->getInvocation(),
 #if LLVM_VERSION_MAJOR >= 16
@@ -917,10 +917,10 @@ static int runClangImpl(const char* const* argBeg, const char* const* argEnd,
   return result ? 0 : 1;
 }
 
-int runClang(const char* const* argBeg, const char* const* argEnd,
+int runClang(char const* const* argBeg, char const* const* argEnd,
              Options const& opts)
 {
-  llvm::SmallVector<const char*, 32> args(argBeg, argEnd);
+  llvm::SmallVector<char const*, 32> args(argBeg, argEnd);
   std::string fmsc_version = "-fmsc-version=";
   std::string std_flag = "-std=";
 
@@ -959,11 +959,11 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
     if (pd.find("#define _MSC_EXTENSIONS ") != pd.npos) {
       args.push_back("-fms-extensions");
     }
-    if (const char* d = strstr(pd.c_str(), "#define _MSC_VER ")) {
+    if (char const* d = strstr(pd.c_str(), "#define _MSC_VER ")) {
       args.push_back("-fms-compatibility");
       // Extract the _MSC_VER value to give to -fmsc-version=.
       d += 17;
-      if (const char* e = strchr(d, '\n')) {
+      if (char const* e = strchr(d, '\n')) {
         if (*(e - 1) == '\r') {
           --e;
         }
@@ -983,9 +983,9 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
             }
             if (msc_ver >= 1900) {
               long msvc_lang = 0;
-              if (const char* l = strstr(pd.c_str(), "#define _MSVC_LANG ")) {
+              if (char const* l = strstr(pd.c_str(), "#define _MSVC_LANG ")) {
                 l += 19;
-                if (const char* le = strchr(l, '\n')) {
+                if (char const* le = strchr(l, '\n')) {
                   if (*(le - 1) == '\r') {
                     --le;
                   }
@@ -1031,11 +1031,11 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
         std_flag += "c";
       }
 
-      if (const char* d = strstr(pd.c_str(), "#define __cplusplus ")) {
+      if (char const* d = strstr(pd.c_str(), "#define __cplusplus ")) {
         // Extract the C++ level to give to -std=.  We do this above for
         // MSVC because it does not set __cplusplus to standard values.
         d += 20;
-        if (const char* e = strchr(d, '\n')) {
+        if (char const* e = strchr(d, '\n')) {
           if (*(e - 1) == '\r') {
             --e;
           }
@@ -1083,11 +1083,11 @@ int runClang(const char* const* argBeg, const char* const* argEnd,
           }
           args.push_back(std_flag.c_str());
         }
-      } else if (const char* d =
+      } else if (char const* d =
                    strstr(pd.c_str(), "#define __STDC_VERSION__ ")) {
         // Extract the C standard level.
         d += 25;
-        if (const char* e = strchr(d, '\n')) {
+        if (char const* e = strchr(d, '\n')) {
           if (*(e - 1) == '\r') {
             --e;
           }

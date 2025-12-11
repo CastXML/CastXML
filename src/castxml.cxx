@@ -48,25 +48,25 @@ class StringSaver : public llvm::cl::StringSaver
   std::set<std::string> Strings;
 
 public:
-  const char* SaveString(const char* s)
+  char const* SaveString(char const* s)
   {
     return this->Strings.insert(s).first->c_str();
   }
 };
 #endif
 
-int main(int argc_in, const char** argv_in)
+int main(int argc_in, char const** argv_in)
 {
   suppressInteractiveErrors();
 
 #if LLVM_VERSION_MAJOR >= 7
   llvm::InitLLVM initLLVM(argc_in, argv_in);
-  llvm::SmallVector<const char*, 64> argv(argv_in, argv_in + argc_in);
+  llvm::SmallVector<char const*, 64> argv(argv_in, argv_in + argc_in);
 #else
-  llvm::SmallVector<const char*, 64> argv;
+  llvm::SmallVector<char const*, 64> argv;
   llvm::SpecificBumpPtrAllocator<char> argAlloc;
   if (std::error_code e = llvm::sys::Process::GetArgumentVector(
-        argv, llvm::ArrayRef<const char*>(argv_in, argc_in), argAlloc)) {
+        argv, llvm::ArrayRef<char const*>(argv_in, argc_in), argAlloc)) {
     llvm::errs() << "error: could not get arguments: " << e.message() << "\n";
     return 1;
   }
@@ -146,9 +146,9 @@ int main(int argc_in, const char** argv_in)
   /* clang-format on */
 
   Options opts;
-  llvm::SmallVector<const char*, 16> clang_args;
-  llvm::SmallVector<const char*, 16> cc_args;
-  const char* cc_id = 0;
+  llvm::SmallVector<char const*, 16> clang_args;
+  llvm::SmallVector<char const*, 16> cc_args;
+  char const* cc_id = 0;
 
   for (size_t i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "--castxml-gccxml") == 0) {

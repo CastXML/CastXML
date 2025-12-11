@@ -20,7 +20,7 @@ struct Options;
 
 /// detectCC - Detect settings from given compiler command.
 
-bool detectCC(const char* id, const char* const* argBeg,
-              const char* const* argEnd, Options& opts);
+bool detectCC(char const* id, char const* const* argBeg,
+              char const* const* argEnd, Options& opts);
 
 #endif // CASTXML_DETECT_H
