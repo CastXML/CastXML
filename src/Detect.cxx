@@ -43,13 +43,13 @@ static std::string getClangBuiltinIncludeDir()
   return getClangResourceDir() + "/include";
 }
 
-static bool failedCC(const char* id, std::vector<const char*> const& args,
+static bool failedCC(char const* id, std::vector<char const*> const& args,
                      std::string const& out, std::string const& err,
                      std::string const& msg)
 {
   std::cerr << "error: '--castxml-cc-" << id
             << "' compiler command failed:\n\n";
-  for (std::vector<const char*>::const_iterator i = args.begin(),
+  for (std::vector<char const*>::const_iterator i = args.begin(),
                                                 e = args.end();
        i != e; ++i) {
     std::cerr << " '" << *i << "'";
@@ -130,12 +130,12 @@ static bool isBuiltinIncludeDir(std::string const& inc)
   );
 }
 
-static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
-                         Options& opts, const char* id, const char* ext)
+static bool detectCC_GNU(char const* const* argBeg, char const* const* argEnd,
+                         Options& opts, char const* id, char const* ext)
 {
   std::string const fwExplicitSuffix = " (framework directory)";
   std::string const fwImplicitSuffix = "/Frameworks";
-  std::vector<const char*> cc_args(argBeg, argEnd);
+  std::vector<char const*> cc_args(argBeg, argEnd);
   std::string empty_cpp = getResourceDir() + "/empty." + ext;
   int ret;
   std::string out;
@@ -148,12 +148,12 @@ static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
   if (runCommand(int(cc_args.size()), &cc_args[0], ret, out, err, msg) &&
       ret == 0) {
     opts.Predefines = out;
-    const char* start_line = "#include <...> search starts here:";
-    if (const char* c = strstr(err.c_str(), start_line)) {
+    char const* start_line = "#include <...> search starts here:";
+    if (char const* c = strstr(err.c_str(), start_line)) {
       if ((c = strchr(c, '\n'), c++)) {
         while (*c++ == ' ') {
-          if (const char* e = strchr(c, '\n')) {
-            const char* s = c;
+          if (char const* e = strchr(c, '\n')) {
+            char const* s = c;
             c = e + 1;
             if (*(e - 1) == '\r') {
               --e;
@@ -187,10 +187,10 @@ static bool detectCC_GNU(const char* const* argBeg, const char* const* argEnd,
   }
 }
 
-static bool detectCC_MSVC(const char* const* argBeg, const char* const* argEnd,
-                          Options& opts, const char* id, const char* ext)
+static bool detectCC_MSVC(char const* const* argBeg, char const* const* argEnd,
+                          Options& opts, char const* id, char const* ext)
 {
-  std::vector<const char*> cc_args(argBeg, argEnd);
+  std::vector<char const*> cc_args(argBeg, argEnd);
   std::string detect_vs_cpp = getResourceDir() + "/detect_vs." + ext;
   int ret;
   std::string out;
@@ -228,10 +228,10 @@ static bool detectCC_MSVC(const char* const* argBeg, const char* const* argEnd,
 
   // Check results.
   if (success) {
-    if (const char* predefs = strstr(out.c_str(), "\n#define")) {
+    if (char const* predefs = strstr(out.c_str(), "\n#define")) {
       opts.Predefines = predefs + 1;
     }
-    if (const char* includes_str = std::getenv("INCLUDE")) {
+    if (char const* includes_str = std::getenv("INCLUDE")) {
       llvm::SmallVector<llvm::StringRef, 8> includes;
       llvm::StringRef includes_ref(includes_str);
       includes_ref.split(includes, ";", -1, false);
@@ -251,8 +251,8 @@ static bool detectCC_MSVC(const char* const* argBeg, const char* const* argEnd,
   }
 }
 
-bool detectCC(const char* id, const char* const* argBeg,
-              const char* const* argEnd, Options& opts)
+bool detectCC(char const* id, char const* const* argBeg,
+              char const* const* argEnd, Options& opts)
 {
   if (strcmp(id, "gnu") == 0) {
     return detectCC_GNU(argBeg, argEnd, opts, id, "cpp");

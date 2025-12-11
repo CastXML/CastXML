@@ -19,7 +19,7 @@
 struct Options;
 
 /// runClang - Run Clang with given user arguments and detected options.
-int runClang(const char* const* argBeg, const char* const* argEnd,
+int runClang(char const* const* argBeg, char const* const* argEnd,
              Options const& opts);
 
 #endif // CASTXML_RUNCLANG_H

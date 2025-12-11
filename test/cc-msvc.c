@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(int argc, const char* argv[])
+int main(int argc, char const* argv[])
 {
   int cpp = 0;
-  const char* msc_ver = "1600";
-  const char* msvc_lang = 0;
-  const char* stdcpp_default_new_alignment = 0;
+  char const* msc_ver = "1600";
+  char const* msvc_lang = 0;
+  char const* stdcpp_default_new_alignment = 0;
   int i;
   for (i = 1; i < argc; ++i) {
     if (strncmp(argv[i], "--cc-define=", 12) == 0) {

@@ -1,5 +1,5 @@
 #pragma clang diagnostic ignored "-Wundefined-inline"
-constexpr void* __cdecl __builtin_assume_aligned(const void*, size_t,
+constexpr void* __cdecl __builtin_assume_aligned(void const*, size_t,
                                                  ...) noexcept;
 
 int* check_assume_aligned(int* p)

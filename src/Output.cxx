@@ -599,7 +599,7 @@ class ASTVisitor : public ASTVisitorBase
       the caller.  This encompasses functionality common to all the
       function declaration output methods.  */
   void OutputFunctionHelper(
-    clang::FunctionDecl const* d, DumpNode const* dn, const char* tag,
+    clang::FunctionDecl const* d, DumpNode const* dn, char const* tag,
     unsigned int flags,
     cx::optional<std::string> const& name = cx::optional<std::string>());
 
@@ -607,7 +607,7 @@ class ASTVisitor : public ASTVisitorBase
       This encompasses functionality common to all the function type
       output methods.  */
   void OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
-                                DumpNode const* dn, const char* tag,
+                                DumpNode const* dn, char const* tag,
                                 clang::Type const* c);
 
   /** Output an <Argument/> element inside a function element.  */
@@ -1798,7 +1798,7 @@ void ASTVisitor::PrintMembersAttribute(std::set<DumpId> const& emitted)
 {
   if (!emitted.empty()) {
     this->OS << " members=\"";
-    const char* sep = "";
+    char const* sep = "";
     for (std::set<DumpId>::const_iterator i = emitted.begin(),
                                           e = emitted.end();
          i != e; ++i) {
@@ -1812,7 +1812,7 @@ void ASTVisitor::PrintMembersAttribute(std::set<DumpId> const& emitted)
 void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
 {
   this->OS << " bases=\"";
-  const char* sep = "";
+  char const* sep = "";
   for (clang::CXXRecordDecl::base_class_const_iterator i = dx->bases_begin(),
                                                        e = dx->bases_end();
        i != e; ++i) {
@@ -1840,7 +1840,7 @@ void ASTVisitor::PrintAttributesAttribute(
     return;
   }
   this->OS << " attributes=\"";
-  const char* sep = "";
+  char const* sep = "";
   for (std::string const& a : attrs) {
     this->OS << sep << encodeXML(a);
     sep = " ";
@@ -1928,7 +1928,7 @@ void ASTVisitor::PrintThrowsAttribute(clang::FunctionProtoType const* fpt,
     clang::FunctionProtoType::exception_iterator i = fpt->exception_begin();
     clang::FunctionProtoType::exception_iterator e = fpt->exception_end();
     this->OS << " throw=\"";
-    const char* sep = "";
+    char const* sep = "";
     for (; i != e; ++i) {
       this->OS << sep;
       this->PrintTypeIdRef(*i, complete);
@@ -1942,7 +1942,7 @@ void ASTVisitor::PrintBefriendingAttribute(clang::CXXRecordDecl const* dx)
 {
   if (dx && dx->hasFriends()) {
     this->OS << " befriending=\"";
-    const char* sep = "";
+    char const* sep = "";
     for (clang::CXXRecordDecl::friend_iterator i = dx->friend_begin(),
                                                e = dx->friend_end();
          i != e; ++i) {
@@ -2045,7 +2045,7 @@ bool ASTVisitor::IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const
 }
 
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
-                                      DumpNode const* dn, const char* tag,
+                                      DumpNode const* dn, char const* tag,
                                       unsigned int flags,
                                       cx::optional<std::string> const& name)
 {
@@ -2089,7 +2089,7 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
         clang::dyn_cast<clang::CXXMethodDecl>(d)) {
     if (md->size_overridden_methods() > 0) {
       this->OS << " overrides=\"";
-      const char* sep = "";
+      char const* sep = "";
       for (clang::CXXMethodDecl::method_iterator
              i = md->begin_overridden_methods(),
              e = md->end_overridden_methods();
@@ -2145,7 +2145,7 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 }
 
 void ASTVisitor::OutputFunctionTypeHelper(clang::FunctionProtoType const* t,
-                                          DumpNode const* dn, const char* tag,
+                                          DumpNode const* dn, char const* tag,
                                           clang::Type const* c)
 {
   this->OS << "  <" << tag;
@@ -2251,7 +2251,7 @@ void ASTVisitor::OutputNamespaceDecl(clang::NamespaceDecl const* d,
 void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
                                   DumpNode const* dn)
 {
-  const char* tag;
+  char const* tag;
   switch (d->getTagKind()) {
     case cx_TagTypeKind(Class):
       tag = "Class";

@@ -20,11 +20,11 @@
   "#define __" #x "_NORM_MAX__\n"                                             \
   ""
 
-int main(int argc, const char* argv[])
+int main(int argc, char const* argv[])
 {
   int cpp = 0;
-  const char* std_date = 0;
-  const char* ver_major = "1";
+  char const* std_date = 0;
+  char const* ver_major = "1";
   int i;
   for (i = 1; i < argc; ++i) {
     if (strncmp(argv[i], "--cc-define=", 12) == 0) {
