@@ -35,7 +35,6 @@
 #include "clang/Driver/Compilation.h"
 #include "clang/Driver/Driver.h"
 #include "clang/Driver/DriverDiagnostic.h"
-#include "clang/Driver/Options.h"
 #include "clang/Driver/Tool.h"
 #include "clang/Frontend/CompilerInstance.h"
 #include "clang/Frontend/FrontendActions.h"
@@ -50,6 +49,14 @@
 #include "llvm/Support/FileSystem.h"
 #include "llvm/Support/Path.h"
 #include "llvm/Support/raw_ostream.h"
+
+#if LLVM_VERSION_MAJOR >= 22
+#  include "clang/Options/Options.h"
+#  define CASTXML_CLANG_OPTIONS clang::options
+#else
+#  include "clang/Driver/Options.h"
+#  define CASTXML_CLANG_OPTIONS clang::driver::options
+#endif
 
 #if LLVM_VERSION_MAJOR >= 20
 #  include "llvm/Support/VirtualFileSystem.h"
@@ -808,7 +815,9 @@ static int runClangImpl(char const* const* argBeg, char const* const* argEnd,
 #endif
   llvm::IntrusiveRefCntPtr<clang::DiagnosticIDs> diagID(
     new clang::DiagnosticIDs());
-#if LLVM_VERSION_MAJOR >= 10
+#if LLVM_VERSION_MAJOR >= 22
+  llvm::opt::OptTable const* driverOpts = &clang::getDriverOptTable();
+#elif LLVM_VERSION_MAJOR >= 10
   llvm::opt::OptTable const* driverOpts = &clang::driver::getDriverOptTable();
 #else
   std::unique_ptr<llvm::opt::OptTable> driverOpts(
@@ -864,7 +873,7 @@ static int runClangImpl(char const* const* argBeg, char const* const* argEnd,
   }
 
   // For '-###' just print the jobs and exit early.
-  if (c->getArgs().hasArg(clang::driver::options::OPT__HASH_HASH_HASH)) {
+  if (c->getArgs().hasArg(CASTXML_CLANG_OPTIONS::OPT__HASH_HASH_HASH)) {
     c->getJobs().Print(llvm::errs(), "\n", true);
     return 0;
   }
