@@ -411,6 +411,8 @@ castxml_test_cmd(rsp-empty @${input}/empty.rsp)
 castxml_test_cmd(rsp-missing @${input}/does-not-exist.rsp)
 castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
 castxml_test_cmd(fbracket-depth -fbracket-depth=300 -std=c11 -c ${input}/fbracket-depth.c)
+# Label fbracket-depth as LargeStackRequired, which is not supported on github CI
+set_tests_properties(cmd.fbracket-depth PROPERTIES LABELS LargeStackRequired)
 
 # Test predefined macros when not using --castxml-cc-<id>.
 configure_file(expect/cmd.predefined-macros.stdout.txt.in
