@@ -329,6 +329,7 @@ castxml_test_cmd(rsp-empty @${input}/empty.rsp)
 castxml_test_cmd(rsp-missing @${input}/does-not-exist.rsp)
 castxml_test_cmd(rsp-o-missing @${input}/o-missing.rsp)
 castxml_test_cmd(fbracket-depth -fbracket-depth=300 -std=c11 -c ${input}/fbracket-depth.c)
+set_property(TEST cmd.fbracket-depth APPEND PROPERTY LABELS LargeStackRequired) # aid exclusion
 
 # Test predefined macros when not using --castxml-cc-<id>.
 configure_file(expect/cmd.predefined-macros.stdout.txt.in
