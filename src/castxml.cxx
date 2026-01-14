@@ -38,6 +38,7 @@
 #include <string.h>
 #include <system_error>
 #include <vector>
+#include <map>
 
 #if LLVM_VERSION_MAJOR > 3 ||                                                 \
   LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 7
@@ -133,6 +134,11 @@ int main(int argc_in, char const** argv_in)
     "    name(s).  Multiple names may be specified as a comma-separated\n"
     "    list or by repeating the option.\n"
     "\n"
+    "  --castxml-exclude-by-visibility <specifier>[,<specifier>]...\n"
+    "    Filter out declarations with the given visibility (private||protected||public)\n"
+    "    specifier(s). Multiple specifiers may be provided as a comma-separated\n"
+    "    list or by repeating the option.\n"
+    "\n"
     "  -help, --help\n"
     "    Print castxml and internal Clang compiler usage information\n"
     "\n"
@@ -149,6 +155,13 @@ int main(int argc_in, char const** argv_in)
   llvm::SmallVector<char const*, 16> clang_args;
   llvm::SmallVector<char const*, 16> cc_args;
   char const* cc_id = 0;
+
+  typedef std::map<std::string, clang::AccessSpecifier> VisibilityMapType;
+  VisibilityMapType TextToVisibility = {
+    { "private",  clang::AccessSpecifier::AS_private },
+    { "protected", clang::AccessSpecifier::AS_protected },
+    { "public" , clang::AccessSpecifier::AS_public }
+  };
 
   for (size_t i = 1; i < argc; ++i) {
     if (strcmp(argv[i], "--castxml-gccxml") == 0) {
@@ -287,8 +300,32 @@ int main(int argc_in, char const** argv_in)
         /* clang-format on */
         return 1;
       }
-    } else if (strcmp(argv[i], "-help") == 0 ||
-               strcmp(argv[i], "--help") == 0) {
+    }
+    else if (strcmp(argv[i], "--castxml-exclude-by-visibility") == 0) {
+      if ((i + 1) < argc) {
+        std::string item;
+        std::stringstream stream(argv[++i]);
+        while (std::getline(stream, item, ',')) {
+          VisibilityMapType::iterator iterator = TextToVisibility.find(item);
+          if (iterator != TextToVisibility.end()) {
+            opts.ExcludedVisibility.insert(iterator->second);
+          }
+        }
+      }
+      else {
+        /* clang-format off */
+        std::cerr <<
+          "error: argument to '--castxml-exclude-by-visibility' is missing "
+          "(expected 1 value)\n"
+          "\n" <<
+          usage
+          ;
+        /* clang-format on */
+        return 1;
+      }
+    }
+    else if (strcmp(argv[i], "-help") == 0 ||
+      strcmp(argv[i], "--help") == 0) {
       /* clang-format off */
       std::cout <<
         usage <<
