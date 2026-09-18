@@ -48,6 +48,7 @@
 #include <queue>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #if LLVM_VERSION_MAJOR >= 21
@@ -556,6 +557,13 @@ class ASTVisitor : public ASTVisitorBase
       bases of the given class type.  Also queues the base classes
       for later output.  */
   void PrintBasesAttribute(clang::CXXRecordDecl const* dx);
+
+  /** Print a usings="..." attribute listing the XML IDREFs named by
+      the class-scope using declarations of the given class type, each
+      prefixed by the access specifier the using declaration gives it
+      unless that is public.  Also queues the referenced declarations
+      for later output.  */
+  void PrintUsingsAttribute(clang::CXXRecordDecl const* dx);
 
   /** Print an attributes="..." attribute listing the given attributes.  */
   void PrintAttributesAttribute(std::vector<std::string> const& attrs);
@@ -1837,6 +1845,42 @@ void ASTVisitor::PrintBasesAttribute(clang::CXXRecordDecl const* dx)
   this->OS << "\"";
 }
 
+void ASTVisitor::PrintUsingsAttribute(clang::CXXRecordDecl const* dx)
+{
+  std::vector<std::pair<clang::AccessSpecifier, DumpId>> usings;
+  for (clang::Decl const* d : dx->decls()) {
+    // This also covers ConstructorUsingShadowDecl for inherited
+    // constructors.
+    if (clang::UsingShadowDecl const* shadow =
+          clang::dyn_cast<clang::UsingShadowDecl>(d)) {
+      if (DumpId id = this->AddDeclDumpNode(shadow, true)) {
+        usings.push_back(std::make_pair(shadow->getAccess(), id));
+      }
+    }
+  }
+  if (usings.empty()) {
+    return;
+  }
+  this->OS << " usings=\"";
+  char const* sep = "";
+  for (std::pair<clang::AccessSpecifier, DumpId> const& u : usings) {
+    this->OS << sep;
+    sep = " ";
+    switch (u.first) {
+      case clang::AS_private:
+        this->OS << "private:";
+        break;
+      case clang::AS_protected:
+        this->OS << "protected:";
+        break;
+      default:
+        break;
+    }
+    this->OS << "_" << u.second;
+  }
+  this->OS << "\"";
+}
+
 void ASTVisitor::PrintAttributesAttribute(
   std::vector<std::string> const& attrs)
 {
@@ -2304,6 +2348,10 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
       doBases = dx && dx->getNumBases();
       if (doBases) {
         this->PrintBasesAttribute(dx);
+      }
+      // The gccxml format reproduces gccxml 0.9 and has no such attribute.
+      if (dx && this->Opts.CastXml) {
+        this->PrintUsingsAttribute(dx);
       }
       this->PrintBefriendingAttribute(dx);
     }
@@ -2801,7 +2849,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".4.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".4.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {

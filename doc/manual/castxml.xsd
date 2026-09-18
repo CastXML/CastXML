@@ -49,6 +49,18 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <!-- A list of IDREFs, each prefixed by its access specifier
+       unless that is public.  -->
+  <xs:simpleType name="access-prefixed-ids">
+    <xs:list>
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:pattern value="(private:|protected:)?_[0-9]+" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:list>
+  </xs:simpleType>
+
   <xs:simpleType name="elaboration-keyword">
     <xs:restriction base="xs:token">
       <xs:enumeration value="enum" />
@@ -171,17 +183,8 @@
     <!-- All of the following attributes are for complete declarations only. -->
     <xs:attribute name="abstract" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="members" type="xs:IDREFS" use="optional" />
-    <xs:attribute name="bases" use="optional">
-      <xs:simpleType>
-        <xs:list>
-          <xs:simpleType>
-            <xs:restriction base="xs:token">
-              <xs:pattern value="(private:|protected:)?_[0-9]+" />
-            </xs:restriction>
-          </xs:simpleType>
-        </xs:list>
-      </xs:simpleType>
-    </xs:attribute>
+    <xs:attribute name="bases" type="access-prefixed-ids" use="optional" />
+    <xs:attribute name="usings" type="access-prefixed-ids" use="optional" />
     <xs:attribute name="befriending" type="xs:IDREFS" use="optional" />
     <xs:attributeGroup ref="optionalAbi" />
     <xs:attribute name="attributes" type="attributes" use="optional" />
