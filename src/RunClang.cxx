@@ -864,6 +864,9 @@ static int runClangImpl(char const* const* argBeg, char const* const* argEnd,
     cArgs.push_back("-E");
   } else {
     cArgs.push_back("-fsyntax-only");
+#if LLVM_VERSION_MAJOR >= 24
+    cArgs.push_back("-fretain-comments");
+#endif
   }
 
   // Ask the driver to build the compiler commands for us.
