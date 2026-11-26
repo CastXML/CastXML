@@ -1,0 +1,41 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6 _7"/>
+  <ClassTemplate id="_3" name="Box" context="_1" location="f1:2" file="f1" line="2">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+  </ClassTemplate>
+  <Struct id="_4" name="Box&lt;int&gt;" template="_3" instantiation="explicit-declaration" canonical_name="start::Box&lt;int&gt;" written_name="Box&lt;int&gt;" context="_1" location="f1:3" file="f1" line="3" members="_8 _9 _10 _11 _12 _13" size="[0-9]+" align="[0-9]+"/>
+  <FunctionTemplate id="_5" name="run" context="_1" location="f1:4" file="f1" line="4" type_spelling="void \(T\)" canonical_type="void \(type-parameter-0-0\)">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <Argument type_spelling="T" parameter_depth="0" parameter_index="0"/>
+  </FunctionTemplate>
+  <Function id="_6" template="_5" instantiation="explicit-declaration" canonical_name="start::run&lt;int&gt;" name="run" returns="_14" context="_1" location="f1:4" file="f1" line="4" mangled="[^"]+">
+    <Argument type="_15" location="f1:4" file="f1" line="4"/>
+  </Function>
+  <Function id="_7" template="_5" instantiation="explicit-definition" canonical_name="start::run&lt;double&gt;" name="run" returns="_14" context="_1" location="f1:4" file="f1" line="4" mangled="[^"]+">
+    <Argument type="_16" location="f1:4" file="f1" line="4"/>
+  </Function>
+  <Constructor id="_8" name="Box" context="_4" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
+  <Constructor id="_9" name="Box" context="_4" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
+    <Argument type="_17" location="f1:3" file="f1" line="3"/>
+  </Constructor>
+  <OperatorMethod id="_10" name="=" returns="_18" context="_4" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_17" location="f1:3" file="f1" line="3"/>
+  </OperatorMethod>
+  <Constructor id="_11" name="Box" context="_4" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1">
+    <Argument type="_19" location="f1:3" file="f1" line="3"/>
+  </Constructor>
+  <OperatorMethod id="_12" name="=" returns="_18" context="_4" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1" mangled="[^"]+">
+    <Argument type="_19" location="f1:3" file="f1" line="3"/>
+  </OperatorMethod>
+  <Destructor id="_13" name="Box" context="_4" access="public" location="f1:3" file="f1" line="3" inline="1" artificial="1"/>
+  <FundamentalType id="_14" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_15" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_16" name="double" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_17" type="_4c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_4c" type="_4" const="1"/>
+  <ReferenceType id="_18" type="_4" size="[0-9]+" align="[0-9]+"/>
+  <RValueReferenceType id="_19" type="_4" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Template-explicit-instantiations.cxx"/>
+</CastXML>$

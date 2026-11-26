@@ -1,0 +1,62 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6 _7 _8 _9 _10 _11 _12 _13 _14 _15 _16 _17 _18"/>
+  <ClassTemplate id="_3" name="Box" context="_1" location="f1:2" file="f1" line="2">
+    <TemplateParameter kind="type" name="T" declaration="class T = int" default="int" default_type="_19"/>
+  </ClassTemplate>
+  <Struct id="_4" name="Box&lt;&gt;" template="_3" instantiation="explicit-specialization" canonical_name="start::Box&lt;int&gt;" written_name="Box&lt;I&gt;" context="_1" location="f1:14" file="f1" line="14" incomplete="1"/>
+  <ClassTemplate id="_5" name="Buf" context="_1" location="f1:3" file="f1" line="3">
+    <TemplateParameter kind="non-type" name="N" type_spelling="int" declaration="int N = 4" default="4"/>
+  </ClassTemplate>
+  <Concept id="_6" name="Small" context="_1" location="f1:4" file="f1" line="4">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <Constraint expression="sizeof\(T\) &lt;= 4"/>
+  </Concept>
+  <FunctionTemplate id="_7" name="f" context="_1" location="f1:5" file="f1" line="5" type_spelling="void \(T, int\)" canonical_type="void \(type-parameter-0-0, int\)">
+    <TemplateParameter kind="type" name="T" concept="_6" declaration="Small T"/>
+    <Argument type_spelling="T" parameter_depth="0" parameter_index="0"/>
+    <Argument type_spelling="int" type="_19"/>
+    <Constraint expression="\(Small&lt;T&gt; &amp;&amp; sizeof\(T\) &gt; 1\)" concepts="_6"/>
+  </FunctionTemplate>
+  <TypeAliasTemplate id="_8" name="Alias" context="_1" location="f1:6" file="f1" line="6" type_spelling="T \*" canonical_type="type-parameter-0-0 \*">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+  </TypeAliasTemplate>
+  <VarTemplate id="_9" name="value" context="_1" location="f1:7" file="f1" line="7" type_spelling="const int" canonical_type="const int">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+  </VarTemplate>
+  <FunctionTemplate id="_10" name="walk" context="_1" location="f1:8" file="f1" line="8" type_spelling="void \(T\)" canonical_type="void \(type-parameter-0-0\)">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <Argument type_spelling="T" parameter_depth="0" parameter_index="0"/>
+  </FunctionTemplate>
+  <Function id="_11" template="_10" instantiation="explicit-declaration" canonical_name="start::walk&lt;int&gt;" name="walk" returns="_20" context="_1" location="f1:8" file="f1" line="8" mangled="[^"]+">
+    <Argument type="_19" location="f1:8" file="f1" line="8"/>
+  </Function>
+  <Function id="_12" template="_10" instantiation="explicit-definition" canonical_name="start::walk&lt;char&gt;" name="walk" returns="_20" context="_1" location="f1:8" file="f1" line="8" mangled="[^"]+">
+    <Argument type="_21" location="f1:8" file="f1" line="8"/>
+  </Function>
+  <Function id="_13" template="_10" instantiation="explicit-specialization" canonical_name="start::walk&lt;double&gt;" written_name="walk&lt;double&gt;" name="walk" returns="_20" context="_1" location="f1:11" file="f1" line="11" mangled="[^"]+">
+    <Argument type="_22" location="f1:8" file="f1" line="8"/>
+  </Function>
+  <Function id="_14" template="_10" instantiation="implicit" canonical_name="start::walk&lt;float&gt;" name="walk" returns="_20" context="_1" location="f1:8" file="f1" line="8" mangled="[^"]+">
+    <Argument type="_23" location="f1:8" file="f1" line="8"/>
+  </Function>
+  <Function id="_15" name="use" returns="_20" context="_1" location="f1:12" file="f1" line="12" inline="1" mangled="[^"]+"/>
+  <Typedef id="_16" name="I" type="_19" context="_1" location="f1:13" file="f1" line="13"/>
+  <ClassTemplate id="_17" name="Family" context="_1" location="f1:15" file="f1" line="15">
+    <TemplateParameter kind="template" name="C" declaration="template &lt;class&gt; class C( = Box)?" default="(start::)?Box">
+    <TemplateParameter kind="type" name="" declaration="class"/>
+    </TemplateParameter>
+    <TemplateParameter kind="type" name="Ts" pack="1" declaration="class ...Ts"/>
+  </ClassTemplate>
+  <ClassTemplate id="_18" name="Dependent" context="_1" location="f1:16" file="f1" line="16">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <TemplateParameter kind="type" name="U" declaration="class U = T" default="T"/>
+  </ClassTemplate>
+  <FundamentalType id="_19" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_20" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_21" name="char" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_22" name="double" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_23" name="float" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <File id="f1" name=".*/test/input/Templates.cxx"/>
+</CastXML>$

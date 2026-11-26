@@ -1,0 +1,9 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <ClassTemplate id="_1" name="start" context="_2" location="f1:1" file="f1" line="1">
+    <TemplateParameter kind="type" name="Internal" declaration="class Internal = int" default="int" default_type="_3"/>
+  </ClassTemplate>
+  <Namespace id="_2" name="::"/>
+  <FundamentalType id="_3" name="int" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Template-redeclaration.cxx"/>
+</CastXML>$

@@ -63,6 +63,25 @@ Remaining options are given to the internal Clang compiler.
   or move assignment operators, and may contain ``<Unimplemented/>``
   elements on non-c++98 constructs.
 
+``--castxml-templates=1``
+  With ``--castxml-output=1``, include primary class, function, alias and
+  variable templates and concept declarations. Parameters appear in order
+  with their kinds, declarations and optional defaults. A non-dependent type
+  default can also refer to its type node through ``default_type``. Function
+  signatures, alias targets and variable types have printed and canonical
+  type spellings. Constraints carry printed expressions. A constrained type
+  parameter can reference its concept, and a constraint expression can
+  reference concepts used in it. These references participate in traversal
+  with ``--castxml-start``.
+
+  Instantiated records and functions reference their primary template and
+  record their specialization kind. With Clang 8 and later, their
+  ``canonical_name`` includes the scope. The optional ``written_name``
+  contains the unqualified name and explicit template arguments when Clang
+  retains their source range. Instantiation kind describes the declaration in
+  the translation unit. Symbol export requires separate information from the
+  built library.
+
 ``--castxml-start <name>[,<name>]...``
   Start AST traversal at declaration(s) with the given qualified name(s).
   Multiple names may be specified as a comma-separated list or by repeating
@@ -105,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.4.1">
+  <CastXML format="1.5.0">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
@@ -189,18 +208,14 @@ CastXML was written had no need for function bodies.
 Why don't I see templates in the output?
 ----------------------------------------
 
-This feature has not been implemented because the driving project for which
-CastXML was written had no need for uninstantiated templates.
-Template instantiations will still be dumped, though. For example:
+By default CastXML emits template instantiations. For example:
 
 .. code-block:: c++
 
   template <class T> struct foo {};
   typedef foo<int>::foo foo_int;
 
-will instantiate ``foo<int>``, which will be included in the output.
-However, there will be no place that explicitly lists the set of types used
-for the instantiation other than in the name. This is because the proper way to
-do it is to dump the templates too and reference them from the instantiations
-with the template arguments listed. Since the features will be linked they
-should be implemented together.
+This instantiates ``foo<int>``, which appears in the output. To also include
+the primary template and its parameters, use ``--castxml-output=1`` with
+``--castxml-templates=1``. In this mode each emitted class or function
+template specialization references its primary template.
