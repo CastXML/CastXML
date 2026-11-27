@@ -1,0 +1,1 @@
+^error: --castxml-templates=1 requires --castxml-output=1$

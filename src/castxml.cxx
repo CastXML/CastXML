@@ -118,6 +118,8 @@ int main(int argc_in, char const** argv_in)
     "    <cc> names a compiler (e.g. \"gcc\") and <cc-opt>... specifies\n"
     "    options that may affect its target (e.g. \"-m32\").\n"
     "\n"
+    "  --castxml-templates=1\n"
+    "    Include template declarations in CastXML output.\n"
     "  --castxml-output=<v>\n"
     "    Write castxml-format output to <src>.xml or file named by '-o'\n"
     "    The <v> specifies the \"epic\" format version number to generate,\n"
@@ -164,6 +166,12 @@ int main(int argc_in, char const** argv_in)
         /* clang-format on */
         return 1;
       }
+    } else if (strncmp(argv[i], "--castxml-templates=", 20) == 0) {
+      if (opts.Templates || strcmp(argv[i] + 20, "1") != 0) {
+        std::cerr << "error: expected a single --castxml-templates=1\n";
+        return 1;
+      }
+      opts.Templates = true;
     } else if (strncmp(argv[i], "--castxml-output=", 17) == 0) {
       if (!opts.CastXml) {
         opts.CastXml = true;
@@ -344,6 +352,11 @@ int main(int argc_in, char const** argv_in)
     }
   }
 
+  if (opts.Templates &&
+      (!opts.CastXml || opts.CastXmlEpicFormatVersion != 1)) {
+    std::cerr << "error: --castxml-templates=1 requires --castxml-output=1\n";
+    return 1;
+  }
   if (opts.GccXml && opts.CastXml) {
     /* clang-format off */
     std::cerr <<

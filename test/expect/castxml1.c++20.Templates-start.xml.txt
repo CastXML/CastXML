@@ -1,0 +1,17 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <FunctionTemplate id="_1" name="f" context="_2" location="f1:5" file="f1" line="5" type_spelling="void \(T, int\)" canonical_type="void \(type-parameter-0-0, int\)">
+    <TemplateParameter kind="type" name="T" concept="_3" declaration="Small T"/>
+    <Argument type_spelling="T" parameter_depth="0" parameter_index="0"/>
+    <Argument type_spelling="int" type="_4"/>
+    <Constraint expression="\(Small&lt;T&gt; &amp;&amp; sizeof\(T\) &gt; 1\)" concepts="_3"/>
+  </FunctionTemplate>
+  <Concept id="_3" name="Small" context="_2" location="f1:4" file="f1" line="4">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <Constraint expression="sizeof\(T\) &lt;= 4"/>
+  </Concept>
+  <Namespace id="_2" name="start" context="_5"/>
+  <FundamentalType id="_4" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_5" name="::"/>
+  <File id="f1" name=".*/test/input/Templates.cxx"/>
+</CastXML>$

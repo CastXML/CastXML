@@ -1,0 +1,19 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <FunctionTemplate id="_1" name="start" context="_2" location="f1:7" file="f1" line="7" type_spelling="void \(T\)" canonical_type="void \(type-parameter-0-0\)">
+    <TemplateParameter kind="type" name="T" concept="_3" declaration="constraints::Both T"/>
+    <Argument type_spelling="T" parameter_depth="0" parameter_index="0"/>
+    <Constraint expression="constraints::Sized&lt;T&gt;" concepts="_4"/>
+  </FunctionTemplate>
+  <Concept id="_3" name="Both" context="_5" location="f1:3" file="f1" line="3">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <Constraint expression="Sized&lt;T&gt; &amp;&amp; Sized&lt;T \*&gt;" concepts="_4"/>
+  </Concept>
+  <Concept id="_4" name="Sized" context="_5" location="f1:2" file="f1" line="2">
+    <TemplateParameter kind="type" name="T" declaration="class T"/>
+    <Constraint expression="sizeof\(T\) &gt; 0"/>
+  </Concept>
+  <Namespace id="_2" name="::"/>
+  <Namespace id="_5" name="constraints" context="_2"/>
+  <File id="f1" name=".*/test/input/Template-concept-references.cxx"/>
+</CastXML>$

@@ -25,6 +25,7 @@ struct Options
     : PPOnly(false)
     , GccXml(false)
     , CastXml(false)
+    , Templates(false)
     , HaveCC(false)
     , HaveStd(false)
     , HaveTarget(false)
@@ -34,6 +35,7 @@ struct Options
   bool PPOnly;
   bool GccXml;
   bool CastXml;
+  bool Templates;
   bool HaveCC;
   bool HaveStd;
   bool HaveTarget;

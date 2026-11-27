@@ -34,11 +34,13 @@
 #include "clang/AST/NestedNameSpecifier.h"
 #include "clang/AST/PrettyPrinter.h"
 #include "clang/AST/RecordLayout.h"
+#include "clang/AST/TypeLoc.h"
 #include "clang/Basic/FileManager.h"
 #include "clang/Basic/SourceLocation.h"
 #include "clang/Basic/Specifiers.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Frontend/CompilerInstance.h"
+#include "clang/Lex/Lexer.h"
 #include "clang/Lex/Preprocessor.h"
 #include "llvm/Support/raw_ostream.h"
 
@@ -50,6 +52,10 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#if LLVM_VERSION_MAJOR >= 10
+#  include "clang/AST/ExprConcepts.h"
+#endif
 
 #if LLVM_VERSION_MAJOR >= 21
 #  include "clang/AST/DeclOpenACC.h"
@@ -733,6 +739,14 @@ class ASTVisitor : public ASTVisitorBase
   // Decl node output methods.
   void OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
                                  DumpNode const* dn);
+  void OutputTemplate(clang::TemplateDecl const* d, DumpNode const* dn);
+#if LLVM_VERSION_MAJOR >= 10
+  DumpId AddConceptReference(clang::TemplateName name);
+#endif
+  void OutputTemplateParameters(clang::TemplateParameterList const* params);
+  void PrintInstantiation(clang::NamedDecl const* instance,
+                          clang::TemplateDecl const* primary,
+                          clang::TemplateSpecializationKind kind);
   void OutputNamespaceDecl(clang::NamespaceDecl const* d, DumpNode const* dn);
   void OutputRecordDecl(clang::RecordDecl const* d, DumpNode const* dn);
   void OutputCXXRecordDecl(clang::CXXRecordDecl const* d, DumpNode const* dn);
@@ -942,7 +956,7 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
     }
   }
 
-  if (clang::dyn_cast<clang::TypeAliasTemplateDecl>(d)) {
+  if (!this->Opts.Templates && clang::isa<clang::TypeAliasTemplateDecl>(d)) {
     return DumpId();
   }
 
@@ -1242,6 +1256,12 @@ unsigned int ASTVisitor::AddDumpFile(cx::FileEntryRef f)
 void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
                                       std::set<DumpId>* emitted)
 {
+  if (this->Opts.Templates) {
+    DumpId id = this->AddDeclDumpNode(d, true);
+    if (id && emitted) {
+      emitted->insert(id);
+    }
+  }
   // Queue all the instantiations of this class template.
   for (clang::ClassTemplateDecl::spec_iterator i = d->spec_begin(),
                                                e = d->spec_end();
@@ -1257,6 +1277,12 @@ void ASTVisitor::AddClassTemplateDecl(clang::ClassTemplateDecl const* d,
 void ASTVisitor::AddFunctionTemplateDecl(clang::FunctionTemplateDecl const* d,
                                          std::set<DumpId>* emitted)
 {
+  if (this->Opts.Templates) {
+    DumpId id = this->AddDeclDumpNode(d, true);
+    if (id && emitted) {
+      emitted->insert(id);
+    }
+  }
   // Queue all the instantiations of this function template.
   for (clang::FunctionTemplateDecl::spec_iterator i = d->spec_begin(),
                                                   e = d->spec_end();
@@ -1307,6 +1333,14 @@ void ASTVisitor::AddDeclContextMembers(clang::DeclContext const* dc,
       case clang::Decl::AccessSpec: {
         continue;
       } break;
+#if LLVM_VERSION_MAJOR >= 23
+      case clang::Decl::ExplicitInstantiation:
+        // The specialization already records this instantiation.
+        if (this->Opts.Templates) {
+          continue;
+        }
+        break;
+#endif
       case clang::Decl::ClassTemplate: {
         this->AddClassTemplateDecl(
           static_cast<clang::ClassTemplateDecl const*>(d), &emitted);
@@ -1493,6 +1527,20 @@ void ASTVisitor::ProcessFileQueue()
 
 void ASTVisitor::OutputDecl(clang::Decl const* d, DumpNode const* dn)
 {
+  if (this->Opts.Templates) {
+    if (auto const* td = clang::dyn_cast<clang::TemplateDecl>(d)) {
+      if (clang::isa<clang::ClassTemplateDecl>(td) ||
+          clang::isa<clang::FunctionTemplateDecl>(td) ||
+          clang::isa<clang::TypeAliasTemplateDecl>(td) ||
+#if LLVM_VERSION_MAJOR >= 10
+          clang::isa<clang::ConceptDecl>(td) ||
+#endif
+          clang::isa<clang::VarTemplateDecl>(td)) {
+        this->OutputTemplate(td, dn);
+        return;
+      }
+    }
+  }
   // Dispatch output of the declaration.
   switch (d->getKind()) {
 #define ABSTRACT_DECL(DECL)
@@ -2099,6 +2147,10 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 {
   this->OS << "  <" << tag;
   this->PrintIdAttribute(dn);
+  if (this->Opts.Templates && d->getPrimaryTemplate()) {
+    this->PrintInstantiation(d, d->getPrimaryTemplate(),
+                             d->getTemplateSpecializationKind());
+  }
   if (name) {
     this->PrintNameAttribute(*name);
   }
@@ -2275,6 +2327,291 @@ void ASTVisitor::OutputTranslationUnitDecl(clang::TranslationUnitDecl const* d,
   this->OS << "/>\n";
 }
 
+void ASTVisitor::PrintInstantiation(clang::NamedDecl const* instance,
+                                    clang::TemplateDecl const* primary,
+                                    clang::TemplateSpecializationKind kind)
+{
+  if (!this->Opts.Templates) {
+    return;
+  }
+  char const* value;
+  switch (kind) {
+    case clang::TSK_ImplicitInstantiation:
+      value = "implicit";
+      break;
+    case clang::TSK_ExplicitInstantiationDeclaration:
+      value = "explicit-declaration";
+      break;
+    case clang::TSK_ExplicitInstantiationDefinition:
+      value = "explicit-definition";
+      break;
+    case clang::TSK_ExplicitSpecialization:
+      value = "explicit-specialization";
+      break;
+    default:
+      return;
+  }
+  if (DumpId id = this->AddDeclDumpNode(primary, true)) {
+    this->OS << " template=\"_" << id << "\" instantiation=\"" << value
+             << "\"";
+  }
+#if LLVM_VERSION_MAJOR >= 8
+  std::string canonical;
+  llvm::raw_string_ostream out(canonical);
+  clang::PrintingPolicy policy(this->PrintingPolicy);
+#  if LLVM_VERSION_MAJOR >= 21
+  policy.PrintAsCanonical = true;
+#  else
+  policy.PrintCanonicalTypes = true;
+#  endif
+  instance->getNameForDiagnostic(out, policy, true);
+  this->OS << " canonical_name=\"" << encodeXML(out.str()) << "\"";
+#endif
+
+  clang::SourceRange angles;
+  clang::ASTTemplateArgumentListInfo const* written = nullptr;
+  if (auto const* fn = clang::dyn_cast<clang::FunctionDecl>(instance)) {
+    for (auto const* decl : fn->redecls()) {
+      written = decl->getTemplateSpecializationArgsAsWritten();
+      if (written && written->LAngleLoc.isValid()) {
+        break;
+      }
+    }
+  } else if (auto const* cls =
+               clang::dyn_cast<clang::ClassTemplateSpecializationDecl>(
+                 instance)) {
+#if LLVM_VERSION_MAJOR >= 19
+    written = cls->getTemplateArgsAsWritten();
+#else
+    if (auto const* tsi = cls->getTypeAsWritten()) {
+      for (auto loc = tsi->getTypeLoc(); !loc.isNull();
+           loc = loc.getNextTypeLoc()) {
+        if (auto spec = loc.getAs<clang::TemplateSpecializationTypeLoc>()) {
+          angles =
+            clang::SourceRange(spec.getLAngleLoc(), spec.getRAngleLoc());
+          break;
+        }
+      }
+    }
+#endif
+  }
+  if (written) {
+    angles = clang::SourceRange(written->LAngleLoc, written->RAngleLoc);
+  }
+  if (angles.isValid()) {
+    auto args = clang::Lexer::getSourceText(
+      clang::CharSourceRange::getTokenRange(angles),
+      this->CTX.getSourceManager(), this->CTX.getLangOpts());
+    if (!args.empty()) {
+      this->OS << " written_name=\""
+               << encodeXML(instance->getNameAsString() + args.str()) << "\"";
+    }
+  }
+}
+
+#if LLVM_VERSION_MAJOR >= 10
+ASTVisitor::DumpId ASTVisitor::AddConceptReference(clang::TemplateName name)
+{
+  if (auto const* conceptDecl = clang::dyn_cast_or_null<clang::ConceptDecl>(
+        name.getAsTemplateDecl())) {
+    return this->AddDeclDumpNode(conceptDecl, true);
+  }
+  return DumpId();
+}
+#endif
+
+void ASTVisitor::OutputTemplateParameters(
+  clang::TemplateParameterList const* params)
+{
+  for (auto const* p : *params) {
+    auto const* type = clang::dyn_cast<clang::TemplateTypeParmDecl>(p);
+    auto const* value = clang::dyn_cast<clang::NonTypeTemplateParmDecl>(p);
+    auto const* nested = clang::dyn_cast<clang::TemplateTemplateParmDecl>(p);
+    this->OS << "    <TemplateParameter kind=\""
+             << (type      ? "type"
+                   : value ? "non-type"
+                           : "template")
+             << "\"";
+    this->PrintNameAttribute(p->getName());
+#if LLVM_VERSION_MAJOR >= 10
+    if (type && type->getTypeConstraint()) {
+      clang::TemplateName name(type->getTypeConstraint()->getNamedConcept());
+      if (DumpId id = this->AddConceptReference(name)) {
+        this->OS << " concept=\"_" << id << "\"";
+      }
+    }
+#endif
+    if (p->isParameterPack()) {
+      this->OS << " pack=\"1\"";
+    }
+    if (value) {
+      this->OS << " type_spelling=\""
+               << encodeXML(value->getType().getAsString(this->PrintingPolicy))
+               << "\"";
+    }
+#if LLVM_VERSION_MAJOR >= 11
+    std::string spelling;
+    llvm::raw_string_ostream out(spelling);
+    p->print(out, this->PrintingPolicy);
+    this->OS << " declaration=\"" << encodeXML(out.str()) << "\"";
+#else
+    // Older Clang versions cannot print an individual type parameter.
+    auto spelling = clang::Lexer::getSourceText(
+      clang::CharSourceRange::getTokenRange(p->getSourceRange()),
+      this->CI.getSourceManager(), this->CTX.getLangOpts());
+    if (!spelling.empty()) {
+      this->OS << " declaration=\"" << encodeXML(spelling.str()) << "\"";
+    }
+#endif
+    if ((type && type->hasDefaultArgument()) ||
+        (value && value->hasDefaultArgument()) ||
+        (nested && nested->hasDefaultArgument())) {
+      std::string argument;
+      llvm::raw_string_ostream arg(argument);
+#if LLVM_VERSION_MAJOR >= 19
+      auto const& loc = type ? type->getDefaultArgument()
+        : value              ? value->getDefaultArgument()
+                             : nested->getDefaultArgument();
+      loc.getArgument().print(this->PrintingPolicy, arg, true);
+#else
+      if (type) {
+        type->getDefaultArgument().print(arg, this->PrintingPolicy);
+      } else if (value) {
+        value->getDefaultArgument()->printPretty(arg, nullptr,
+                                                 this->PrintingPolicy);
+      } else {
+        nested->getDefaultArgument().getArgument().print(this->PrintingPolicy,
+                                                         arg
+#  if LLVM_VERSION_MAJOR >= 13
+                                                         ,
+                                                         true
+#  endif
+        );
+      }
+#endif
+      this->OS << " default=\"" << encodeXML(arg.str()) << "\"";
+      if (type) {
+#if LLVM_VERSION_MAJOR >= 19
+        clang::QualType defaultType = loc.getArgument().getAsType();
+#else
+        clang::QualType defaultType = type->getDefaultArgument();
+#endif
+        if (!defaultType->isDependentType()) {
+          if (DumpId id = this->AddTypeDumpNode(defaultType, false)) {
+            this->OS << " default_type=\"_" << id << "\"";
+          }
+        }
+      }
+    }
+    if (nested) {
+      this->OS << ">\n";
+      this->OutputTemplateParameters(nested->getTemplateParameters());
+      this->OS << "    </TemplateParameter>\n";
+    } else {
+      this->OS << "/>\n";
+    }
+  }
+}
+
+void ASTVisitor::OutputTemplate(clang::TemplateDecl const* d,
+                                DumpNode const* dn)
+{
+  this->OS << "  <" << d->getDeclKindName();
+  this->PrintIdAttribute(dn);
+  this->PrintNameAttribute(d->getNameAsString());
+  this->PrintContextAttribute(d);
+  this->PrintLocationAttribute(d);
+
+  // Keep the first declaration's location. Use the most recent declaration
+  // for the signature and parameter list so later defaults are visible.
+  if (auto const* redecl =
+        clang::dyn_cast<clang::RedeclarableTemplateDecl>(d)) {
+    d = redecl->getMostRecentDecl();
+  }
+  auto const* fn = clang::dyn_cast<clang::FunctionTemplateDecl>(d);
+  auto const* alias = clang::dyn_cast<clang::TypeAliasTemplateDecl>(d);
+  auto const* var = clang::dyn_cast<clang::VarTemplateDecl>(d);
+  if (fn || alias || var) {
+    clang::QualType t = fn ? fn->getTemplatedDecl()->getType()
+      : alias              ? alias->getTemplatedDecl()->getUnderlyingType()
+                           : var->getTemplatedDecl()->getType();
+    this->OS << " type_spelling=\""
+             << encodeXML(t.getAsString(this->PrintingPolicy))
+             << "\" canonical_type=\""
+             << encodeXML(
+                  t.getCanonicalType().getAsString(this->PrintingPolicy))
+             << "\"";
+  }
+  this->OS << ">\n";
+  this->OutputTemplateParameters(d->getTemplateParameters());
+  if (fn) {
+    for (auto const* param : fn->getTemplatedDecl()->parameters()) {
+      clang::QualType t = param->getType();
+      this->OS << "    <Argument type_spelling=\""
+               << encodeXML(t.getAsString(this->PrintingPolicy)) << "\"";
+      if (!t->isDependentType()) {
+        this->PrintTypeAttribute(t, false);
+      } else if (auto const* ref = t->getAs<clang::TemplateTypeParmType>()) {
+        this->OS << " parameter_depth=\"" << ref->getDepth()
+                 << "\" parameter_index=\"" << ref->getIndex() << "\"";
+      }
+      this->OS << "/>\n";
+    }
+  }
+#if LLVM_VERSION_MAJOR >= 10
+  auto writeConstraint = [this](clang::Expr const* e) {
+    if (e) {
+      std::string text;
+      llvm::raw_string_ostream out(text);
+      e->printPretty(out, nullptr, this->PrintingPolicy);
+      this->OS << "    <Constraint expression=\"" << encodeXML(out.str())
+               << "\"";
+      std::set<DumpId> concepts;
+      std::vector<clang::Stmt const*> pending(1, e);
+      while (!pending.empty()) {
+        auto const* stmt = pending.back();
+        pending.pop_back();
+        if (auto const* use =
+              clang::dyn_cast<clang::ConceptSpecializationExpr>(stmt)) {
+          clang::TemplateName name(use->getNamedConcept());
+          if (DumpId id = this->AddConceptReference(name)) {
+            concepts.insert(id);
+          }
+        }
+        for (auto const* child : stmt->children()) {
+          if (child) {
+            pending.push_back(child);
+          }
+        }
+      }
+      if (!concepts.empty()) {
+        this->OS << " concepts=\"";
+        char const* sep = "";
+        for (auto id : concepts) {
+          this->OS << sep << "_" << id;
+          sep = " ";
+        }
+        this->OS << "\"";
+      }
+      this->OS << "/>\n";
+    }
+  };
+  writeConstraint(d->getTemplateParameters()->getRequiresClause());
+  if (fn) {
+#  if LLVM_VERSION_MAJOR >= 21
+    writeConstraint(
+      fn->getTemplatedDecl()->getTrailingRequiresClause().ConstraintExpr);
+#  else
+    writeConstraint(fn->getTemplatedDecl()->getTrailingRequiresClause());
+#  endif
+  }
+  if (auto const* conceptDecl = clang::dyn_cast<clang::ConceptDecl>(d)) {
+    writeConstraint(conceptDecl->getConstraintExpr());
+  }
+#endif
+  this->OS << "  </" << d->getDeclKindName() << ">\n";
+}
+
 void ASTVisitor::OutputNamespaceDecl(clang::NamespaceDecl const* d,
                                      DumpNode const* dn)
 {
@@ -2334,6 +2671,7 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
     // This is a template instantiation so get the access of the original
     // template.  Access of the instantiation itself has no meaning.
     if (clang::ClassTemplateDecl const* dxt = dxts->getSpecializedTemplate()) {
+      this->PrintInstantiation(dxts, dxt, dxts->getSpecializationKind());
       access = dxt->getAccess();
     }
   }
@@ -2849,7 +3187,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".4.1\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.0\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {

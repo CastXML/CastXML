@@ -110,6 +110,7 @@
       </xs:element>
       <xs:element name="Ellipsis" minOccurs="0" />
     </xs:sequence>
+    <xs:attributeGroup ref="templateInstance" />
     <xs:attribute name="id" type="xs:ID" />
     <!-- Artificial members or anonymous structs (like ctor) might have an empty name. -->
     <xs:attribute name="name" type="nameOrEmpty" />
@@ -172,6 +173,7 @@
         </xs:complexType>
       </xs:element>
     </xs:sequence>
+    <xs:attributeGroup ref="templateInstance" />
     <xs:attribute name="id" type="xs:ID" />
     <!-- Anonymous records might have an empty name. -->
     <xs:attribute name="name" type="nameOrEmpty" use="optional" />
@@ -192,9 +194,79 @@
     <xs:attribute name="annotation" type="name" use="optional"/>
   </xs:complexType>
 
+  <xs:attributeGroup name="templateInstance">
+    <xs:attribute name="canonical_name" type="xs:string" />
+    <xs:attribute name="written_name" type="xs:string" />
+    <xs:attribute name="template" type="xs:IDREF" />
+    <xs:attribute name="instantiation">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="implicit" />
+          <xs:enumeration value="explicit-declaration" />
+          <xs:enumeration value="explicit-definition" />
+          <xs:enumeration value="explicit-specialization" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+  </xs:attributeGroup>
+
+  <xs:complexType name="TemplateParameter">
+    <xs:sequence>
+      <xs:element name="TemplateParameter" type="TemplateParameter" minOccurs="0" maxOccurs="unbounded" />
+    </xs:sequence>
+    <xs:attribute name="kind" use="required">
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="type" />
+          <xs:enumeration value="non-type" />
+          <xs:enumeration value="template" />
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="name" type="nameOrEmpty" />
+    <xs:attribute name="type_spelling" type="xs:string" />
+    <xs:attribute name="concept" type="xs:IDREF" />
+    <xs:attribute name="declaration" type="xs:string" />
+    <xs:attribute name="default" type="xs:string" />
+    <xs:attribute name="default_type" type="xs:IDREF" />
+    <xs:attribute name="pack" type="xs:int" fixed="1" />
+  </xs:complexType>
+
+  <xs:complexType name="Template">
+    <xs:sequence>
+      <xs:element name="TemplateParameter" type="TemplateParameter" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="Argument" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="type_spelling" type="xs:string" use="required" />
+          <xs:attribute name="type" type="xs:IDREF" />
+          <xs:attribute name="parameter_depth" type="xs:nonNegativeInteger" />
+          <xs:attribute name="parameter_index" type="xs:nonNegativeInteger" />
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="Constraint" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          <xs:attribute name="expression" type="xs:string" use="required" />
+          <xs:attribute name="concepts" type="xs:IDREFS" />
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="id" type="xs:ID" />
+    <xs:attribute name="name" type="nameOrEmpty" />
+    <xs:attribute name="context" type="xs:IDREF" />
+    <xs:attribute name="access" type="access" />
+    <xs:attribute name="type_spelling" type="xs:string" />
+    <xs:attribute name="canonical_type" type="xs:string" />
+    <xs:attributeGroup ref="location" />
+  </xs:complexType>
+
   <xs:complexType name="Items">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
 
+      <xs:element name="ClassTemplate" type="Template" />
+      <xs:element name="FunctionTemplate" type="Template" />
+      <xs:element name="TypeAliasTemplate" type="Template" />
+      <xs:element name="VarTemplate" type="Template" />
+      <xs:element name="Concept" type="Template" />
       <xs:element name="File">
         <xs:complexType>
           <xs:attribute name="id" type="xs:ID" />
