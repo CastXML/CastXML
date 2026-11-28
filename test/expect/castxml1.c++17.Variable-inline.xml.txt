@@ -1,0 +1,12 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Variable id="_1" name="ordinary" type="_5" init="1" context="_6" location="f1:1" file="f1" line="1"/>
+  <Variable id="_2" name="constant" type="_5c" init="1" context="_6" location="f1:2" file="f1" line="2"/>
+  <Variable id="_3" name="member" type="_5c" init="1" context="_7" access="public" location="f1:5" file="f1" line="5" static="1" inline="1" mangled="[^"]+"/>
+  <Variable id="_4" name="redeclared" type="_5" context="_6" location="f1:7" file="f1" line="7" extern="1" inline="1"/>
+  <FundamentalType id="_5" name="int" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_5c" type="_5" const="1"/>
+  <Namespace id="_6" name="::"/>
+  <Struct id="_7" name="Holder" context="_6" location="f1:3" file="f1" line="3" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Variable-inline.cxx"/>
+</CastXML>$

@@ -1,0 +1,11 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Variable id="_1" name="ordinary" type="_6" context="_7" location="f1:1" file="f1" line="1" extern="1"/>
+  <Variable id="_2" name="small" type="_6" context="_7" location="f1:2" file="f1" line="2" extern="1"/>
+  <Variable id="_3" name="large" type="_6" context="_7" location="f1:3" file="f1" line="3" extern="1"/>
+  <Variable id="_4" name="zero" type="_6" context="_7" location="f1:4" file="f1" line="4" extern="1"/>
+  <Variable id="_5" name="redeclared" type="_6" context="_7" location="f1:5" file="f1" line="5" extern="1"/>
+  <FundamentalType id="_6" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_7" name="::"/>
+  <File id="f1" name=".*/test/input/Variable-align.c(xx)?"/>
+</GCC_XML>$
