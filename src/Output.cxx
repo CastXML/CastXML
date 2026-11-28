@@ -930,7 +930,9 @@ ASTVisitor::DumpId ASTVisitor::AddDeclDumpNode(clang::Decl const* d,
   // Skip declarations our output formats do not support.
   if (clang::FunctionDecl const* fd =
         clang::dyn_cast<clang::FunctionDecl>(d)) {
-    if (fd->isDeleted()) {
+    if (fd->isDeleted() &&
+        (!this->Opts.CastXml || fd->isImplicit() ||
+         !fd->isDeletedAsWritten())) {
       return DumpId();
     }
 
@@ -2175,6 +2177,9 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   if (flags & FH_Pure) {
     this->OS << " pure_virtual=\"1\"";
   }
+  if (this->Opts.CastXml && d->isDeletedAsWritten()) {
+    this->OS << " deleted=\"1\"";
+  }
   if (d->isInlined()) {
     this->OS << " inline=\"1\"";
   }
@@ -3187,7 +3192,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".6.0\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
