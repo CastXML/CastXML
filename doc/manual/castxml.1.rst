@@ -124,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.5.0">
+  <CastXML format="1.6.0">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
@@ -135,6 +135,12 @@ The XML root element tag will be of the form:
   whenever a new XML attribute is added to an existing element or a minor
   bug is fixed in the XML output of an existing element or attribute
   (clients should work unchanged unless they want the new info).
+
+Starting in format 1.6.0, an overload set may include functions explicitly
+defined as ``= delete``. These have ``deleted="1"`` and participate in
+overload resolution. Clients that generate calls must exclude deleted
+functions from the set of call targets.
+Implicitly deleted special members are omitted.
 
 With ``--castxml-gccxml``
 -------------------------

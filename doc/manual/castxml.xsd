@@ -118,6 +118,7 @@
     <xs:attribute name="returns" type="xs:IDREF" use="optional" />
     <xs:attribute name="context" type="xs:IDREF" use="optional" />
     <xs:attribute name="static" type="xs:int" use="optional" fixed="1" />
+    <xs:attribute name="deleted" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="inline" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="extern" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="artificial" type="xs:int" use="optional" fixed="1" />
