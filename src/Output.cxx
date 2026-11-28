@@ -2140,6 +2140,28 @@ bool ASTVisitor::IsCastXMLTypedefDecl(clang::TypedefDecl const* td) const
   return false;
 }
 
+static bool hasNonThrowingNoexcept(clang::FunctionDecl const* d)
+{
+  // Inspect the declared type: a destructor can acquire an implicit noexcept.
+  auto const* source = d->getTypeSourceInfo();
+  auto const* fpt =
+    source ? source->getType()->getAs<clang::FunctionProtoType>() : nullptr;
+  if (!fpt) {
+    return false;
+  }
+  auto spec = fpt->getExceptionSpecType();
+  if (spec == clang::EST_BasicNoexcept) {
+    return true;
+  }
+#if LLVM_VERSION_MAJOR >= 7
+  return spec == clang::EST_NoexceptTrue;
+#else
+  return spec == clang::EST_ComputedNoexcept &&
+    fpt->getNoexceptSpec(d->getASTContext()) ==
+    clang::FunctionProtoType::NR_Nothrow;
+#endif
+}
+
 void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
                                       DumpNode const* dn, char const* tag,
                                       unsigned int flags,
@@ -2175,6 +2197,9 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
   if (flags & FH_Pure) {
     this->OS << " pure_virtual=\"1\"";
   }
+  if (this->Opts.CastXml && !d->isImplicit() && d->isConstexpr()) {
+    this->OS << " constexpr=\"1\"";
+  }
   if (d->isInlined()) {
     this->OS << " inline=\"1\"";
   }
@@ -2207,6 +2232,9 @@ void ASTVisitor::OutputFunctionHelper(clang::FunctionDecl const* d,
 
   if (clang::FunctionProtoType const* fpt =
         d->getType()->getAs<clang::FunctionProtoType>()) {
+    if (this->Opts.CastXml && !d->isImplicit() && hasNonThrowingNoexcept(d)) {
+      this->OS << " noexcept=\"1\"";
+    }
     this->PrintThrowsAttribute(fpt, dn->Complete);
     if (!clang::isa<clang::CXXConstructorDecl>(d) &&
         !clang::isa<clang::CXXDestructorDecl>(d) &&

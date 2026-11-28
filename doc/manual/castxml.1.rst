@@ -137,7 +137,11 @@ The XML root element tag will be of the form:
   (clients should work unchanged unless they want the new info).
 
 An explicit conversion function has ``explicit="1"`` on its ``Converter``
-element.
+element. User-declared functions and methods have ``constexpr="1"`` when
+they are constexpr. A non-throwing
+``noexcept`` specification is reported as ``noexcept="1"``, including
+when the expression in ``noexcept(expression)`` evaluates to true.
+Immediate functions declared ``consteval`` also have ``constexpr="1"``.
 
 With ``--castxml-gccxml``
 -------------------------
