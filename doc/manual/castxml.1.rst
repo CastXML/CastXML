@@ -139,6 +139,11 @@ The XML root element tag will be of the form:
 Since format 1.5.1, a ``Variable`` with thread storage duration has a
 ``thread_local="1"`` attribute.
 
+The optional ``align`` attribute on ``Variable`` gives the strictest explicit
+alignment requirement in bits, including one supplied by a redeclaration.
+CastXML omits it when the declaration has no explicit requirement, the
+requirement is zero, or its value still depends on template arguments.
+
 With ``--castxml-gccxml``
 -------------------------
 

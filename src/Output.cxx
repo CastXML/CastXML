@@ -2847,6 +2847,21 @@ void ASTVisitor::OutputFieldDecl(clang::FieldDecl const* d, DumpNode const* dn)
   this->OS << "/>\n";
 }
 
+static unsigned getExplicitAlignment(clang::VarDecl const* d)
+{
+  // The canonical declaration may precede an explicit alignment.
+  d = d->getMostRecentDecl();
+  if (!d->isInvalidDecl()) {
+    for (auto const* a : d->specific_attrs<clang::AlignedAttr>()) {
+      if (a->isAlignmentDependent()) {
+        return 0;
+      }
+    }
+    return d->getMaxAlignment();
+  }
+  return 0;
+}
+
 void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
 {
   this->OS << "  <Variable";
@@ -2864,8 +2879,13 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   if (d->getStorageClass() == clang::SC_Extern) {
     this->OS << " extern=\"1\"";
   }
-  if (this->Opts.CastXml && d->getTLSKind() != clang::VarDecl::TLS_None) {
-    this->OS << " thread_local=\"1\"";
+  if (this->Opts.CastXml) {
+    if (d->getTLSKind() != clang::VarDecl::TLS_None) {
+      this->OS << " thread_local=\"1\"";
+    }
+    if (unsigned align = getExplicitAlignment(d)) {
+      this->OS << " align=\"" << align << "\"";
+    }
   }
 
   bool const isTranslationUnit =
