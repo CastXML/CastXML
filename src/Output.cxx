@@ -2886,6 +2886,11 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
     if (unsigned align = getExplicitAlignment(d)) {
       this->OS << " align=\"" << align << "\"";
     }
+#if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9
+    if (d->getMostRecentDecl()->isInline()) {
+      this->OS << " inline=\"1\"";
+    }
+#endif
   }
 
   bool const isTranslationUnit =

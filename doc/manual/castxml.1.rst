@@ -144,6 +144,9 @@ alignment requirement in bits, including one supplied by a redeclaration.
 CastXML omits it when the declaration has no explicit requirement, the
 requirement is zero, or its value still depends on template arguments.
 
+A ``Variable`` with ``inline="1"`` is an inline variable. This includes
+static ``constexpr`` data members in C++17 and later.
+
 With ``--castxml-gccxml``
 -------------------------
 
