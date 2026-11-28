@@ -714,6 +714,8 @@ castxml_test_output(nostart)
 unset(castxml_test_output_custom_start)
 
 if(";${LLVM_TARGETS_TO_BUILD};" MATCHES ";X86;")
+  set(castxml_test_output_extra_arguments -target x86_64-unknown-linux-gnu)
+  castxml_test_output_cxx98(Function-ms-abi)
   set(castxml_test_output_extra_arguments -target i386-pc-windows-msvc)
   castxml_test_output(Class-ms-dllexport)
   castxml_test_output(Class-ms-dllimport)

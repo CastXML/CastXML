@@ -124,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.5.0">
+  <CastXML format="1.5.1">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
