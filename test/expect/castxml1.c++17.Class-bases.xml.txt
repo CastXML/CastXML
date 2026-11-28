@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:10" file="f1" line="10" members="_3 _4 _5 _6 _7 _8" bases="_9 private:_10 protected:_11" size="[0-9]+" align="[0-9]+">
+  <Class id="_1" name="start" context="_2" location="f1:10" file="f1" line="10" trivially_copyable="0" members="_3 _4 _5 _6 _7 _8" bases="_9 private:_10 protected:_11" size="[0-9]+" align="[0-9]+">
     <Base type="_9" access="public" virtual="0" offset="[0-9]+"/>
     <Base type="_10" access="private" virtual="0" offset="[0-9]+"/>
     <Base type="_11" access="protected" virtual="1"/>
@@ -19,9 +19,9 @@
   <Constructor id="_8" name="start" context="_1" access="public" location="f1:10" file="f1" line="10" inline="1" artificial="1">
     <Argument type="_14" location="f1:10" file="f1" line="10"/>
   </Constructor>
-  <Class id="_9" name="base_public" context="_2" location="f1:1" file="f1" line="1" members="_15 _16 _17 _18 _19 _20" size="[0-9]+" align="[0-9]+"/>
-  <Class id="_10" name="base_private" context="_2" location="f1:4" file="f1" line="4" members="_21 _22 _23 _24 _25 _26" size="[0-9]+" align="[0-9]+"/>
-  <Class id="_11" name="base_protected" context="_2" location="f1:7" file="f1" line="7" members="_27 _28 _29 _30 _31 _32" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_9" name="base_public" context="_2" location="f1:1" file="f1" line="1" trivially_copyable="1" members="_15 _16 _17 _18 _19 _20" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_10" name="base_private" context="_2" location="f1:4" file="f1" line="4" trivially_copyable="1" members="_21 _22 _23 _24 _25 _26" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_11" name="base_protected" context="_2" location="f1:7" file="f1" line="7" trivially_copyable="1" members="_27 _28 _29 _30 _31 _32" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_12" type="_1" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_13" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>

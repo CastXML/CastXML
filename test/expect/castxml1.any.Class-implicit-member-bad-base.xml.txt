@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:9" file="f1" line="9" members="_3 _4 _5 _6" bases="_7" size="[0-9]+" align="[0-9]+">
+  <Class id="_1" name="start" context="_2" location="f1:9" file="f1" line="9" trivially_copyable="0" members="_3 _4 _5 _6" bases="_7" size="[0-9]+" align="[0-9]+">
     <Base type="_7" access="public" virtual="0" offset="0"/>
   </Class>
   <Constructor id="_3" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1">
@@ -15,7 +15,7 @@
   </Constructor>
   <Constructor id="_5" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"/>
   )<Destructor id="_6" name="start" context="_1" access="public" location="f1:9" file="f1" line="9" inline="1" artificial="1"/>
-  <Class id="_7" name="base&lt;const int&gt;" context="_2" location="f1:2" file="f1" line="2" members="_10 _11 _12 _13" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_7" name="base&lt;const int&gt;" context="_2" location="f1:2" file="f1" line="2" trivially_copyable="0" members="_10 _11 _12 _13" size="[0-9]+" align="[0-9]+"/>
   (<RValueReferenceType id="_8" type="_1" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_9" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>

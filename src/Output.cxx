@@ -2678,6 +2678,11 @@ void ASTVisitor::OutputRecordDecl(clang::RecordDecl const* d,
   this->PrintContextAttribute(d, access);
   this->PrintLocationAttribute(d);
   if (d->getDefinition()) {
+    if (this->Opts.CastXml && dx && !dx->isInvalidDecl() &&
+        !dx->isDependentContext()) {
+      this->OS << " trivially_copyable=\""
+               << (dx->isTriviallyCopyable() ? 1 : 0) << "\"";
+    }
     if (dx && dx->isAbstract()) {
       this->OS << " abstract=\"1\"";
     }
@@ -3187,7 +3192,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
