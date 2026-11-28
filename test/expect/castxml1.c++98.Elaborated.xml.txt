@@ -15,14 +15,14 @@
   <Variable id="_14" name="e4" type="_43" context="_1" location="f1:21" file="f1" line="21" mangled="[^"]+"/>
   <Typedef id="_15" name="e5" type="_40" context="_1" location="f1:22" file="f1" line="22"/>
   <Typedef id="_16" name="e6" type="_41" context="_1" location="f1:23" file="f1" line="23"/>
-  <Union id="_17" name="Foo3" context="_1" location="f1:26" file="f1" line="26" members="_44 _45 _46 _47" size="[0-9]+" align="[0-9]+"/>
+  <Union id="_17" name="Foo3" context="_1" location="f1:26" file="f1" line="26" trivially_copyable="1" members="_44 _45 _46 _47" size="[0-9]+" align="[0-9]+"/>
   <Variable id="_18" name="u1" type="_48" context="_1" location="f1:30" file="f1" line="30" mangled="[^"]+"/>
   <Variable id="_19" name="u2" type="_49" context="_1" location="f1:31" file="f1" line="31" mangled="[^"]+"/>
   <Variable id="_20" name="u3" type="_50" context="_1" location="f1:32" file="f1" line="32" mangled="[^"]+"/>
   <Variable id="_21" name="u4" type="_51" context="_1" location="f1:33" file="f1" line="33" mangled="[^"]+"/>
   <Typedef id="_22" name="u5" type="_48" context="_1" location="f1:34" file="f1" line="34"/>
   <Typedef id="_23" name="u6" type="_49" context="_1" location="f1:35" file="f1" line="35"/>
-  <Class id="_24" name="Foo4" context="_1" location="f1:38" file="f1" line="38" members="_52 _53 _54 _55" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_24" name="Foo4" context="_1" location="f1:38" file="f1" line="38" trivially_copyable="1" members="_52 _53 _54 _55" size="[0-9]+" align="[0-9]+"/>
   <Variable id="_25" name="c1" type="_56" context="_1" location="f1:42" file="f1" line="42" mangled="[^"]+"/>
   <Variable id="_26" name="c2" type="_57" context="_1" location="f1:43" file="f1" line="43" mangled="[^"]+"/>
   <Variable id="_27" name="c3" type="_50" context="_1" location="f1:44" file="f1" line="44" mangled="[^"]+"/>

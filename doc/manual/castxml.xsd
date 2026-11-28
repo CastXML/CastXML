@@ -183,6 +183,8 @@
     <xs:attribute name="comment" type="xs:IDREF" use="optional" />
     <xs:attribute name="incomplete" type="xs:int" use="optional" fixed="1" />
     <!-- All of the following attributes are for complete declarations only. -->
+    <!-- C++ language trait for a complete, non-dependent C++ record. -->
+    <xs:attribute name="trivially_copyable" type="xs:boolean" use="optional" />
     <xs:attribute name="abstract" type="xs:int" use="optional" fixed="1" />
     <xs:attribute name="members" type="xs:IDREFS" use="optional" />
     <xs:attribute name="bases" type="access-prefixed-ids" use="optional" />

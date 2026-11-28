@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" members="_3 _4 _5 _6 _7 _8 _9" bases="_10" size="[0-9]+" align="[0-9]+">
+  <Class id="_1" name="start" context="_2" location="f1:5" file="f1" line="5" trivially_copyable="0" members="_3 _4 _5 _6 _7 _8 _9" bases="_10" size="[0-9]+" align="[0-9]+">
     <Base type="_10" access="public" virtual="0" offset="0"/>
   </Class>
   <Method id="_3" name="method" returns="_11" context="_1" access="private" location="f1:7" file="f1" line="7" virtual="1" overrides="_12" mangled="[^"]+" attributes="override">
@@ -20,7 +20,7 @@
   <Constructor id="_9" name="start" context="_1" access="public" location="f1:5" file="f1" line="5" inline="1" artificial="1">
     <Argument type="_15" location="f1:5" file="f1" line="5"/>
   </Constructor>
-  <Class id="_10" name="base" context="_2" location="f1:1" file="f1" line="1" members="_12 _16 _17 _18 _19 _20 _21" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_10" name="base" context="_2" location="f1:1" file="f1" line="1" trivially_copyable="0" members="_12 _16 _17 _18 _19 _20 _21" size="[0-9]+" align="[0-9]+"/>
   <FundamentalType id="_11" name="int" size="[0-9]+" align="[0-9]+"/>
   <Method id="_12" name="method" returns="_11" context="_10" access="private" location="f1:3" file="f1" line="3" virtual="1" mangled="[^"]+">
     <Argument type="_11" location="f1:3" file="f1" line="3"/>
