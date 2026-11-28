@@ -18,6 +18,9 @@
 
 #include <string>
 #include <vector>
+#include <set>
+
+#include "clang/Basic/Specifiers.h"
 
 struct Options
 {
@@ -55,6 +58,7 @@ struct Options
   std::string Predefines;
   std::string Triple;
   std::vector<std::string> StartNames;
+  std::set<clang::AccessSpecifier> ExcludedVisibility;
 };
 
 #endif // CASTXML_OPTIONS_H
