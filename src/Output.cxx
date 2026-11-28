@@ -2944,6 +2944,9 @@ void ASTVisitor::OutputCXXConversionDecl(clang::CXXConversionDecl const* d,
   }
 
   unsigned int flags = FH_Returns;
+  if (this->Opts.CastXml && d->isExplicit()) {
+    flags |= FH_Explicit;
+  }
   if (d->isConst()) {
     flags |= FH_Const;
   }
@@ -3187,7 +3190,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
