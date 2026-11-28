@@ -1,0 +1,8 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Variable id="_1" name="ordinary" type="_3" context="_4" location="f1:1" file="f1" line="1" extern="1"/>
+  <Variable id="_2" name="per_thread" type="_3" context="_4" location="f1:2" file="f1" line="2" extern="1"/>
+  <FundamentalType id="_3" name="int" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_4" name="::"/>
+  <File id="f1" name=".*/test/input/Variable-thread-local.c(xx)?"/>
+</GCC_XML>$

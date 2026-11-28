@@ -124,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.5.0">
+  <CastXML format="1.5.1">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
@@ -135,6 +135,9 @@ The XML root element tag will be of the form:
   whenever a new XML attribute is added to an existing element or a minor
   bug is fixed in the XML output of an existing element or attribute
   (clients should work unchanged unless they want the new info).
+
+Since format 1.5.1, a ``Variable`` with thread storage duration has a
+``thread_local="1"`` attribute.
 
 With ``--castxml-gccxml``
 -------------------------

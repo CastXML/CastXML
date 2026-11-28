@@ -349,6 +349,7 @@
           <xs:attributeGroup ref="location" />
           <xs:attribute name="static" type="xs:int" use="optional" fixed="1" />
           <xs:attribute name="extern" type="xs:int" use="optional" fixed="1" />
+          <xs:attribute name="thread_local" type="xs:int" use="optional" fixed="1" />
           <xs:attribute name="mangled" type="xs:string" />
           <xs:attribute name="attributes" type="attributes" use="optional" />
           <xs:attribute name="comment" type="xs:IDREF" use="optional" />
