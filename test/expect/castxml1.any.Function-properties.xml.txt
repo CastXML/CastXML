@@ -1,0 +1,14 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Function id="_1" name="plain" returns="_7" context="_8" location="f1:1" file="f1" line="1" inline="1" mangled="[^"]+"/>
+  <Function id="_2" name="constant" returns="_7" context="_8" location="f1:5" file="f1" line="5" constexpr="1" inline="1" mangled="[^"]+"/>
+  <Method id="_3" name="safe" returns="_9" context="_10" access="public" location="f1:11" file="f1" line="11" virtual="1" noexcept="1" mangled="[^"]+"/>
+  <Method id="_4" name="yes" returns="_9" context="_10" access="public" location="f1:12" file="f1" line="12" noexcept="1" mangled="[^"]+"/>
+  <Method id="_5" name="maybe" returns="_9" context="_10" access="public" location="f1:13" file="f1" line="13" mangled="[^"]+"/>
+  <Method id="_6" name="ordinary" returns="_9" context="_10" access="public" location="f1:14" file="f1" line="14" mangled="[^"]+"/>
+  <FundamentalType id="_7" name="int" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_9" name="void" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_8" name="::"/>
+  <Struct id="_10" name="S" context="_8" location="f1:9" file="f1" line="9" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Function-properties.cxx"/>
+</CastXML>$

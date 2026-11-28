@@ -124,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.5.0">
+  <CastXML format="1.5.1">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
@@ -135,6 +135,13 @@ The XML root element tag will be of the form:
   whenever a new XML attribute is added to an existing element or a minor
   bug is fixed in the XML output of an existing element or attribute
   (clients should work unchanged unless they want the new info).
+
+An explicit conversion function has ``explicit="1"`` on its ``Converter``
+element. User-declared functions and methods have ``constexpr="1"`` when
+they are constexpr. A non-throwing
+``noexcept`` specification is reported as ``noexcept="1"``, including
+when the expression in ``noexcept(expression)`` evaluates to true.
+Immediate functions declared ``consteval`` also have ``constexpr="1"``.
 
 With ``--castxml-gccxml``
 -------------------------
