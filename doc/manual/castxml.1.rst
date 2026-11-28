@@ -124,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.5.0">
+  <CastXML format="1.5.1">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
@@ -135,6 +135,9 @@ The XML root element tag will be of the form:
   whenever a new XML attribute is added to an existing element or a minor
   bug is fixed in the XML output of an existing element or attribute
   (clients should work unchanged unless they want the new info).
+
+A ``Variable`` with ``inline="1"`` is an inline variable. This includes
+static ``constexpr`` data members in C++17 and later.
 
 With ``--castxml-gccxml``
 -------------------------

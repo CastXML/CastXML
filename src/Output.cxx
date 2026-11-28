@@ -2864,6 +2864,11 @@ void ASTVisitor::OutputVarDecl(clang::VarDecl const* d, DumpNode const* dn)
   if (d->getStorageClass() == clang::SC_Extern) {
     this->OS << " extern=\"1\"";
   }
+#if LLVM_VERSION_MAJOR > 3 || LLVM_VERSION_MAJOR == 3 && LLVM_VERSION_MINOR >= 9
+  if (this->Opts.CastXml && d->getMostRecentDecl()->isInline()) {
+    this->OS << " inline=\"1\"";
+  }
+#endif
 
   bool const isTranslationUnit =
     clang::isa<clang::TranslationUnitDecl>(d->getDeclContext());
@@ -3187,7 +3192,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
