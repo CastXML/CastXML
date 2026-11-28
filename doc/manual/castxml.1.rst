@@ -124,7 +124,7 @@ The XML root element tag will be of the form:
 
 .. code-block:: xml
 
-  <CastXML format="1.5.0">
+  <CastXML format="1.5.1">
 
 * The first component is the ``epic`` format version number given to the
   ``--castxml-output=<v>`` flag, and currently must always be ``1``.
@@ -135,6 +135,11 @@ The XML root element tag will be of the form:
   whenever a new XML attribute is added to an existing element or a minor
   bug is fixed in the XML output of an existing element or attribute
   (clients should work unchanged unless they want the new info).
+
+The optional ``align`` attribute on ``Variable`` gives the strictest explicit
+alignment requirement in bits, including one supplied by a redeclaration.
+CastXML omits it when the declaration has no explicit requirement, the
+requirement is zero, or its value still depends on template arguments.
 
 With ``--castxml-gccxml``
 -------------------------
