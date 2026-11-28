@@ -1,0 +1,21 @@
+^<\?xml version="1.0"\?>
+<GCC_XML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4"/>
+  <Function id="_3" name="f" returns="_5" context="_1" location="f1:2" file="f1" line="2" mangled="[^"]+">
+    <Argument type="_6" location="f1:2" file="f1" line="2"/>
+  </Function>
+  <Struct id="_4" name="Blocked" context="_1" location="f1:4" file="f1" line="4" members="_7 _8 _9" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_5" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_6" name="long int" size="[0-9]+" align="[0-9]+"/>
+  <Field id="_7" name="ref" type="_10" context="_4" access="public" location="f1:6" file="f1" line="6" offset="0"/>
+  <Constructor id="_8" name="Blocked" context="_4" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1">
+    <Argument type="_11" location="f1:4" file="f1" line="4"/>
+  </Constructor>
+  <Destructor id="_9" name="Blocked" context="_4" access="public" location="f1:4" file="f1" line="4" inline="1" artificial="1"/>
+  <ReferenceType id="_10" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <ReferenceType id="_11" type="_4c" size="[0-9]+" align="[0-9]+"/>
+  <CvQualifiedType id="_4c" type="_4" const="1"/>
+  <Namespace id="_2" name="::"/>
+  <FundamentalType id="_12" name="int" size="[0-9]+" align="[0-9]+"/>
+  <File id="f1" name=".*/test/input/Function-deleted.cxx"/>
+</GCC_XML>$
