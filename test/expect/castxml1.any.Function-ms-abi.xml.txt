@@ -1,0 +1,24 @@
+^<\?xml version="1.0"\?>
+<CastXML[^>]*>
+  <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6"/>
+  <Function id="_3" name="native" returns="_7" context="_1" location="f1:2" file="f1" line="2" mangled="[^"]+">
+    <Argument type="_8" location="f1:2" file="f1" line="2"/>
+  </Function>
+  <Function id="_4" name="foreign" returns="_7" context="_1" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="__ms_abi__">
+    <Argument type="_8" location="f1:3" file="f1" line="3"/>
+  </Function>
+  <Typedef id="_5" name="NativeCallback" type="_9" context="_1" location="f1:4" file="f1" line="4"/>
+  <Typedef id="_6" name="ForeignCallback" type="_10" context="_1" location="f1:5" file="f1" line="5"/>
+  <FundamentalType id="_7" name="void" size="[0-9]+" align="[0-9]+"/>
+  <FundamentalType id="_8" name="int" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_9" type="_11" size="[0-9]+" align="[0-9]+"/>
+  <PointerType id="_10" type="_12" size="[0-9]+" align="[0-9]+"/>
+  <Namespace id="_2" name="::"/>
+  <FunctionType id="_11" returns="_7">
+    <Argument type="_8"/>
+  </FunctionType>
+  <FunctionType id="_12" returns="_7" attributes="__ms_abi__">
+    <Argument type="_8"/>
+  </FunctionType>
+  <File id="f1" name=".*/test/input/Function-ms-abi.cxx"/>
+</CastXML>$

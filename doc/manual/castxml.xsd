@@ -33,7 +33,7 @@
   <!--
     A space separated list of declaration attributes, inlcuding:
     deprecated, dllexport, dllimport, final, override, __stdcall__,
-    __fastcall__, __thiscall__ annotate(...).
+    __fastcall__, __thiscall__, __ms_abi__, annotate(...).
     Note that it isn't a valid XML list, because annotate(...) might contain
     spaces.
   -->
