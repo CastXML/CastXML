@@ -1957,6 +1957,17 @@ void ASTVisitor::GetFunctionTypeAttributes(clang::FunctionProtoType const* t,
   switch (t->getExtInfo().getCC()) {
     case clang::CallingConv::CC_C:
       break;
+#if LLVM_VERSION_MAJOR >= 5
+    case clang::CallingConv::CC_Win64:
+#else
+    case clang::CallingConv::CC_X86_64Win64:
+#endif
+      if (this->Opts.CastXml &&
+          this->CTX.getTargetInfo().getTriple().getArch() ==
+            llvm::Triple::x86_64) {
+        attrs.push_back("__ms_abi__");
+      }
+      break;
     case clang::CallingConv::CC_X86StdCall:
       attrs.push_back("__stdcall__");
       break;
@@ -3187,7 +3198,7 @@ void ASTVisitor::OutputStartXMLTags()
     // Start dump with castxml-compatible format.
     /* clang-format off */
     this->OS <<
-      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.0\">\n"
+      "<CastXML format=\"" << Opts.CastXmlEpicFormatVersion << ".5.1\">\n"
       ;
     /* clang-format on */
   } else if (this->Opts.GccXml) {
