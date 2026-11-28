@@ -1,0 +1,3 @@
+<Struct [^>]*name="Defaulted" [^>]*trivially_copyable="1"[^>]*/>
+  <Struct [^>]*name="UserProvided" [^>]*trivially_copyable="0"[^>]*/>
+  <Struct [^>]*name="Forward" context="[^"]*" location="[^"]*" file="[^"]*" line="[0-9]+" incomplete="1"/>

@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6 _7 _8 _9" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" trivially_copyable="1" members="_3 _4 _5 _6 _7 _8 _9" size="[0-9]+" align="[0-9]+"/>
   <OperatorMethod id="_3" name="&lt;&lt;" returns="_10" context="_1" access="private" location="f1:3" file="f1" line="3" mangled="[^"]+" attributes="dllexport">
     <Argument type="_11" location="f1:3" file="f1" line="3"/>
   </OperatorMethod>

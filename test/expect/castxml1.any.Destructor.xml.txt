@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" members="_3 _4 _5 _6" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_1" name="start" context="_2" location="f1:1" file="f1" line="1" trivially_copyable="0" members="_3 _4 _5 _6" size="[0-9]+" align="[0-9]+"/>
   <Destructor id="_3" name="start" context="_1" access="private" location="f1:3" file="f1" line="3"/>
   <Constructor id="_4" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1"/>
   <Constructor id="_5" name="start" context="_1" access="public" location="f1:1" file="f1" line="1" inline="1" artificial="1">

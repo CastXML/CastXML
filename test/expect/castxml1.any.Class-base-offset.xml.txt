@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start" context="_2" location="f1:13" file="f1" line="13" members="_3 _4 _5 _6 _7 _8" bases="_9 _10 _11" size="[0-9]+" align="[0-9]+">
+  <Class id="_1" name="start" context="_2" location="f1:13" file="f1" line="13" trivially_copyable="1" members="_3 _4 _5 _6 _7 _8" bases="_9 _10 _11" size="[0-9]+" align="[0-9]+">
     <Base type="_9" access="public" virtual="0" offset="[0-9]+"/>
     <Base type="_10" access="public" virtual="0" offset="[0-9]+"/>
     <Base type="_11" access="public" virtual="0" offset="[0-9]+"/>
@@ -19,9 +19,9 @@
     <Argument type="_14" location="f1:13" file="f1" line="13"/>
   </OperatorMethod>
   <Destructor id="_8" name="start" context="_1" access="public" location="f1:13" file="f1" line="13" inline="1" artificial="1"/>
-  <Class id="_9" name="base_1" context="_2" location="f1:1" file="f1" line="1" members="_15 _16 _17 _18 _19 _20 _21" size="[0-9]+" align="[0-9]+"/>
-  <Class id="_10" name="base_2" context="_2" location="f1:5" file="f1" line="5" members="_22 _23 _24 _25 _26 _27 _28" size="[0-9]+" align="[0-9]+"/>
-  <Class id="_11" name="base_3" context="_2" location="f1:9" file="f1" line="9" members="_29 _30 _31 _32 _33 _34 _35" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_9" name="base_1" context="_2" location="f1:1" file="f1" line="1" trivially_copyable="1" members="_15 _16 _17 _18 _19 _20 _21" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_10" name="base_2" context="_2" location="f1:5" file="f1" line="5" trivially_copyable="1" members="_22 _23 _24 _25 _26 _27 _28" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_11" name="base_3" context="_2" location="f1:9" file="f1" line="9" trivially_copyable="1" members="_29 _30 _31 _32 _33 _34 _35" size="[0-9]+" align="[0-9]+"/>
   <ReferenceType id="_12" type="_1c" size="[0-9]+" align="[0-9]+"/>
   <CvQualifiedType id="_1c" type="_1" const="1"/>
   <ReferenceType id="_13" type="_1" size="[0-9]+" align="[0-9]+"/>

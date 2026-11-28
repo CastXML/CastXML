@@ -1,6 +1,6 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
-  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:2" file="f1" line="2" members="_3 _4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_1" name="start&lt;int&gt;" context="_2" location="f1:2" file="f1" line="2" trivially_copyable="1" members="_3 _4 _5 _6 _7" size="[0-9]+" align="[0-9]+"/>
   <Method id="_3" name="method" returns="_8" context="_1" access="private" location="f1:5" file="f1" line="5" inline="1" mangled="[^"]+">
     <Argument type="_9" location="f1:5" file="f1" line="5"/>
   </Method>

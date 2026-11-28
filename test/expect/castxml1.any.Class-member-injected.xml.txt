@@ -1,7 +1,7 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6"/>
-  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" members="_7 _8 _9 _10 _11 _12 _13 _14 _15" size="[0-9]+" align="[0-9]+"/>
+  <Class id="_3" name="A" context="_1" location="f1:2" file="f1" line="2" trivially_copyable="1" members="_7 _8 _9 _10 _11 _12 _13 _14 _15" size="[0-9]+" align="[0-9]+"/>
   <Function id="_4" name="function" returns="_3" context="_1" location="f1:8" file="f1" line="8" mangled="[^"]+">
     <Argument type="_16" location="f1:8" file="f1" line="8"/>
     <Argument type="_17" location="f1:8" file="f1" line="8"/>

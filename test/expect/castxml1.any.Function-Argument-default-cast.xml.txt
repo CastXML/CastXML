@@ -1,8 +1,8 @@
 ^<\?xml version="1.0"\?>
 <CastXML[^>]*>
   <Namespace id="_1" name="start" context="_2" members="_3 _4 _5 _6 _7 _8"/>
-  <Struct id="_3" name="Base" context="_1" location="f1:2" file="f1" line="2" members="_9 _10 _11 _12" size="[0-9]+" align="[0-9]+"/>
-  <Struct id="_4" name="Derived" context="_1" location="f1:7" file="f1" line="7" members="_13 _14 _15 _16" bases="_3" size="[0-9]+" align="[0-9]+">
+  <Struct id="_3" name="Base" context="_1" location="f1:2" file="f1" line="2" trivially_copyable="0" members="_9 _10 _11 _12" size="[0-9]+" align="[0-9]+"/>
+  <Struct id="_4" name="Derived" context="_1" location="f1:7" file="f1" line="7" trivially_copyable="0" members="_13 _14 _15 _16" bases="_3" size="[0-9]+" align="[0-9]+">
     <Base type="_3" access="public" virtual="0" offset="0"/>
   </Struct>
   <Function id="_5" name="b" returns="_17" context="_1" location="f1:14" file="f1" line="14" mangled="[^"]+"/>
